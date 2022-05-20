@@ -13,11 +13,17 @@ class FormModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class SubjectModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class UnitModel(BaseModel):
@@ -26,8 +32,14 @@ class UnitModel(BaseModel):
     subject = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="form_units")
     form = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="subject_units")
 
+    def __str__(self):
+        return self.name
+
 
 class VideoModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="videos")
     url = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.url

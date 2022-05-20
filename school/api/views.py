@@ -1,4 +1,6 @@
-from rest_framework import viewsets
+import uuid
+
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from school.api import serializers as school_serializers
@@ -17,21 +19,70 @@ class FormViewSet(viewsets.ModelViewSet):
 
 class UnitViewSet(viewsets.ViewSet):
 
+    @staticmethod
+    def valid_uuid(val):
+        try:
+            uuid.UUID(str(val))
+            return True
+        except ValueError:
+            return False
+
     @action(methods=['GET'], detail=False)
     def list_units(self, request):
-        pass
+        """
+        for form and subject
+        list units for form and subject
+        """
+        form = request.query_params.get('form', False)
+        subject = request.query_params.get('subject', False)
+
+        if not form and not subject:
+            return Response({"details": "Form and subject are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        qs = school_models.UnitModel.objects.filter(subject=subject, form=form)
+        serializer = school_serializers.UnitSerializer(qs, many=True)
+
+        return Response({"details": serializer}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
     def add_unit(self, request):
-        pass
+        """
+        add unit
+        """
+        payload = request.data
 
     @action(methods=['GET'], detail=False)
     def retrieve_unit(self, request):
-        pass
+        request_id = request.query_params.get("request_id", False)
+        is_valid = self.valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.UnitModel.objects.get(id=request_id)
+        except school_models.UnitModel.DoesNotExist:
+            return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = school_serializers.UnitSerializer(instance)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
     def update_unit(self, request):
-        pass
+        """
+        depends on payload passed to update unit
+        """
+
+        request_id = request.query_params.get("request_id", False)
+        is_valid = self.valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.UnitModel.objects.get(id=request_id)
+        except school_models.UnitModel.DoesNotExist:
+            return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VideoViewSet(viewsets.ViewSet):

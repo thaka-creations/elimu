@@ -26,3 +26,23 @@ class SubjectSerializer(serializers.ModelSerializer):
         if qs.exists():
             raise serializers.ValidationError("Subject exists")
         return obj
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    subject = SubjectSerializer()
+    form = FormSerializer()
+
+    class Meta:
+        model = school_models.UnitModel
+        fields = ['id', 'name', 'subject', 'form']
+        extra_kwargs = {'id': {'read_only': True}}
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    unit = UnitSerializer()
+
+    class Meta:
+        model = school_models.VideoModel
+        fields = ['id', 'url', 'unit']
+        extra_kwargs = {'id': {'read_only': True}}
+
