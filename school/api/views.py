@@ -50,6 +50,17 @@ class UnitViewSet(viewsets.ViewSet):
         add unit
         """
         payload = request.data
+        payload_serializer = school_serializers.AddUnitSerializer(
+            data=payload, many=False
+        )
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+        school_models.UnitModel.objects.create(**validated_data)
+
+        return Response({"details": "Unit created successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=False)
     def retrieve_unit(self, request):

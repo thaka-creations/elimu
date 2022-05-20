@@ -38,6 +38,27 @@ class UnitSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
 
+class AddUnitSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True, trim_whitespace=True)
+    subject = serializers.UUIDField(required=True)
+    form = serializers.UUIDField(required=True)
+
+    def validate(self, obj):
+        try:
+            subject = school_models.SubjectModel.objects.get(id=obj['subject'])
+        except school_models.SubjectModel.DoesNotExist:
+            raise serializers.ValidationError("Subject does not exist")
+
+        try:
+            form = school_models.FormModel.objects.get(id=obj['form'])
+        except school_models.FormModel.DoesNotExist:
+            raise serializers.ValidationError("Form does not exist")
+
+        obj['subject'] = subject
+        obj['form'] = form
+        return obj
+
+
 class VideoSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
 
@@ -45,4 +66,3 @@ class VideoSerializer(serializers.ModelSerializer):
         model = school_models.VideoModel
         fields = ['id', 'url', 'unit']
         extra_kwargs = {'id': {'read_only': True}}
-
