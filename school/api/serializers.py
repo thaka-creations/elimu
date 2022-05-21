@@ -28,7 +28,7 @@ class SubjectSerializer(serializers.ModelSerializer):
         return obj
 
 
-class UnitSerializer(serializers.ModelSerializer):
+class ListUnitSerializer(serializers.ModelSerializer):
     subject = SubjectSerializer()
     form = FormSerializer()
 
@@ -38,7 +38,7 @@ class UnitSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
 
-class AddUnitSerializer(serializers.Serializer):
+class UnitSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, trim_whitespace=True)
     subject = serializers.UUIDField(required=True)
     form = serializers.UUIDField(required=True)
@@ -57,6 +57,10 @@ class AddUnitSerializer(serializers.Serializer):
         obj['subject'] = subject
         obj['form'] = form
         return obj
+
+
+class UpdateUnitSerializer(UnitSerializer):
+    request_id = serializers.UUIDField(required=True)
 
 
 class VideoSerializer(serializers.ModelSerializer):

@@ -27,8 +27,7 @@ class UnitViewSet(viewsets.ViewSet):
         except ValueError:
             return False
 
-    @action(methods=['GET'], detail=False)
-    def list_units(self, request):
+    def list(self, request):
         """
         for form and subject
         list units for form and subject
@@ -40,17 +39,16 @@ class UnitViewSet(viewsets.ViewSet):
             return Response({"details": "Form and subject are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         qs = school_models.UnitModel.objects.filter(subject=subject, form=form)
-        serializer = school_serializers.UnitSerializer(qs, many=True)
+        serializer = school_serializers.ListUnitSerializer(qs, many=True)
 
         return Response({"details": serializer}, status=status.HTTP_200_OK)
 
-    @action(methods=['POST'], detail=False)
-    def add_unit(self, request):
+    def create(self, request):
         """
         add unit
         """
         payload = request.data
-        payload_serializer = school_serializers.AddUnitSerializer(
+        payload_serializer = school_serializers.UnitSerializer(
             data=payload, many=False
         )
 
@@ -83,17 +81,27 @@ class UnitViewSet(viewsets.ViewSet):
         """
         depends on payload passed to update unit
         """
+        payload = request.data
+        payload_serializer = school_serializers.UpdateUnitSerializer(
+            data=payload, many=False
+        )
 
-        request_id = request.query_params.get("request_id", False)
-        is_valid = self.valid_uuid(request_id)
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not is_valid:
-            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+        validated_data = payload_serializer.validated_data
+        request_id = validated_data.pop("request_id")
 
         try:
             instance = school_models.UnitModel.objects.get(id=request_id)
         except school_models.UnitModel.DoesNotExist:
             return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for k, v in validated_data:
+            instance.k = v
+            instance.save()
+
+        return Response({"details": "Unit updated successfully"}, status=status.HTTP_200_OK)
 
 
 class VideoViewSet(viewsets.ViewSet):
