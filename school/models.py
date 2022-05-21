@@ -8,6 +8,9 @@ class BaseModel(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     date_deleted = models.DateTimeField(blank=True, null=True)
 
+    class Meta:
+        abstract = True
+
 
 class FormModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
