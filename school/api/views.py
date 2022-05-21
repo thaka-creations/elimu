@@ -7,25 +7,92 @@ from school.api import serializers as school_serializers
 from school import models as school_models
 
 
-class SubjectViewSet(viewsets.ModelViewSet):
+def valid_uuid(val):
+    try:
+        uuid.UUID(str(val))
+        return True
+    except ValueError:
+        return False
+
+
+class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = school_models.SubjectModel.objects.all()
     serializer_class = school_serializers.SubjectSerializer
 
+    @staticmethod
+    def create(request):
+        payload_serializer = school_serializers.SubjectSerializer(
+            data=request.data, many=False
+        )
 
-class FormViewSet(viewsets.ModelViewSet):
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+        school_models.SubjectModel.objects.create(**validated_data)
+        return Response({"details": "Subject created successfully"}, status=status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=False)
+    def update_subject(self, request):
+        payload = request.data
+        request_id = payload.pop("request_id")
+        payload_serializer = school_serializers.SubjectSerializer(
+            data=payload, many=False
+        )
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+
+        try:
+            instance = school_models.SubjectModel.objects.get(id=request_id)
+        except school_models.SubjectModel.DoesNotExist:
+            return Response({"details": "Subject does not exist"})
+
+        for k, v in validated_data:
+            instance.k = v
+            instance.save()
+
+        return Response({"details": "Subject updated successfully"}, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=False)
+    def retrieve_subject(self, request):
+        request_id = request.query_params.get('request_id', False)
+
+        is_valid = valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.SubjectModel.objects.get(id=request_id)
+        except school_models.SubjectModel.DoesNotExist:
+            return Response({"details": "Subject does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = school_serializers.SubjectSerializer(
+            instance
+        )
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
+
+
+class FormViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = school_models.SubjectModel.objects.all()
     serializer_class = school_serializers.FormSerializer
 
+    def create(self, request):
+        pass
+
+    @action(methods=['POST'], detail=False)
+    def update_form(self, request):
+        pass
+
+    @action(methods=['GET'], detail=False)
+    def retrieve_form(self, request):
+        pass
+
 
 class UnitViewSet(viewsets.ViewSet):
-
-    @staticmethod
-    def valid_uuid(val):
-        try:
-            uuid.UUID(str(val))
-            return True
-        except ValueError:
-            return False
 
     @staticmethod
     def list(request):
@@ -65,7 +132,7 @@ class UnitViewSet(viewsets.ViewSet):
     @action(methods=['GET'], detail=False)
     def retrieve_unit(self, request):
         request_id = request.query_params.get("request_id", False)
-        is_valid = self.valid_uuid(request_id)
+        is_valid = valid_uuid(request_id)
 
         if not is_valid:
             return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
@@ -109,14 +176,6 @@ class UnitViewSet(viewsets.ViewSet):
 class VideoViewSet(viewsets.ViewSet):
 
     @staticmethod
-    def valid_uuid(val):
-        try:
-            uuid.UUID(str(val))
-            return True
-        except ValueError:
-            return False
-
-    @staticmethod
     def create(request):
         """
         add video , url and unit required
@@ -150,7 +209,7 @@ class VideoViewSet(viewsets.ViewSet):
         retrieve video
         """
         request_id = request.query_params.get("request_id", False)
-        is_valid = self.valid_uuid(request_id)
+        is_valid = valid_uuid(request_id)
 
         if not is_valid:
             return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
