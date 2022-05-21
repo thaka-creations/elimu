@@ -77,7 +77,7 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FormViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = school_models.SubjectModel.objects.all()
+    queryset = school_models.FormModel.objects.all()
     serializer_class = school_serializers.FormSerializer
 
     @staticmethod

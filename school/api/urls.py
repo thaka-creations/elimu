@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from school.api import views as school_api_views
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 
 router.register('subject', school_api_views.SubjectViewSet, basename='subject')
 router.register('form', school_api_views.FormViewSet, basename='form')
