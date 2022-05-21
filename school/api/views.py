@@ -156,8 +156,7 @@ class UnitViewSet(viewsets.ViewSet):
 
         qs = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
         serializer = school_serializers.ListRetrieveUnitSerializer(qs, many=True)
-
-        return Response({"details": serializer}, status=status.HTTP_200_OK)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @staticmethod
     def create(request):
@@ -214,10 +213,11 @@ class UnitViewSet(viewsets.ViewSet):
         except school_models.UnitModel.DoesNotExist:
             return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        for k, v in validated_data:
-            instance.k = v
-            instance.save()
+        for k, v in validated_data.items():
+            if hasattr(instance, k):
+                setattr(instance, k, v)
 
+        instance.save()
         return Response({"details": "Unit updated successfully"}, status=status.HTTP_200_OK)
 
 

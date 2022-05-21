@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from school import models as school_models
 
 
@@ -30,6 +31,14 @@ class UnitSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, trim_whitespace=True)
     subject = serializers.UUIDField(required=True)
     form = serializers.UUIDField(required=True)
+
+    class Meta:
+        validators = [
+            UniqueTogetherValidator(
+                queryset=school_models.UnitModel.objects.all(),
+                fields=['name', 'subject', 'form']
+            )
+        ]
 
     def validate(self, obj):
         try:
