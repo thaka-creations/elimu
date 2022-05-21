@@ -28,7 +28,7 @@ class SubjectSerializer(serializers.ModelSerializer):
         return obj
 
 
-class ListUnitSerializer(serializers.ModelSerializer):
+class ListRetrieveUnitSerializer(serializers.ModelSerializer):
     subject = SubjectSerializer()
     form = FormSerializer()
 
@@ -63,10 +63,30 @@ class UpdateUnitSerializer(UnitSerializer):
     request_id = serializers.UUIDField(required=True)
 
 
-class VideoSerializer(serializers.ModelSerializer):
+class ListRetrieveVideoSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
 
     class Meta:
         model = school_models.VideoModel
-        fields = ['id', 'url', 'unit']
+        fields = ['id', 'url', 'unit', 'label', 'index']
         extra_kwargs = {'id': {'read_only': True}}
+
+
+class CreateVideoSerializer(serializers.Serializer):
+    url = serializers.CharField(required=True)
+    unit = serializers.UUIDField(required=True)
+    label = serializers.CharField(allow_blank=True, allow_null=True)
+    index = serializers.IntegerField(allow_blank=True, allow_null=True)
+
+    def validate(self, obj):
+        try:
+            unit = school_models.UnitModel.objects.get(id=obj['unit'])
+        except school_models.UnitModel.DoesNotExist:
+            raise serializers.ValidationError("Unit does not exist")
+
+        obj.update({"unit": unit})
+        return obj
+
+
+class UpdateVideoSerializer(CreateVideoSerializer):
+    request_id = serializers.UUIDField(required=True)

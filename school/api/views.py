@@ -27,7 +27,8 @@ class UnitViewSet(viewsets.ViewSet):
         except ValueError:
             return False
 
-    def list(self, request):
+    @staticmethod
+    def list(request):
         """
         for form and subject
         list units for form and subject
@@ -38,12 +39,13 @@ class UnitViewSet(viewsets.ViewSet):
         if not form and not subject:
             return Response({"details": "Form and subject are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        qs = school_models.UnitModel.objects.filter(subject=subject, form=form)
-        serializer = school_serializers.ListUnitSerializer(qs, many=True)
+        qs = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
+        serializer = school_serializers.ListRetrieveUnitSerializer(qs, many=True)
 
         return Response({"details": serializer}, status=status.HTTP_200_OK)
 
-    def create(self, request):
+    @staticmethod
+    def create(request):
         """
         add unit
         """
@@ -73,7 +75,7 @@ class UnitViewSet(viewsets.ViewSet):
         except school_models.UnitModel.DoesNotExist:
             return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = school_serializers.UnitSerializer(instance)
+        serializer = school_serializers.ListRetrieveUnitSerializer(instance)
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
@@ -106,21 +108,87 @@ class UnitViewSet(viewsets.ViewSet):
 
 class VideoViewSet(viewsets.ViewSet):
 
-    @action(methods=['POST'], detail=False)
-    def add_video(self, request):
-        pass
+    @staticmethod
+    def valid_uuid(val):
+        try:
+            uuid.UUID(str(val))
+            return True
+        except ValueError:
+            return False
 
-    @action(methods=['GET'], detail=False)
-    def list_videos(self, request):
-        pass  # list unit videos
+    @staticmethod
+    def create(request):
+        """
+        add video , url and unit required
+        """
+        payload = request.data
+        payload_serializer = school_serializers.CreateVideoSerializer(
+            data=payload, many=False
+        )
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+        school_models.VideoModel.objects.create(**validated_data)
+
+        return Response({"details": "Video added successfully"}, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def list(request):
+        """
+        list videos for a given unit
+        """
+        unit = request.query_params.get("unit", False)
+        qs = school_models.VideoModel.objects.filter(unit__id=unit)
+        serializer = school_serializers.ListRetrieveVideoSerializer(qs, many=True)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=False)
     def retrieve_video(self, request):
-        pass
+        """
+        retrieve video
+        """
+        request_id = request.query_params.get("request_id", False)
+        is_valid = self.valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.VideoModel.objects.get(id=request_id)
+        except school_models.VideoModel.DoesNotExist:
+            return Response({"details": "Video does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = school_serializers.ListRetrieveVideoSerializer(instance)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
     def update_video(self, request):
-        pass
+        """
+        update video
+        """
+        payload = request.data
+        payload_serializer = school_serializers.UpdateVideoSerializer(
+            data=payload, many=False
+        )
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+        request_id = validated_data.pop("request_id")
+
+        try:
+            instance = school_models.VideoModel.objects.get(id=request_id)
+        except school_models.VideoModel.DoesNotExist:
+            return Response({"details": "Video does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for k, v in validated_data:
+            instance.k = v
+            instance.save()
+
+        return Response({"details": "Video updated successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
     def delete_video(self, request):
