@@ -112,10 +112,11 @@ class FormViewSet(viewsets.ReadOnlyModelViewSet):
         except school_models.FormModel.DoesNotExist:
             return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        for k, v in validated_data:
-            instance.k = v
-            instance.save()
+        for k, v in validated_data.items():
+            if hasattr(instance, k):
+                setattr(instance, k, v)
 
+        instance.save()
         return Response({"details": "Form updated successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=False)
