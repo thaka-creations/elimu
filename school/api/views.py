@@ -80,16 +80,59 @@ class FormViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = school_models.SubjectModel.objects.all()
     serializer_class = school_serializers.FormSerializer
 
-    def create(self, request):
-        pass
+    @staticmethod
+    def create(request):
+        serializer = school_serializers.FormSerializer(
+            data=request.data, many=False
+        )
+
+        if not serializer.is_valid():
+            return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        school_models.FormModel.objects.create(**validated_data)
+        return Response({"details": "Form created successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
     def update_form(self, request):
-        pass
+        try:
+            request_id = request.data.pop("request_id")
+        except Exception as e:
+            return Response({"details": e}, status=status.HTTP_400_BAD_REQUEST)
+
+        payload_serializer = school_serializers.FormSerializer(data=request.data, many=False)
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+
+        try:
+            instance = school_models.FormModel.objects.get(id=request_id)
+        except school_models.FormModel.DoesNotExist:
+            return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for k, v in validated_data:
+            instance.k = v
+            instance.save()
+
+        return Response({"details": "Form updated successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=False)
     def retrieve_form(self, request):
-        pass
+        request_id = request.query_params.get("request_id", False)
+        is_valid = valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.FormModel.objects.get(id=request_id)
+        except school_models.FormModel.DoesNotExist:
+            return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = school_serializers.FormSerializer(instance)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
 
 class UnitViewSet(viewsets.ViewSet):
