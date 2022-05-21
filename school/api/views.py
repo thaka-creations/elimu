@@ -50,9 +50,11 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
         except school_models.SubjectModel.DoesNotExist:
             return Response({"details": "Subject does not exist"})
 
-        for k, v in validated_data:
-            instance.k = v
-            instance.save()
+        for k, v in validated_data.items():
+            if hasattr(instance, k):
+                setattr(instance, k, v)
+
+        instance.save()
 
         return Response({"details": "Subject updated successfully"}, status=status.HTTP_200_OK)
 
