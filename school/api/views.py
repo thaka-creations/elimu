@@ -34,10 +34,13 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(methods=['POST'], detail=False)
     def update_subject(self, request):
-        payload = request.data
-        request_id = payload.pop("request_id")
+        try:
+            request_id = request.data.pop("request_id")
+        except Exception as e:
+            return Response({"details": e}, status=status.HTTP_400_BAD_REQUEST)
+
         payload_serializer = school_serializers.SubjectSerializer(
-            data=payload, many=False
+            data=request.data, many=False
         )
 
         if not payload_serializer.is_valid():
