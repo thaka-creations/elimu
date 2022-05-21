@@ -76,7 +76,7 @@ class CreateVideoSerializer(serializers.Serializer):
     url = serializers.CharField(required=True)
     unit = serializers.UUIDField(required=True)
     label = serializers.CharField(allow_blank=True, allow_null=True)
-    index = serializers.IntegerField(allow_blank=True, allow_null=True)
+    index = serializers.IntegerField(min_value=0)
 
     def validate(self, obj):
         try:
