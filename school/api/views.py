@@ -291,10 +291,11 @@ class VideoViewSet(viewsets.ViewSet):
         except school_models.VideoModel.DoesNotExist:
             return Response({"details": "Video does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        for k, v in validated_data:
-            instance.k = v
-            instance.save()
+        for k, v in validated_data.items():
+            if hasattr(instance, k):
+                setattr(instance, k, v)
 
+        instance.save()
         return Response({"details": "Video updated successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
