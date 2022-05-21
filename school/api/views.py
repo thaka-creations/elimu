@@ -55,7 +55,6 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
                 setattr(instance, k, v)
 
         instance.save()
-
         return Response({"details": "Subject updated successfully"}, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=False)
