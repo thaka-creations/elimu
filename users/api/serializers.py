@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 from users import models
+from users.utils import services, phone as phone_util
 
 
 class NameSerializer(serializers.Serializer):
@@ -41,7 +42,7 @@ class RegisterByEmailSerializer(NameSerializer, EmailSerializer):
         if user_exists:
             raise serializers.ValidationError("User with email record exists")
 
-        otp_status, message = services_responses.verify_otp_code({'otp': otp, 'send_to': email})
+        otp_status, message = services.verify_otp_code({'otp': otp, 'send_to': email})
 
         if not otp_status:
             raise serializers.ValidationError(message)
@@ -58,7 +59,7 @@ class RegisterByPhoneNumberSerializer(NameSerializer, PhoneNumberSerializer):
         phone_number = obj['phone_number']
         country_code = obj['country_code']
 
-        phone = phone_functions.phone_number_format(country_code, phone_number)
+        phone = phone_util.phone_number_format(country_code, phone_number)
 
         if not phone:
             raise serializers.ValidationError("Invalid phone number")
@@ -71,7 +72,7 @@ class RegisterByPhoneNumberSerializer(NameSerializer, PhoneNumberSerializer):
         if user_exists:
             raise serializers.ValidationError("User with phone record exists")
 
-        otp_status, message = services_responses.verify_otp_code({'otp': otp, 'send_to': phone})
+        otp_status, message = services.verify_otp_code({'otp': otp, 'send_to': phone})
 
         if not otp_status:
             raise serializers.ValidationError(message)
