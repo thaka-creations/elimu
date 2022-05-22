@@ -18,7 +18,13 @@ from django.urls import path, include
 
 api_version = 'api/v1/'
 
-urlpatterns = [
+api_patterns = [
     path('admin/', admin.site.urls),
     path(api_version + 'school/', include('school.api.urls'))
 ]
+
+urlpatterns = api_patterns + [
+    path('school/', include('school.urls'))
+]
+
+
