@@ -1,6 +1,11 @@
 asgiref==3.5.2
+certifi==2022.5.18.1
+charset-normalizer==2.0.12
 Django==4.0.4
 djangorestframework==3.13.1
+idna==3.3
 phonenumbers==8.12.48
 pytz==2022.1
+requests==2.27.1
 sqlparse==0.4.2
+urllib3==1.26.9
