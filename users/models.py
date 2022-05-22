@@ -42,7 +42,7 @@ class ProfileMixin(BaseModel):
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True, db_index=True)
     account_status = models.CharField(max_length=255, choices=ACCEPTED_STATUS, default="REGISTRATION")
 
     objects = UserManager()
