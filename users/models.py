@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UserManager
 
 # Create your models here.
 ACCEPTED_STATUS = [
@@ -44,6 +45,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     account_status = models.CharField(max_length=255, choices=ACCEPTED_STATUS, default="REGISTRATION")
 
+    objects = UserManager()
     USERNAME_FIELD = 'username'
 
     def __str__(self):
