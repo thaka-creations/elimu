@@ -39,7 +39,6 @@ class ProfileMixin(BaseModel):
 
     class Meta:
         abstract = True
-        unique_together = ['country_code', 'phone_number']
 
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
@@ -64,12 +63,14 @@ class Staff(ProfileMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff_user")
     employee_num = models.CharField(max_length=255, blank=True, null=True)
 
-    class Meta(ProfileMixin.Meta):
+    class Meta:
+        unique_together = ['country_code', 'phone_number']
         verbose_name_plural = 'staff'
 
 
 class PublicUser(ProfileMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="public_user")
 
-    class Meta(ProfileMixin.Meta):
+    class Meta:
+        unique_together = ['country_code', 'phone_number']
         verbose_name_plural = 'publicuser'
