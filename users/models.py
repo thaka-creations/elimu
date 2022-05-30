@@ -32,6 +32,9 @@ class ProfileMixin(BaseModel):
     postal_address = models.CharField(max_length=255, blank=True, null=True)
     physical_address = models.CharField(max_length=255, blank=True, null=True)
     profile_status = models.CharField(max_length=255, choices=ACCEPTED_STATUS, default="REGISTRATION")
+    is_email_verified = models.BooleanField(default=False)
+    is_phone_verified = models.BooleanField(default=False)
+    is_password_verified = models.BooleanField(default=False)
 
     def __str__(self):
         middle_name = self.middle_name

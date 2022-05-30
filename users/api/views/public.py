@@ -61,7 +61,8 @@ class RegistrationViewSet(viewsets.ViewSet):
                 middle_name=middle_name,
                 last_name=last_name,
                 email=email,
-                user=instance
+                user=instance,
+                is_email_verified=True
             )
 
             return Response({"details": "User created successfully"},
@@ -84,4 +85,13 @@ class RegistrationViewSet(viewsets.ViewSet):
         password = validated_data['password']
 
         user.set_password(password)
+        user.is_password_verified = True
+        user.account_status = "ACTIVE"
+        user.save()
+
+        public_profile = user.public_user
+        public_profile.profile_status = "ACTIVE"
+        public_profile.is_password_verified = True
+        public_profile.save()
+
         return Response({"details": "Password set successfully"}, status=status.HTTP_200_OK)
