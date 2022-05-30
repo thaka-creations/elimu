@@ -1,4 +1,3 @@
-import uuid
 from django.db import transaction
 from django.conf import settings
 from rest_framework import viewsets, status
