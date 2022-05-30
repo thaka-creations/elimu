@@ -30,5 +30,9 @@ class AuthenticationViewSet(viewsets.ViewSet):
         if not user:
             return Response({"details": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # email verified
+        # send otp to email
+        return
+
 
 
