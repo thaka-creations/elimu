@@ -1,25 +1,32 @@
 import random
 from mfa import models as mfa_models
 from django.utils import timezone
+from django.db import transaction
 
 
 class MultiFactorAuthentication:
 
-    @staticmethod
-    def generate_code():
+    def generate_code(self):
         otp_code = ""
         for i in range(6):
             otp_code += str(random.randint(1, 9))
 
-        return otp_code
-
-    def generate_otp_code(self):
-        new_otp_code = self.generate_code()
-        otp_exists = mfa_models.OtpCode.objects.filter(code=new_otp_code).exists()
+        otp_exists = mfa_models.OtpCode.objects.filter(code=otp_code).exists()
 
         if otp_exists:
-            self.generate_otp_code()
-        return new_otp_code
+            self.generate_code()
+        return otp_code
+
+    def generate_otp_code(self, send_to, expiry_time):
+        otp_code = self.generate_code()
+
+        with transaction.atomic():
+            mfa_models.OtpCode.objects.create(
+                code=otp_code,
+                send_to=send_to,
+                expiry_time=expiry_time
+            )
+            return {"code": otp_code, "expiry_date": expiry_time}
 
     @staticmethod
     def verify_otp_code(otp, send_to):

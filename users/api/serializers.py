@@ -36,7 +36,7 @@ class RegisterByEmailSerializer(NameSerializer, EmailSerializer):
         otp = obj['email_otp']
 
         user_exists = models.PublicUser.objects.filter(
-            email=email, profile_status__iexact='ACTIVE', email_verified=True
+            email=email, profile_status__in=['ACTIVE', 'REGISTRATION'], email_verified=True
         ).exists()
 
         if user_exists:
@@ -101,3 +101,8 @@ class PasswordSerializer(serializers.Serializer):
 
         obj.update({"user_id": user})
         return obj
+
+
+class SystemLoginSerializer(serializers.Serializer):
+    username = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)

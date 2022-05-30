@@ -45,6 +45,9 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=255, unique=True, db_index=True)
     account_status = models.CharField(max_length=255, choices=ACCEPTED_STATUS, default="REGISTRATION")
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     objects = UserManager()
     USERNAME_FIELD = 'username'
