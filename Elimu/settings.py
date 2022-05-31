@@ -30,6 +30,8 @@ DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = []
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': int(os.environ.get('ACCESS_TOKEN_EXPIRY')),
     'OAUTH_SINGLE_ACCESS_TOKEN': True,
@@ -49,14 +51,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'oauth2_provider',
     'corsheaders',
-    'users',
     'school',
-    'mfa'
+    'mfa',
+    'users',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'users.utils.auth.SystemAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -141,6 +150,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REGISTRATION_OTP_EXPIRY_TIME = os.environ.get('REGISTRATION_OTP_EXPIRY_TIME')
+
+ACCESS_TOKEN_EXPIRY = os.environ.get('ACCESS_TOKEN_EXPIRY')
 
 SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://' + os.environ.get('ACL_SERVICE') +
