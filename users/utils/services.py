@@ -18,3 +18,12 @@ def verify_otp_code(payload):
     if resp.status_code == 200:
         return True, resp.json()
     return False, resp.json()
+
+
+def get_client_details(payload):
+    url = CALLBACK_URL + 'o/token'
+    resp = requests.post(url, data=payload)
+
+    if resp.status_code == 200:
+        return resp.json()
+    return False
