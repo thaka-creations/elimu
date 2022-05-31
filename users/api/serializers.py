@@ -36,7 +36,7 @@ class RegisterByEmailSerializer(NameSerializer, EmailSerializer):
         otp = obj['email_otp']
 
         user_exists = models.PublicUser.objects.filter(
-            email=email, profile_status__in=['ACTIVE', 'REGISTRATION'], email_verified=True
+            email=email, profile_status__in=['ACTIVE', 'REGISTRATION'], is_email_verified=True
         ).exists()
 
         if user_exists:
@@ -81,25 +81,28 @@ class RegisterByPhoneNumberSerializer(NameSerializer, PhoneNumberSerializer):
 
 
 class PasswordSerializer(serializers.Serializer):
-    user_id = serializers.UUIDField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
     confirm_password = serializers.CharField(required=True)
 
     def validate(self, obj):
         # user exists
-        user_id = obj['user_id']
+        email = obj['email']
         password = obj['password']
         confirm_password = obj['confirm_password']
 
         try:
-            user = models.User.objects.get(id=user_id)
+            user = models.User.objects.get(public_user__email=email)
         except models.User.DoesNotExist:
             raise serializers.ValidationError("User does not exist")
+
+        # if user.account_status != "REGISTRATION":
+        #     raise serializers.ValidationError("User not authorized to perform this action")
 
         if password != confirm_password:
             raise serializers.ValidationError("Passwords don't match")
 
-        obj.update({"user_id": user})
+        obj["user"] = user
         return obj
 
 

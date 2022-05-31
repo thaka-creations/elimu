@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 
-CALLBACK_URL = settings.SERVICES_URLS('callback_url')
+CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
 def generate_otp_code(payload):

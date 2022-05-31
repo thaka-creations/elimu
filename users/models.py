@@ -34,7 +34,6 @@ class ProfileMixin(BaseModel):
     profile_status = models.CharField(max_length=255, choices=ACCEPTED_STATUS, default="REGISTRATION")
     is_email_verified = models.BooleanField(default=False)
     is_phone_verified = models.BooleanField(default=False)
-    is_password_verified = models.BooleanField(default=False)
 
     def __str__(self):
         middle_name = self.middle_name
@@ -51,6 +50,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    is_password_verified = models.BooleanField(default=False)
 
     objects = UserManager()
     USERNAME_FIELD = 'username'

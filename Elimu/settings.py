@@ -140,6 +140,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REGISTRATION_OTP_EXPIRY_TIME = os.environ.get('REGISTRATION_OTP_EXPIRY_TIME')
+
 SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://' + os.environ.get('ACL_SERVICE') +
     os.environ.get('API_VERSION')

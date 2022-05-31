@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 from mfa import models as mfa_models
 from django.utils import timezone
 from django.db import transaction
@@ -19,14 +20,16 @@ class MultiFactorAuthentication:
 
     def generate_otp_code(self, send_to, expiry_time):
         otp_code = self.generate_code()
+        generation_time = timezone.now()
+        expiry_date = generation_time + timedelta(seconds=int(expiry_time))
 
         with transaction.atomic():
             mfa_models.OtpCode.objects.create(
                 code=otp_code,
                 send_to=send_to,
-                expiry_time=expiry_time
+                expiry_date=expiry_date
             )
-            return {"code": otp_code, "expiry_date": expiry_time}
+            return {"code": otp_code, "expiry_date": expiry_date}
 
     @staticmethod
     def verify_otp_code(otp, send_to):
