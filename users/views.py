@@ -2,7 +2,7 @@ from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from oauth2_provider.models import get_application_model
-from users import forms
+from users import forms, models as user_models
 from users.utils import system_utils
 
 oauth2_user = system_utils.ApplicationUser()
@@ -19,7 +19,17 @@ class RegistrationView(View):
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            pass
+            data = form.cleaned_data
+            name = data['name'].upper()
+            email = data['email']
+            password = data['password']
+
+            user = user_models.User.objects.create(
+                username=email,
+                name=name
+            )
+            user.set_password(password)
+            oauth2_user.create_application_user(user)
         return render(request, self.template_name, {"form": form})
 
 
