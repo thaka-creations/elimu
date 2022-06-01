@@ -71,6 +71,6 @@ class LoginView(View):
                 "jwt_token": oauth2_user.generate_jwt_token(user)
             }
 
-            print(userinfo)
+            return redirect("/registration")
 
         return render(request, self.template_name, {"form": form})
