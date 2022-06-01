@@ -76,8 +76,6 @@ class Authentication(viewsets.ViewSet):
             "client_secret": instance.client_secret
         }
 
-        print(dt)
-
         resp = oauth2_user.get_client_details(dt)
 
         if not resp:
