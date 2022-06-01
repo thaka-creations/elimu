@@ -27,7 +27,8 @@ api_patterns = [
 ]
 
 urlpatterns = api_patterns + [
-    path('school/', include('school.urls'))
+    path('school/', include('school.urls')),
+    path('', include('users.urls'))
 ]
 
 
