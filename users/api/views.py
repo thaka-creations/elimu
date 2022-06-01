@@ -61,7 +61,7 @@ class Authentication(viewsets.ViewSet):
         user = authenticate(username=username, password=password)
 
         if user is None:
-            return Response({"details": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"details": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             instance = get_application_model().objects.get(user=user)
