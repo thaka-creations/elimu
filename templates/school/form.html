@@ -1,0 +1,35 @@
+{% extends "partials/theme.html" %}
+{% load static%}
+{% block title %}
+<title>Tafa</title>
+{% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+<style>
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="card rounded-0">
+    <div class="card-header rounded-0">
+        {{instance.name.title}} Subjects
+    </div>
+
+    <div class="card-body {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">
+        <div class="container">
+            <div class="row gx-3 gy-3">
+                {% for subject in subjects %}
+                    <div class="col-md-3">
+                        <div class="py-2 border text-center">
+                            {{subject}}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

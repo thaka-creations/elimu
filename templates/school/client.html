@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tafa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    
+    <style>
+        .card-body div.border{
+            cursor: pointer;
+        }
+        .card-body >.row > .col-md-6:first-child > div{
+            background-color:#6EA660;
+        }
+
+        .card-body >.row > .col-md-6:nth-child(2) > div{
+            background-color:#4C82B3;
+        }
+
+        .card-body >.row > .col-md-6:nth-child(3) > div{
+            background-color:#A66CAE;
+        }
+
+        .card-body >.row > .col-md-6:last-child > div{
+            background-color:#D56064;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="container-fluid">
+
+        </div>
+    </nav>
+
+    <div class="container w-50">
+
+        <!--tabs-->
+        <ul class="nav border-bottom">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Video Category</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">My Learning</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Account Activity</a>
+            </li>
+        </ul>
+
+        <h4 class="title">
+            Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
+        </h4>
+
+        <div class="card rounded-0">
+            <div class="card-header title">
+                Select the Video Material to use
+            </div>
+
+            <div class="card-body">
+                <div class="row gx-5 gy-3">
+                    {%for i in forms%}
+                    <div class="col-md-6">
+                        <div class="border text-center py-3 fm-it" item="{{i.id}}">{{i.name.title}} Subjects</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        const elements = document.getElementsByClassName('fm-it');
+        Array.from(elements).forEach(function(element) {
+            element.addEventListener('click', fmNavigator);
+        });
+
+        function fmNavigator(e){
+            id = e.target.getAttribute('item')
+            window.location.href = "/form/"+id
+        }
+    </script>
+
+</body>
+</html>
