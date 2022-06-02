@@ -46,7 +46,7 @@ class UnitView(View):
             return redirect("/")
 
         qs = school_models.VideoModel.objects.filter(unit=instance)
-        context = {"videos": qs}
+        context = {"videos": qs, 'unit':instance}
         return render(request, self.template_name, context=context)
 
 
