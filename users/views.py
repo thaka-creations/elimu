@@ -1,9 +1,12 @@
 from django.views import View
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from oauth2_provider.models import get_application_model
 from users import forms, models as user_models
 from users.utils import system_utils
+from  school import models as school_models
 
 oauth2_user = system_utils.ApplicationUser()
 
@@ -54,33 +57,17 @@ class LoginView(View):
                 print("Invalid email or password")
                 return redirect("/login")
 
-            try:
-                instance = get_application_model().objects.get(user=user)
-            except get_application_model().DoesNotExist:
-                print("Invalid client")
-                return redirect("/login")
-
-            dt = {
-                "grant_type": "password",
-                "username": user.username,
-                "password": password,
-                "client_id": instance.client_id,
-                "client_secret": instance.client_secret
-            }
-
-            resp = oauth2_user.get_client_details(dt)
-
-            if not resp:
-                return redirect("/login")
-
-            userinfo = {
-                "access_token": resp['access_token'],
-                "expires_in": resp['expires_in'],
-                "token_type": resp['token_type'],
-                "refresh_token": resp['refresh_token'],
-                "jwt_token": oauth2_user.generate_jwt_token(user)
-            }
-
-            return redirect("/registration")
+            login(request, user)
+            return redirect("/")
 
         return render(request, self.template_name, {"form": form})
+
+
+class ProtectedView(View):
+    template_name = "school/client.html"
+
+    @method_decorator(login_required)
+    def get(self, request):
+        qs = school_models.FormModel.objects.all()
+        context = {"forms": qs}
+        return render(request, self.template_name, context=context)

@@ -28,7 +28,7 @@ TOKEN_SECRET_KEY = os.environ.get('TOKEN_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("APPLICATION_ALLOWED_HOSTS").split(",")
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -157,3 +157,9 @@ SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://' + os.environ.get('ACL_SERVICE') +
     os.environ.get('API_VERSION')
 }
+
+LOGIN_URL = "/login"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
