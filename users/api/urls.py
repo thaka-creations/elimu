@@ -5,5 +5,6 @@ router = DefaultRouter(trailing_slash=False)
 
 router.register("registration", views.Registration, basename="registration")
 router.register("auth", views.Authentication, basename="auth")
+router.register("user", views.UserViewSet, basename="user")
 
 urlpatterns = router.urls

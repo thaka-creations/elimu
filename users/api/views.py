@@ -90,3 +90,34 @@ class Authentication(viewsets.ViewSet):
         }
 
         return Response({"details": userinfo}, status=status.HTTP_200_OK)
+
+
+class UserViewSet(viewsets.ViewSet):
+
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_name="profile",
+        url_path="profile"
+    )
+    def profile(self, request):
+        param_serializer = serializers.BaseSerializer(data=request.query_params.dict(), many=False)
+
+        if not param_serializer.is_valid():
+            return Response({"details": param_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = param_serializer.validated_data
+
+        try:
+            instance = user_models.User.objects.get(id=validated_data['request_id'])
+        except user_models.User.DoesNotExist:
+            return Response({"details": "Invalid user"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = serializers.UserProfileSerializer(instance, many=False)
+        return Response({"details": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
