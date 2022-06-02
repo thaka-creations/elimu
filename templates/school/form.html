@@ -22,8 +22,8 @@
             <div class="row gx-3 gy-3">
                 {% for subject in subjects %}
                     <div class="col-md-3">
-                        <div class="py-2 border text-center">
-                            {{subject}}
+                        <div class="py-2 border text-center sb-it" sub-id="{{subject.id}}">
+                            {{subject.name}}
                         </div>
                     </div>
                 {% endfor %}
@@ -32,4 +32,18 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts%}
+<script>
+    const elements = document.getElementsByClassName('sb-it');
+    Array.from(elements).forEach(function(element) {
+        element.addEventListener('click', fmNavigator);
+    });
+
+    function fmNavigator(e){
+        id = e.target.getAttribute('sub-id')
+        window.location.href = "/form/subject/"+id
+    }
+</script>
 {% endblock %}

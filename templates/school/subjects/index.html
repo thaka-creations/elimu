@@ -1,0 +1,51 @@
+{% extends "partials/theme.html" %}
+{% load static%}
+
+{% block title %}
+<title>Tafa</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="card rounded-0">
+    <div class="card-header rounded-0">
+        Form Four {{subject.name.title}} Units
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row gx-3 gy-3">
+                {% if units %}
+                    {% for unit in units %}
+                        <div class="col-md-3">
+                            <div class="py-2 border text-center un-it" un-id="{{unit.id}}">
+                                {{unit.name.title}}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        No {{subject.name.title}} units available at the moment
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const elements = document.getElementsByClassName('un-it');
+    Array.from(elements).forEach(function(element) {
+        element.addEventListener('click', unNavigator);
+    });
+
+    function unNavigator(e){
+        id = e.target.getAttribute('un-id')
+        window.location.href = "/form/subject/unit/"+id
+    }
+</script>
+{% endblock %}
