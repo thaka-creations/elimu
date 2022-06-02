@@ -109,7 +109,7 @@ class UserViewSet(viewsets.ViewSet):
         validated_data = param_serializer.validated_data
 
         try:
-            instance = user_models.User.objects.get(id=validated_data['request_id'])
+            instance = user_models.User.objects.get(id=validated_data['user_id'])
         except user_models.User.DoesNotExist:
             return Response({"details": "Invalid user"}, status=status.HTTP_400_BAD_REQUEST)
 

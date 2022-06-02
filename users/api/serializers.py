@@ -3,7 +3,7 @@ from users import models as user_models
 
 
 class BaseSerializer(serializers.Serializer):
-    request_id = serializers.UUIDField(required=True)
+    user_id = serializers.UUIDField(required=True)
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -43,7 +43,7 @@ class LoginSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = user_models.User
-        field = ["id", "username", "name", "account_status"]
+        fields = ["id", "username", "name", "account_status"]
 
 
 
