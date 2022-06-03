@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from mpesa.urls import mpesa_urls
 
 api_version = 'api/v1/'
 
@@ -28,7 +29,8 @@ api_patterns = [
 
 urlpatterns = api_patterns + [
     path('', include('school.urls')),
-    path('', include('users.urls'))
+    path('', include('users.urls')),
+    path('mpesa/', include(mpesa_urls))
 ]
 
 
