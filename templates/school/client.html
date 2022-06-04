@@ -26,52 +26,84 @@
         .card-body >.row > .col-md-6:last-child > div{
             background-color:#D56064;
         }
+
+        .navbar .container-fluid{
+            background-color: #6283B4!important;
+        }
+        
+        .search{
+            border-color: #6283B4!important;
+        }
+
+        .nav-link{
+            color:#000000;
+        }
+        .nav-link.active{
+            color:#6283B4;
+        }
     </style>
 </head>
 <body>
     
-    <nav class="navbar">
-        <div class="container-fluid">
-
-        </div>
-    </nav>
-
-    <div class="container w-50">
-
-        <!--tabs-->
-        <ul class="nav border-bottom">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Video Category</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">My Learning</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Account Activity</a>
-            </li>
-        </ul>
-
-        <h4 class="title">
-            Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
-        </h4>
-
-        <div class="card rounded-0">
-            <div class="card-header title">
-                Select the Video Material to use
-            </div>
-
-            <div class="card-body">
-                <div class="row gx-5 gy-3">
-                    {%for i in forms%}
-                    <div class="col-md-6">
-                        <div class="border text-center py-3 fm-it" item="{{i.id}}">{{i.name.title}} Subjects</div>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-light pt-0 pb-5">
+            <div class="container-fluid">
+                <div class="row w-100 py-2">
+                    <div class="col-12 col-md-3">
+                        <a href="" class="navbar-brand">Navbar</a>
                     </div>
-                    {% endfor %}
+                    <div class="col-12 col-md-6">
+                        <form action="" role="search">
+                            <input type="search" class="form-control me-2 search shadow-none" placeholder="Search" aria-label="Search">
+                        </form>
+                    </div>
+                    <div class="col-12 col-md-3 d-flex justify-content-end">
+                        <div class="rounded-circle border border-dark text-center p-2" style="width:2.5em; height:2.5em;">
+                            SJ
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+
+        <div class="container w-75 mt-2">
+
+            <!--tabs-->
+            <ul class="nav border-bottom mb-4">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Video Category</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">My Learning</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Account Activity</a>
+                </li>
+            </ul>
+    
+            <p class="page-header fs-4">
+                Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
+            </p>
+    
+            <div class="card rounded-0">
+                <div class="card-header title">
+                    Select the Video Material to use
+                </div>
+    
+                <div class="card-body">
+                    <div class="row gx-5 gy-3">
+                        {%for i in forms%}
+                        <div class="col-md-6">
+                            <div class="border text-center py-3 fm-it" item="{{i.id}}">{{i.name.title}} Subjects</div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
+    
+    
         </div>
-
-
     </div>
 
     <script>
