@@ -10,6 +10,9 @@ ALLOWED_PERIOD = [
     ("1 YEAR", "1 YEAR")
 ]
 
+class BaseSerializer(serializers.Serializer):
+    request_id = serializers.UUIDField(required=True)
+
 
 class UnitAmountSerializer(serializers.ModelSerializer):
     unit = ListRetrieveUnitSerializer(many=False)
@@ -51,5 +54,11 @@ class UpdateAmountSerializer(serializers.Serializer):
 
         obj['request_id'] = inst
         return obj
+
+
+class ListSubscription(serializers.ModelSerializer):
+    class Meta:
+        model = models.Subscription
+        fields = "__all__"
 
 

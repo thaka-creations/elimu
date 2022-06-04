@@ -12,10 +12,10 @@ ALLOWED_STATUS = [
 ]
 
 ALLOWED_PERIOD = [
-    ("1 MONTH", "1 MONTH"),
-    ("3 MONTHS", "3 MONTHS"),
-    ("6 MONTHS", "6 MONTHS"),
-    ("1 YEAR", "1 YEAR")
+    ("1 MONTH", 30),
+    ("3 MONTHS", 90),
+    ("6 MONTHS", 180),
+    ("1 YEAR", 365)
 ]
 
 SUBSCRIPTION_STATUS = [
@@ -37,7 +37,7 @@ class BaseModel(models.Model):
 class UnitAmount(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="unit_amounts")
-    period = models.CharField(max_length=255, choices=ALLOWED_PERIOD, default="1 MONTH")
+    period = models.IntegerField(choices=ALLOWED_PERIOD, default=30)
     amount = models.DecimalField(max_digits=19, decimal_places=2)
 
 
@@ -56,6 +56,7 @@ class Subscription(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_subcriptions")
     status = models.CharField(max_length=255, choices=SUBSCRIPTION_STATUS)
+    period = models.IntegerField(blank=True, null=True, choices=ALLOWED_PERIOD)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
 

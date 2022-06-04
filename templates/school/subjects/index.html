@@ -59,7 +59,7 @@
                 window.location.href = "/form/subject/unit/"+id
             }
         }
-        xhttp.open("GET", "/form/subject/unit/"+id, true);
+        xhttp.open("GET", "/api/v1/payments/subscription/check-status/"+id, true);
         xhttp.send();
     }
 </script>
