@@ -41,6 +41,17 @@
     </div>
 </div>
 
+<!--modal-->
+<div class="modal fade" id="subscription" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"></div>
+            <div class="modal-body">
+                Header
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -59,7 +70,7 @@
                 window.location.href = "/form/subject/unit/"+id
             }
             else if (this.readyState == 4 && this.status == 400){
-                alert("Not valid")
+                const myModal = new bootstrap.Modal(document.getElementById('subscription'), options)
             }
         }
         xhttp.open("GET", "/payments/subscription/check-status?request_id"+id, true);
