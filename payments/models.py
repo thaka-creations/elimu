@@ -18,6 +18,12 @@ ALLOWED_PERIOD = [
     ("1 YEAR", "1 YEAR")
 ]
 
+SUBSCRIPTION_STATUS = [
+    ("ACTIVE", "ACTIVE"),
+    ("EXPIRED", "EXPIRED"),
+    ("REVOKED", "REVOKED")
+]
+
 
 class BaseModel(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
@@ -46,6 +52,17 @@ class Invoice(BaseModel):
     status = models.CharField(max_length=255, choices=ALLOWED_STATUS, default="PENDING")
 
 
+class Subscription(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_subcriptions")
+    status = models.CharField(max_length=255, choices=SUBSCRIPTION_STATUS)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+
 class InvoiceUnit(BaseModel):
     unit = models.ForeignKey(UnitModel, on_delete=models.DO_NOTHING, related_name="invoice_units")
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="invoice_unit_set")
+    invoice = models.ForeignKey(Invoice, on_delete=models.DO_NOTHING, related_name="invoice_unit_set")
+    subscription = models.ForeignKey(Subscription, on_delete=models.DO_NOTHING, related_name="invoiceunits",
+                                     blank=True, null=True)
+
+
