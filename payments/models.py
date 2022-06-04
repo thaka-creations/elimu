@@ -11,6 +11,13 @@ ALLOWED_STATUS = [
     ("CANCELLED", "CANCELLED")
 ]
 
+ALLOWED_PERIOD = [
+    ("1 MONTH", "1 MONTH"),
+    ("3 MONTHS", "3 MONTHS"),
+    ("6 MONTHS", "6 MONTHS"),
+    ("1 YEAR", "1 YEAR")
+]
+
 
 class BaseModel(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
@@ -19,6 +26,13 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class UnitAmount(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="unit_amounts")
+    period = models.CharField(max_length=255, choices=ALLOWED_PERIOD, default="1 MONTH")
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
 
 
 class Invoice(BaseModel):
