@@ -24,7 +24,8 @@ api_patterns = [
     path(api_version + 'o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path(api_version + 'school/', include('school.api.urls')),
     path(api_version + 'users/', include('users.api.urls')),
-    path(api_version + 'mfa/', include('mfa.api.urls'))
+    path(api_version + 'mfa/', include('mfa.api.urls')),
+    path(api_version + 'payments/', include('payments.urls'))
 ]
 
 urlpatterns = api_patterns + [
