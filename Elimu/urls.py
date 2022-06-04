@@ -25,13 +25,14 @@ api_patterns = [
     path(api_version + 'school/', include('school.api.urls')),
     path(api_version + 'users/', include('users.api.urls')),
     path(api_version + 'mfa/', include('mfa.api.urls')),
-    path(api_version + 'payments/', include('payments.urls'))
+    path(api_version + 'payments/', include('payments.api.urls'))
 ]
 
 urlpatterns = api_patterns + [
     path('', include('school.urls')),
     path('', include('users.urls')),
-    path('mpesa/', include(mpesa_urls))
+    path('mpesa/', include(mpesa_urls)),
+    path('payments/', include('payments.urls'))
 ]
 
 

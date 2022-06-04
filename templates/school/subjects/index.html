@@ -58,8 +58,11 @@
             if (this.readyState == 4 && this.status == 200) {
                 window.location.href = "/form/subject/unit/"+id
             }
+            else if (this.readyState == 4 && this.status == 400){
+                alert("Not valid")
+            }
         }
-        xhttp.open("GET", "/api/v1/payments/subscription/check-status/"+id, true);
+        xhttp.open("GET", "/payments/subscription/check-status?request_id"+id, true);
         xhttp.send();
     }
 </script>
