@@ -13,3 +13,9 @@
 .form-four{
     background-color:#D56064A6;
 }
+.heading-bar{
+    background-color:rgba(130, 130, 130, 0.12);
+}
+.sb-it{
+    cursor: pointer;
+}
