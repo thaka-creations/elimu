@@ -1,5 +1,5 @@
 import uuid
-
+import requests
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -228,6 +228,7 @@ class VideoViewSet(viewsets.ViewSet):
         """
         add video , url and unit required
         """
+        url = "https://dev.vdocipher.com/api/videos"
         payload = request.data
         payload_serializer = school_serializers.CreateVideoSerializer(
             data=payload, many=False
@@ -237,7 +238,16 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = payload_serializer.validated_data
-        school_models.VideoModel.objects.create(**validated_data)
+        video = school_models.VideoModel.objects.create(**validated_data)
+
+        querystring = {"title": "title", "folderId": "ca038407e1b045dd9ad1947a8a3f781f"}
+
+        headers = {
+            'Authorization': "Apisecret kTaxYFRCXjCgSodgScmwUwKdyB5qAJ0gP0ovcRmzBpqQyYBhHxcmUdZj3eYfGHgs"
+        }
+
+        response = requests.request("PUT", url, headers=headers, params=querystring)
+        print(response.text)
 
         return Response({"details": "Video added successfully"}, status=status.HTTP_200_OK)
 

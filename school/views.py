@@ -23,6 +23,7 @@ class FormView(View):
         context = {"subjects": qs, "instance": inst, "num": num}
         return render(request, self.template_name, context=context)
 
+
 class SubjectView(View):
     template_name = "school/subjects/index.html"
 
@@ -34,9 +35,10 @@ class SubjectView(View):
 
         units = school_models.UnitModel.objects.filter(subject=instance)
         context = {"units": units, "subject": instance}
-        return render(request, self.template_name, context=context)     
+        return render(request, self.template_name, context=context)
 
-class UnitView(View): 
+
+class UnitView(View):
     template_name = "school/subjects/units/index.html"
 
     def get(self, request, pk):
@@ -46,8 +48,5 @@ class UnitView(View):
             return redirect("/")
 
         qs = school_models.VideoModel.objects.filter(unit=instance)
-        context = {"videos": qs, 'unit':instance}
+        context = {"videos": qs, 'unit': instance}
         return render(request, self.template_name, context=context)
-
-
-

@@ -164,3 +164,14 @@ LOGIN_URL = "/login"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MPESA_CONFIG = {
+    'CONSUMER_KEY': 'uQH9B9rRvYHvpM2ICYyvBdwR0UE6Pvz4',
+    'CONSUMER_SECRET': 'DurpnNk6Z21uDjaW',
+    'HOST_NAME': 'localhost:8000',
+    'PASS_KEY': '9cd4dd3777a83ffc18c70766a77e1f2077dbaea17188f98235158ed533f3331d',
+    'SAFARICOM_API': 'https://sandbox.safaricom.co.ke',
+    'SHORT_CODE': '4083027'
+}
+
+VDOCIPHER_SECRET = 'kTaxYFRCXjCgSodgScmwUwKdyB5qAJ0gP0ovcRmzBpqQyYBhHxcmUdZj3eYfGHgs'
