@@ -170,7 +170,7 @@ MPESA_CONFIG = {
     'CONSUMER_SECRET': 'DurpnNk6Z21uDjaW',
     'HOST_NAME': 'localhost:8000',
     'PASS_KEY': '9cd4dd3777a83ffc18c70766a77e1f2077dbaea17188f98235158ed533f3331d',
-    'SAFARICOM_API': 'https://sandbox.safaricom.co.ke',
+    'SAFARICOM_API': 'https://api.safaricom.co.ke',
     'SHORT_CODE': '4083027'
 }
 

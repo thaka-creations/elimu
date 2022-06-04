@@ -7,26 +7,38 @@
 {% block styles %} 
 <link rel="stylesheet" href="{% static 'css/form.css' %}">
 <style>
+    .heading-bar{
+        background-color:rgba(130, 130, 130, 0.12);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<div class="card rounded-0">
+<div class="mt-4 mb-5 heading-bar px-md-3 d-flex py-2">
+    <div class="flex-fill"><p class="fs-4 mb-0">{{instance.name.title}} Learning Videos Category</p></div>
+    <div class="flex-fill d-flex justify-content-end"><button type="button" class="btn btn-primary btn-sm px-3">Back</button></div>
+</div>
+
+<div class="card rounded-0 mx-4">
     <div class="card-header rounded-0">
-        {{instance.name.title}} Subjects
+        <p class="fs-5 mb-0 text-white">{{instance.name.title}} Subjects</p>
     </div>
 
     <div class="card-body {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">
-        <div class="container">
+        <div class="container py-2">
             <div class="row gx-3 gy-3">
-                {% for subject in subjects %}
-                    <div class="col-md-3">
-                        <div class="py-2 border text-center sb-it" sub-id="{{subject.id}}">
-                            {{subject.name}}
+                {% if subjects %}
+                    {% for subject in subjects %}
+                        <div class="col-md-3">
+                            <div class="py-2 border text-center sb-it bg-white" sub-id="{{subject.id}}">
+                                {{subject.name}}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p class="fs-4">No subjects added yet </p>
+                {% endif %}
             </div>
         </div>
     </div>

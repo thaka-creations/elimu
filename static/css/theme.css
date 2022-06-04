@@ -1,0 +1,14 @@
+.navbar .container-fluid{
+    background-color: #6283B4!important;
+}
+
+.search{
+    border-color: #6283B4!important;
+}
+
+.nav-link{
+    color:#000000;
+}
+.nav-link.active{
+    color:#6283B4;
+}
