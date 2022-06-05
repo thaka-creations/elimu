@@ -14,19 +14,27 @@
 </head>
 <body>
     
-    <div class="container">
+    <div class="container d-flex justify-content-center" style="height: 100vh;">
         
-        <div class="w-50 mx-auto">
+        <div class="card align-self-center w-50 py-4 px-4 rounded-0">
+            <div class="card-header mx-auto bg-transparent border-0">
+                <h3>Create Account</h3>
+            </div>
 
-            <form action="" method="post">
-                {% csrf_token %}
-    
-                {{form}}
-    
-                <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100">Create Account</button>
-    
-            </form>
+            <div class="card-body border shadow px-4 py-4">
+                <form action="" method="post">
+                    {% csrf_token %}
+        
+                    {{form}}
+        
+                    <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100">Create Account</button>
+        
+                </form>
+            </div>
 
+            <div class="card-footer bg-transparent border-0 pt-3">
+                <p class="mb-0">Already have an account? <a href="/login" class="text-decoration-none">Sign In</a></p>
+            </div>
         </div>
 
     </div>
