@@ -1,3 +1,5 @@
+{% load static %}
+{% load tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +43,10 @@
         .nav-link.active{
             color:#6283B4;
         }
+        .tf-logo, .user-cont{
+            height:3em;
+            width:3em;
+        }
     </style>
 </head>
 <body>
@@ -50,15 +56,17 @@
             <div class="container-fluid">
                 <div class="row w-100 py-2">
                     <div class="col-12 col-md-3">
-                        <a href="" class="navbar-brand">Navbar</a>
+                        <a href="" class="navbar-brand">
+                            <img src="{% static 'images/tafa/logo.png'%}" alt="Tafa logs" class="tf-logo">
+                        </a>
                     </div>
                     <div class="col-12 col-md-6">
                         <form action="" role="search">
-                            <input type="search" class="form-control me-2 search shadow-none" placeholder="Search" aria-label="Search">
+                            <input type="search" class="form-control me-2 search shadow-none py-3" placeholder="Search for topic" aria-label="Search">
                         </form>
                     </div>
                     <div class="col-12 col-md-3 d-flex justify-content-end">
-                        <div class="rounded-circle border border-dark text-center p-2" style="width:2.5em; height:2.5em;">
+                        <div class="rounded-circle border border-dark text-center p-2 user-cont">
                             SJ
                         </div>
                     </div>
@@ -95,7 +103,7 @@
                     <div class="row gx-5 gy-3">
                         {%for i in forms%}
                         <div class="col-md-6">
-                            <div class="border text-center py-3 fm-it" item="{{i.id}}">{{i.name.title}} Subjects</div>
+                            <div class="border text-center py-3 fm-it text-white" item="{{i.id}}">{{i.name.title}} Subjects</div>
                         </div>
                         {% endfor %}
                     </div>
@@ -103,6 +111,20 @@
             </div>
     
     
+        </div>
+
+
+        <div class="container">
+            <footer class="py-3 my-4">
+              <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+              </ul>
+              <p class="text-center text-muted">© {%current_year%} Tafa Publishers</p>
+            </footer>
         </div>
     </div>
 

@@ -42,7 +42,7 @@
 </div>
 
 <!--modal-->
-<div class="modal fade" id="subscription" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header"></div>
@@ -70,7 +70,8 @@
                 window.location.href = "/form/subject/unit/"+id
             }
             else if (this.readyState == 4 && this.status == 400){
-                const myModal = new bootstrap.Modal(document.getElementById('subscription'), options)
+                dialog = document.getElementById("myModal");
+                dialog.showModal("show");
             }
         }
         xhttp.open("GET", "/payments/subscription/check-status?request_id"+id, true);
