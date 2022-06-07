@@ -1,10 +1,16 @@
+import os
 import uuid
 import requests
+from pathlib import Path
+from django.core.files.storage import FileSystemStorage, default_storage
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from school.api import serializers as school_serializers
 from school import models as school_models
+from requests_toolbelt import MultipartEncoder
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def valid_uuid(val):
@@ -228,7 +234,7 @@ class VideoViewSet(viewsets.ViewSet):
         """
         add video , url and unit required
         """
-        url = "https://dev.vdocipher.com/api/videos"
+        url = "https://dev.vdocipher.com/api/videos/importUrl"
         payload = request.data
         payload_serializer = school_serializers.CreateVideoSerializer(
             data=payload, many=False
@@ -238,15 +244,48 @@ class VideoViewSet(viewsets.ViewSet):
             return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = payload_serializer.validated_data
-        video = school_models.VideoModel.objects.create(**validated_data)
+        vid = request.FILES.get('video')
+        fs = FileSystemStorage()
+        file = fs.save(vid.name, vid)
+        file_url = fs.url(file)
+        filename = "media/" + os.path.basename(file_url)
 
-        querystring = {"title": "title", "folderId": "ca038407e1b045dd9ad1947a8a3f781f"}
+        querystring = {"title": vid.name}
 
+        url = "https://dev.vdocipher.com/api/videos"
         headers = {
-            'Authorization': "Apisecret kTaxYFRCXjCgSodgScmwUwKdyB5qAJ0gP0ovcRmzBpqQyYBhHxcmUdZj3eYfGHgs"
+            'Authorization': "Apisecret MPv32VRtyY5lpuT7VFTWNQxLhstDB7XoA5nEMjB501XpZlSjSFx5iYHiij8bnmOr"
         }
 
         response = requests.request("PUT", url, headers=headers, params=querystring)
+
+        if response.status_code == 403:
+            return Response({"details": response.text}, status=status.HTTP_400_BAD_REQUEST)
+
+        uploadInfo = response.json()
+        client_payload = uploadInfo['clientPayload']
+        uploadLink = client_payload['uploadLink']
+
+        m = MultipartEncoder(fields=[
+            ('x-amz-credential', client_payload['x-amz-credential']),
+            ('x-amz-algorithm', client_payload['x-amz-algorithm']),
+            ('x-amz-date', client_payload['x-amz-date']),
+            ('x-amz-signature', client_payload['x-amz-signature']),
+            ('key', client_payload['key']),
+            ('policy', client_payload['policy']),
+            ('success_action_status', '201'),
+            ('success_action_redirect', ''),
+            ('file', ('filename', open(filename, 'rb'), 'text/plain'))
+        ])
+
+        response = requests.post(
+            uploadLink,
+            data=m,
+            headers={'Content-Type': m.content_type}
+        )
+
+        response.raise_for_status()
+
         print(response.text)
 
         return Response({"details": "Video added successfully"}, status=status.HTTP_200_OK)

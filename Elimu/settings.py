@@ -89,6 +89,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media'
             ],
             'libraries':
                 {
@@ -169,6 +170,10 @@ LOGIN_URL = "/login"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 MPESA_CONFIG = {
     'CONSUMER_KEY': 'uQH9B9rRvYHvpM2ICYyvBdwR0UE6Pvz4',
