@@ -65,7 +65,7 @@ class ListRetrieveVideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = school_models.VideoModel
-        fields = ['id', 'url', 'unit', 'label', 'index']
+        fields = ['id', 'videoid', 'unit', 'label', 'index']
         extra_kwargs = {'id': {'read_only': True}}
 
 

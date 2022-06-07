@@ -1,16 +1,15 @@
 import os
 import uuid
-import requests
 from pathlib import Path
-from django.core.files.storage import FileSystemStorage, default_storage
+from threading import Thread
+from django.core.files.storage import FileSystemStorage
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from school.api import serializers as school_serializers
+from school.utils import video_util
 from school import models as school_models
-from requests_toolbelt import MultipartEncoder
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def valid_uuid(val):
@@ -229,12 +228,10 @@ class UnitViewSet(viewsets.ViewSet):
 
 class VideoViewSet(viewsets.ViewSet):
 
-    @staticmethod
-    def create(request):
+    def create(self, request):
         """
         add video , url and unit required
         """
-        url = "https://dev.vdocipher.com/api/videos/importUrl"
         payload = request.data
         payload_serializer = school_serializers.CreateVideoSerializer(
             data=payload, many=False
@@ -245,50 +242,31 @@ class VideoViewSet(viewsets.ViewSet):
 
         validated_data = payload_serializer.validated_data
         vid = request.FILES.get('video')
-        fs = FileSystemStorage()
-        file = fs.save(vid.name, vid)
-        file_url = fs.url(file)
-        filename = "media/" + os.path.basename(file_url)
+        unit = validated_data['unit']
+        label = validated_data['label']
+        index = validated_data['index']
 
-        querystring = {"title": vid.name}
+        with transaction.atomic():
+            video_instance = school_models.VideoModel.objects.create(
+                unit=unit,
+                label=label,
+                index=index,
+            )
 
-        url = "https://dev.vdocipher.com/api/videos"
-        headers = {
-            'Authorization': "Apisecret MPv32VRtyY5lpuT7VFTWNQxLhstDB7XoA5nEMjB501XpZlSjSFx5iYHiij8bnmOr"
-        }
+            try:
+                name_list = vid.name.split(".")
+                vid_name = str(video_instance.id) + "." + name_list[-1]
+            except Exception as e:
+                vid_name = vid.name
 
-        response = requests.request("PUT", url, headers=headers, params=querystring)
+            # save file to storage
+            fs = FileSystemStorage()
+            file = fs.save(vid_name, vid)
+            file_url = fs.url(file)
+            filepath = "media/" + os.path.basename(file_url)
 
-        if response.status_code == 403:
-            return Response({"details": response.text}, status=status.HTTP_400_BAD_REQUEST)
-
-        uploadInfo = response.json()
-        client_payload = uploadInfo['clientPayload']
-        uploadLink = client_payload['uploadLink']
-
-        m = MultipartEncoder(fields=[
-            ('x-amz-credential', client_payload['x-amz-credential']),
-            ('x-amz-algorithm', client_payload['x-amz-algorithm']),
-            ('x-amz-date', client_payload['x-amz-date']),
-            ('x-amz-signature', client_payload['x-amz-signature']),
-            ('key', client_payload['key']),
-            ('policy', client_payload['policy']),
-            ('success_action_status', '201'),
-            ('success_action_redirect', ''),
-            ('file', ('filename', open(filename, 'rb'), 'text/plain'))
-        ])
-
-        response = requests.post(
-            uploadLink,
-            data=m,
-            headers={'Content-Type': m.content_type}
-        )
-
-        response.raise_for_status()
-
-        print(response.text)
-
-        return Response({"details": "Video added successfully"}, status=status.HTTP_200_OK)
+            Thread(target=video_util.upload_video, args=(filepath, vid_name, video_instance)).start()
+            return Response({"details": "Video added successfully"}, status=status.HTTP_200_OK)
 
     @staticmethod
     def list(request):
