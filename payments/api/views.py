@@ -114,6 +114,14 @@ class MpesaCheckout(APIView):
 
 class MpesaCallBack(APIView):
 
+    def get(self, request):
+        return Response({"status": "OK"}, status=200)
+
     def post(self, request):
-        print(request.body)
-        return Response(True)
+        data = request.data
+        res = gateway.callback(data)
+
+        if res:
+            return Response({"details": "Success"}, status=status.HTTP_200_OK)
+
+        return Response({"details": "Failed"}, status=status.HTTP_400_BAD_REQUEST)

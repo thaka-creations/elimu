@@ -77,6 +77,7 @@ class Transaction(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     phone_number = PhoneNumberField(blank=False, null=False)
     checkout_id = models.CharField(max_length=255)
+    receipt_no = models.CharField(max_length=255, blank=True, null=True)
     reference = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     amount = models.DecimalField(max_digits=15, decimal_places=2)

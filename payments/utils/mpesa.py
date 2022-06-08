@@ -6,6 +6,7 @@ import time
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 from django.conf import settings
+from phonenumber_field.phonenumber import PhoneNumber
 from payments.models import Transaction
 
 
@@ -103,7 +104,51 @@ class MpesaGateway:
 
         return res_data
 
-    def callback(self, payload):
-        pass
+    @staticmethod
+    def check_status(data):
+        try:
+            status = data["Body"]["stkCallback"]["ResultCode"]
+        except Exception as e:
+            status = 1
+        return status
+
+    @staticmethod
+    def get_transaction_object(data):
+        checkout_request_id = data["Body"]["stkCallback"]["CheckoutRequestID"]
+        transaction, _ = Transaction.objects.get_or_create(checkout_id=checkout_request_id)
+        return transaction
+
+    def handle_successful_pay(self, data, transaction):
+        items = data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+
+        print("Items")
+        print(items)
+        for item in items:
+            if item["Name"] == "Amount":
+                amount = item["Value"]
+            elif item["Name"] == "MpesaReceiptNumber":
+                receipt_no = item["Value"]
+            elif item["Name"] == "PhoneNumber":
+                phone_number = item["Value"]
+
+        transaction.amount = amount
+        transaction.phone_number = PhoneNumber(raw_input=phone_number)
+        transaction.receipt_no = receipt_no
+        transaction.status = "APPROVED"
+
+        return transaction
+
+    def callback(self, data):
+        status = self.check_status(data)
+        transaction = self.get_transaction_object(data)
+
+        if status == 0:
+            transaction = self.handle_successful_pay(data, transaction)
+        else:
+            transaction.status = "PENDING"
+
+        transaction.save()
+        return True
+
 
 
