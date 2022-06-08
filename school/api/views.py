@@ -1,6 +1,5 @@
 import os
 import uuid
-from pathlib import Path
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction

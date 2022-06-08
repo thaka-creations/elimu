@@ -1,11 +1,16 @@
+import json
 from datetime import datetime
 from django.db import transaction
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from payments import models as payment_models
 from payments.api import serializers as payment_serializers
+from payments.utils import mpesa
+
+gateway = mpesa.MpesaGateway()
 
 
 class UnitAmountViewSet(viewsets.ReadOnlyModelViewSet):
@@ -90,3 +95,25 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"details": "Not subscribed"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"details": "Subscribed"}, status=status.HTTP_200_OK)
+
+
+class MpesaCheckout(APIView):
+
+    def post(self, request):
+        serializer = payment_serializers.MpesaCheckoutSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        amount = validated_data['amount']
+        phone_number = validated_data['phone_number']
+        res = gateway.stk_push_request(amount, phone_number)
+        return Response(res, status=status.HTTP_200_OK)
+
+
+class MpesaCallBack(APIView):
+
+    def post(self, request):
+        print(request.body)
+        return Response(True)

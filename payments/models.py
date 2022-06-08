@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from users.models import User
 from school.models import UnitModel
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 ALLOWED_STATUS = [
@@ -22,6 +23,11 @@ SUBSCRIPTION_STATUS = [
     ("ACTIVE", "ACTIVE"),
     ("EXPIRED", "EXPIRED"),
     ("REVOKED", "REVOKED")
+]
+
+STATUS = [
+    ("PENDING", "PENDING"),
+    ("COMPLETE", "COMPLETE")
 ]
 
 
@@ -67,3 +73,15 @@ class InvoiceUnit(BaseModel):
                                      blank=True, null=True)
 
 
+class Transaction(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    phone_number = PhoneNumberField(blank=False, null=False)
+    checkout_id = models.CharField(max_length=255)
+    reference = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    status = models.CharField(max_length=100, choices=STATUS, default="PENDING")
+    invoices = models.ManyToManyField(Invoice, related_name="transactions")
+
+    def __str__(self):
+        return self.reference

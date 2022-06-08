@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from phonenumbers.phonenumberutil import is_possible_number
+from phonenumber_field.phonenumber import to_python
 from school.models import UnitModel
 from payments import models
 from school.api.serializers import ListRetrieveUnitSerializer
@@ -9,6 +11,7 @@ ALLOWED_PERIOD = [
     ("6 MONTHS", "6 MONTHS"),
     ("1 YEAR", "1 YEAR")
 ]
+
 
 class BaseSerializer(serializers.Serializer):
     request_id = serializers.UUIDField(required=True)
@@ -62,3 +65,36 @@ class ListSubscription(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class MpesaCheckoutSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(required=True)
+    amount = serializers.FloatField(required=True)
+    reference = serializers.CharField(required=True)
+    description = serializers.CharField(required=True)
+
+    def validate(self, obj):
+        phone = obj['phone_number']
+        amount = obj['amount']
+
+        if phone == "+":
+            phone = phone[1:]
+        if phone[0] == "0":
+            phone = "254" + phone[1:]
+
+        try:
+            phone_number = to_python(phone, "KE")
+
+            if phone_number and not is_possible_number(phone_number) or not phone_number.is_valid():
+                raise serializers.ValidationError("Invalid phone number")
+        except Exception:
+            raise serializers.ValidationError("Invalid phone number")
+
+        if amount <= 0:
+            raise serializers.ValidationError("Amount must be greater than zero")
+
+        return obj
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Transaction
+        fields = "__all__"
