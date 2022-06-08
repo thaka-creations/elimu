@@ -24,6 +24,15 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = school_models.SubjectModel.objects.all()
     serializer_class = school_serializers.SubjectSerializer
 
+    def get_queryset(self):
+        form_id = self.request.query_params.get("form", False)
+
+        if not form_id:
+            return super().get_queryset()
+
+        qs = school_models.SubjectModel.objects.filter(form_units__form__id=form_id, form_units__videos__isnull=False)
+        return qs
+
     @staticmethod
     def create(request):
         payload_serializer = school_serializers.SubjectSerializer(
