@@ -118,11 +118,10 @@ class MpesaGateway:
         transaction, _ = Transaction.objects.get_or_create(checkout_id=checkout_request_id)
         return transaction
 
-    def handle_successful_pay(self, data, transaction):
+    @staticmethod
+    def handle_successful_pay(data, transaction):
         items = data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
 
-        print("Items")
-        print(items)
         for item in items:
             if item["Name"] == "Amount":
                 amount = item["Value"]
