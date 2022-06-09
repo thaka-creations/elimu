@@ -16,17 +16,19 @@ gateway = mpesa.MpesaGateway()
 class UnitAmountViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = payment_models.UnitAmount.objects.all()
     serializer_class = payment_serializers.UnitAmountSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         form = self.request.query_params.get("form", False)
         subject = self.request.query_params.get("subject", False)
+        unit = self.request.query_params.get("unit", False)
 
-        if not form or not subject:
-            return super().get_queryset()
+        if unit:
+            qs = payment_models.UnitAmount.objects.filter(unit__id=unit)
+        elif not form or not subject:
+            return payment_models.UnitAmount.objects.none()
         else:
             qs = payment_models.UnitAmount.objects.filter(unit__form__id=form, unit__subject__id=subject)
-            return qs
+        return qs
 
     def create(self, request):
         serializer = payment_serializers.CreateUnitAmountSerializer(data=request.data)
@@ -36,6 +38,7 @@ class UnitAmountViewSet(viewsets.ReadOnlyModelViewSet):
 
         validated_data = serializer.validated_data
         with transaction.atomic():
+            print(validated_data["period"])
             payment_models.UnitAmount.objects.create(**validated_data)
             return Response({"details": "Unit amount updated successfully"}, status=status.HTTP_200_OK)
 

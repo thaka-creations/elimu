@@ -5,11 +5,13 @@ from school.models import UnitModel
 from payments import models
 from school.api.serializers import ListRetrieveUnitSerializer
 
-ALLOWED_PERIOD = [
-    ("1 MONTH", "1 MONTH"),
-    ("3 MONTHS", "3 MONTHS"),
-    ("6 MONTHS", "6 MONTHS"),
-    ("1 YEAR", "1 YEAR")
+ALLOWED_PERIOD_TYPE = [
+    ("DAY", "DAY"),
+    ("MONTH", "MONTH"),
+    ("DAYS", "DAYS"),
+    ("YEAR", "YEAR"),
+    ("YEARS", "YEARS"),
+    ("MONTHS", "MONTHS")
 ]
 
 
@@ -28,7 +30,8 @@ class UnitAmountSerializer(serializers.ModelSerializer):
 class CreateUnitAmountSerializer(serializers.Serializer):
     unit = serializers.UUIDField(required=True)
     amount = serializers.FloatField(required=True)
-    period = serializers.ChoiceField(required=True, choices=ALLOWED_PERIOD)
+    period = serializers.IntegerField(required=True)
+    period_type = serializers.ChoiceField(required=True, choices=ALLOWED_PERIOD_TYPE)
 
     def validate(self, obj):
         try:

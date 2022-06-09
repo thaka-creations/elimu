@@ -17,13 +17,13 @@
 {% block content %}
 
 <div class="mt-4 mb-5 heading-bar px-md-3 d-flex py-2">
-    <div class="flex-fill"><p class="fs-4 mb-0">Form Four {{subject.name.title}} Videos Category</p></div>
+    <div class="flex-fill"><p class="fs-4 mb-0">{{form.name.title}} {{subject.name.title}} Videos Category</p></div>
     <div class="flex-fill d-flex justify-content-end"><button type="button" class="btn btn-primary btn-sm px-3 shadow-none">Back</button></div>
 </div>
 
 <div class="card rounded-0">
     <div class="card-header rounded-0">
-        Form Four {{subject.name.title}} Units
+        {{form.name.title}} {{subject.name.title}} Units
     </div>
     <div class="card-body">
         <div class="container">
@@ -72,14 +72,12 @@
                 <div class="mb-3">
                     <label for="period" class="col-form-label col-label-required">Duration</label>
                     <select name="period" id="id-period" class="form-select rounded-0 shadow-none">
-                        <option value="1" selected> 1 MONTH</option>
-                        <option value="2" selected> 2 MONTH</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label for="amount" class="col-form-label">Amount</label>
-                    <input type="text" class="form-control rounded-0 shadow-none" readonly value="100">
+                    <input type="text" id="amount" class="form-control rounded-0 shadow-none" readonly>
                 </div>
 
 
@@ -111,15 +109,61 @@
                 window.location.href = "/form/subject/unit/"+id
             }
             else if (this.readyState == 4 && this.status == 400){
-                var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                
+                // load costs
+                getUnitCosts(id)
+
+                var myModal = new bootstrap.Modal(document.getElementById("myModal"), {
                     keyboard: false
                   })
-                toggleModal = document.getElementById('myModal')
+                toggleModal = document.getElementById("myModal")
                 myModal.show(toggleModal)
             }
         }
         xhttp.open("GET", "/payments/subscription/check-status?request_id"+id, true);
         xhttp.send();
     }
+
+    // get unit amount for different time periods
+    function getUnitCosts(e){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200) {
+                obj = JSON.parse(xhttp.responseText)
+                for (const key of Object.keys(obj)) {
+                    const option = document.createElement("option");
+                    textNode = document.createTextNode(obj[key].period);
+                    option.appendChild(textNode);
+                    option.value = obj[key].amount;
+                    el = document.getElementById("id-period");
+                    el.appendChild(option);
+                    console.log(key, obj[key]);
+                }
+
+                first_child = document.getElementById("id-period").children[0];
+                first_child.setAttribute("selected", "selected");
+                first_value = first_child.value;
+                am = document.getElementById("amount")
+                am.value = first_value
+            }
+        }
+        xhttp.open("GET", "/api/v1/payments/unit-amount?unit="+id, true);
+        xhttp.send();
+    }
+</script>
+<script>
+    // on closure of modal, raise an event
+    var myModal = document.getElementById("myModal");
+    myModal.addEventListener("hidden.bs.modal", modalClosure)
+
+    function modalClosure(){
+        am = document.getElementById("amount");
+        am.value = null;
+        el = document.getElementById("id-period");
+        while (el.hasChildNodes()) {
+            el.removeChild(el.firstChild);
+        }
+    }
+
 </script>
 {% endblock %}

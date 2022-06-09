@@ -34,7 +34,11 @@ class SubjectView(View):
             return redirect("/")
 
         units = school_models.UnitModel.objects.filter(subject=instance)
-        context = {"units": units, "subject": instance}
+        if units.exists():
+            form = units.first().form
+        else:
+            return redirect("/")
+        context = {"units": units, "subject": instance, "form": form}
         return render(request, self.template_name, context=context)
 
 
