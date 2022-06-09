@@ -6,6 +6,12 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/subject.css' %}">
+<style>
+    .col-label-required:after{
+        content:"*";
+        color:red;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -41,17 +47,52 @@
     </div>
 </div>
 
-<!--modal-->
-<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"></div>
-            <div class="modal-body">
-                Header
-            </div>
+<!-- Button trigger modal -->
+  
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="subscriptionModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Subscription Payment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+            <p class="mb-1 fs-5">Dear Client, subscribe to view videos in Calculus.</p>
+            <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
+            
+            <form action="" method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="phone" class="col-form-label col-label-required">Phone Number</label>
+                    <input type="text" class="form-control rounded-0 shadow-none" name="phone" placeholder="Enter phone number" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="period" class="col-form-label col-label-required">Duration</label>
+                    <select name="period" id="id-period" class="form-select rounded-0 shadow-none">
+                        <option value="1" selected> 1 MONTH</option>
+                        <option value="2" selected> 2 MONTH</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="col-form-label">Amount</label>
+                    <input type="text" class="form-control rounded-0 shadow-none" readonly value="100">
+                </div>
+
+
+            </form>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none">Pay via MPESA</button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
 {% endblock %}
 
@@ -70,8 +111,11 @@
                 window.location.href = "/form/subject/unit/"+id
             }
             else if (this.readyState == 4 && this.status == 400){
-                dialog = document.getElementById("myModal");
-                dialog.showModal("show");
+                var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                    keyboard: false
+                  })
+                toggleModal = document.getElementById('myModal')
+                myModal.show(toggleModal)
             }
         }
         xhttp.open("GET", "/payments/subscription/check-status?request_id"+id, true);
