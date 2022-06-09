@@ -21,10 +21,15 @@ class BaseSerializer(serializers.Serializer):
 
 class UnitAmountSerializer(serializers.ModelSerializer):
     unit = ListRetrieveUnitSerializer(many=False)
+    period = serializers.SerializerMethodField()
 
     class Meta:
         model = models.UnitAmount
         fields = "__all__"
+
+    @staticmethod
+    def get_period(obj):
+        return str(obj.period) + " " + obj.period_type
 
 
 class CreateUnitAmountSerializer(serializers.Serializer):

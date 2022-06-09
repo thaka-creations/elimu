@@ -55,10 +55,10 @@
       <div class="modal-content rounded-0">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Subscription Payment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <p class="mb-1 fs-5">Dear Client, subscribe to view videos in Calculus.</p>
+            <p class="mb-1 fs-6 font-weight-bold" id="wl-md-title"></p>
             <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
             
             <form action="" method="POST">
@@ -86,7 +86,7 @@
         </div>
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary rounded-0 shadow-none">Pay via MPESA</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa">Pay via MPESA</button>
         </div>
       </div>
     </div>
@@ -103,6 +103,9 @@
 
     function unNavigator(e){
         id = e.target.getAttribute('un-id')
+        name = e.target.innerHTML
+        var el = document.getElementById("wl-md-title")
+        el.innerHTML = "Dear Client, subscribe to view videos in " + name + ".";
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200) {
@@ -163,6 +166,27 @@
         while (el.hasChildNodes()) {
             el.removeChild(el.firstChild);
         }
+    }
+
+    // on select control change event
+    el = document.getElementById("id-period");
+    el.addEventListener("change", selectChange);
+
+    function selectChange(e){
+        var x = e.target.value
+        am = document.getElementById("amount")
+        am.value = x
+        e.target.children[0].removeAttribute("selected");
+
+    }
+
+</script>
+
+<script>
+    var btn = document.getElementById("pay-mpesa")
+    btn.addEventListener("click", processPayment);
+
+    function processPayment(){
     }
 
 </script>
