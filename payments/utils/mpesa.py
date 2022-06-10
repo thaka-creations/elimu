@@ -90,9 +90,10 @@ class MpesaGateway:
             "TransactionDesc": description,
             "headers": self.headers
         }
-
+        print(req)
         res = requests.post(self.checkout_url, json=req, headers=self.headers, timeout=30)
         res_data = res.json()
+        print(res_data)
 
         if res.ok:
             transaction_inst = Transaction.objects.create(
@@ -164,9 +165,9 @@ class MpesaGateway:
                 invoice.amount_paid = transaction.amount
                 invoice.mpesa_ref = transaction.receipt_no
 
-                if (invoice.amount - transaction.amount) == 0:
+                if (int(invoice.amount) - int(invoice.amount_paid)) == 0:
                     invoice.status = "PAID"
-                elif (invoice.amount - transaction.amount) < 0:
+                elif (int(invoice.amount) - int(invoice.amount_paid)) < 0:
                     invoice.status = "OVERPAYMENT"
                 else:
                     invoice.status = "PARTIAL_PAYMENT"

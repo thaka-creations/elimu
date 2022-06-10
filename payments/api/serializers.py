@@ -87,7 +87,7 @@ class MpesaCheckoutSerializer(serializers.Serializer):
         user = obj['user']
 
         try:
-            User.objects.get(id=user)
+            user = User.objects.get(id=user)
         except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist")
 
@@ -95,7 +95,6 @@ class MpesaCheckoutSerializer(serializers.Serializer):
             instance = models.UnitAmount.objects.get(unit__id=unit, amount=amount)
         except (models.UnitAmount.DoesNotExist, models.UnitAmount.MultipleObjectsReturned):
             raise serializers.ValidationError("An error occurred. Try again later")
-
 
         period = str(instance.period) + ' ' + instance.period_type
 
@@ -127,7 +126,7 @@ class MpesaCheckoutSerializer(serializers.Serializer):
         else:
             period = int(_period_list[0])
 
-        obj.update({"period": period, "unit": instance.unit})
+        obj.update({"period": period, "unit": instance.unit, "user": user})
         return obj
 
 
