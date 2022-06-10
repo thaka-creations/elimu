@@ -93,6 +93,11 @@
             <p class="page-header fs-4">
                 Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
             </p>
+
+            <div class="container-fluid">
+                <div id="embedBox" style="width:1280px;max-width:100%;height:auto;">
+                </div>
+            </div>
     
             <div class="card rounded-0">
                 <div class="card-header title">
@@ -139,6 +144,18 @@
             id = e.target.getAttribute('item')
             window.location.href = "/form/"+id
         }
+    </script>
+    <script>
+          (function(v,i,d,e,o){v[o]=v[o]||{}; v[o].add = v[o].add || function V(a){ (v[o].d=v[o].d||[]).push(a);};
+            if(!v[o].l) { v[o].l=1*new Date(); a=i.createElement(d), m=i.getElementsByTagName(d)[0];
+            a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
+            })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
+            vdo.add({
+            otp: "REPLACE WITH OTP",
+            playbackInfo: "REPLACE WITH PLAYBACKINFO",
+            theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
+            container: document.querySelector( "#embedBox" ),
+            });
     </script>
 
 </body>
