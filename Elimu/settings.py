@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'mfa',
     'users',
     'payments',
-    'video'
+    'video',
+    'staff'
 ]
 
 REST_FRAMEWORK = {

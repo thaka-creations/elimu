@@ -63,7 +63,11 @@ class LoginView(View):
                 return redirect("/login")
 
             login(request, user)
-            return redirect("/")
+
+            if request.user.is_admin:
+                return redirect("/admin")
+            else:
+                return redirect("/")
 
         return render(request, self.template_name, {"form": form})
 

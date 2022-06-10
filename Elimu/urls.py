@@ -15,13 +15,11 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
 from django.urls import path, include
 
 api_version = 'api/v1/'
 
 api_patterns = [
-    path('admin/', admin.site.urls),
     path(api_version + 'o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path(api_version + 'school/', include('school.api.urls')),
     path(api_version + 'users/', include('users.api.urls')),
@@ -33,7 +31,8 @@ api_patterns = [
 urlpatterns = api_patterns + [
     path('', include('school.urls')),
     path('', include('users.urls')),
-    path('payments/', include('payments.urls'))
+    path('', include('staff.urls')),
+    path('payments/', include('payments.urls')),
 ]
 
 if settings.DEBUG:
