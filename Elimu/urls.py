@@ -26,7 +26,8 @@ api_patterns = [
     path(api_version + 'school/', include('school.api.urls')),
     path(api_version + 'users/', include('users.api.urls')),
     path(api_version + 'mfa/', include('mfa.api.urls')),
-    path(api_version + 'payments/', include('payments.api.urls'))
+    path(api_version + 'payments/', include('payments.api.urls')),
+    path(api_version + 'video/', include('video.urls'))
 ]
 
 urlpatterns = api_patterns + [

@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'school',
     'mfa',
     'users',
-    'payments'
+    'payments',
+    'video'
 ]
 
 REST_FRAMEWORK = {

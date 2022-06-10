@@ -34,18 +34,24 @@
         }
         
         .search{
-            border-color: #6283B4!important;
+            border-color: #5968B0!important;
         }
 
         .nav-link{
             color:#000000;
         }
         .nav-link.active{
-            color:#6283B4;
+            color:#5968B0;
         }
         .tf-logo, .user-cont{
             height:3em;
             width:3em;
+            cursor: pointer;
+        }
+        .video-box{
+            width:85%;
+            margin-left:0px;
+            margin-right:0px;
         }
     </style>
 </head>
@@ -57,17 +63,19 @@
                 <div class="row w-100 py-2">
                     <div class="col-12 col-md-3">
                         <a href="" class="navbar-brand">
-                            <img src="{% static 'images/tafa/logo.png'%}" alt="Tafa logs" class="tf-logo">
+                            <img src="{% static 'images/tafa/logo.png'%}" alt="Tafa logs" class="tf-logo border border-3 rounded-circle">
                         </a>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <form action="" role="search">
-                            <input type="search" class="form-control me-2 search shadow-none py-3" placeholder="Search for topic" aria-label="Search">
+                    <div class="col-12 col-md-6 d-flex">
+                        <form action="" role="search" class="align-self-center w-100">
+                            <input type="search" class="form-control search shadow-none py-2 rounded-pill" placeholder="Search for topic" aria-label="Search">
                         </form>
                     </div>
                     <div class="col-12 col-md-3 d-flex justify-content-end">
-                        <div class="rounded-circle border border-dark text-center p-2 user-cont">
-                            <span>SJ</span>
+                        <div class="d-flex rounded-circle border border-dark bg-dark  p-2 user-cont align-self-center justify-content-center">
+                            <p class="text-white align-self-center mb-0">
+                                SJ
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -94,7 +102,7 @@
                 Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
             </p>
 
-            <div class="container-fluid">
+            <div class="container-fluid video-box mb-4 px-0">
                 <div id="embedBox" style="width:1280px;max-width:100%;height:auto;">
                 </div>
             </div>
@@ -151,8 +159,8 @@
             a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
             })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
             vdo.add({
-            otp: "REPLACE WITH OTP",
-            playbackInfo: "REPLACE WITH PLAYBACKINFO",
+            otp: "20160313versUSE3237DOJATqHCBuq574oKf5lYSlqAXF6Jad7E0xmOFiwSXLfad",
+            playbackInfo: "eyJ2aWRlb0lkIjoiYWU1YjFjYjQ2NzE3NGVmZmEwZGU4MWE2NzBhNjkzNTEifQ==",
             theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
             container: document.querySelector( "#embedBox" ),
             });
