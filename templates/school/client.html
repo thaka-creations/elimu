@@ -53,6 +53,12 @@
             margin-left:0px;
             margin-right:0px;
         }
+        .dropdown-toggle:after {
+            content: none;
+        }
+        .dropdown-menu{
+            left: -6em!important;
+        }
     </style>
 </head>
 <body>
@@ -72,10 +78,25 @@
                         </form>
                     </div>
                     <div class="col-12 col-md-3 d-flex justify-content-end">
-                        <div class="d-flex rounded-circle border border-dark bg-dark  p-2 user-cont align-self-center justify-content-center">
-                            <p class="text-white align-self-center mb-0">
-                                SJ
-                            </p>
+                        <div class="dropdown">
+                            <div class="dropdown-toggle d-flex rounded-circle border border-dark bg-dark justify-content-center align-content-center user-cont p-2" data-bs-toggle="dropdown">
+                                <p class="text-white align-self-center mb-0">
+                                    SJ
+                                </p>
+                            </div>
+            
+                            <div class="dropdown-menu dropdown-menu-right p-0">
+                                <button class="dropdown-item py-2" type="button">
+                                    {{request.user.name}}
+                                </button>
+                                <div class="dropdown-divider my-0"></div>
+                                <a class="dropdown-item py-2">My Learning</a>
+                                <a class="dropdown-item py-2">Account Settings</a>
+                                <div class="dropdown-divider my-0"></div>
+                                <a class="dropdown-item py-2" href="/logout">
+                                    Logout
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

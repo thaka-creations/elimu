@@ -91,6 +91,9 @@ class Authentication(viewsets.ViewSet):
 
         return Response({"details": userinfo}, status=status.HTTP_200_OK)
 
+    @action(methods=["POST"], detail=False)
+    def logout(self, request):
+        pass
 
 class UserViewSet(viewsets.ViewSet):
 

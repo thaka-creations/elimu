@@ -3,12 +3,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from oauth2_provider.models import get_application_model
+from django.contrib.auth import logout
 from users import forms, models as user_models
 from users.utils import system_utils
-from  school import models as school_models
+from school import models as school_models
 
 oauth2_user = system_utils.ApplicationUser()
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("/login")
 
 
 class RegistrationView(View):
