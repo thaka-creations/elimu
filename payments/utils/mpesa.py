@@ -90,10 +90,9 @@ class MpesaGateway:
             "TransactionDesc": description,
             "headers": self.headers
         }
-        print(req)
+
         res = requests.post(self.checkout_url, json=req, headers=self.headers, timeout=30)
         res_data = res.json()
-        print(res_data)
 
         if res.ok:
             transaction_inst = Transaction.objects.create(
@@ -149,6 +148,7 @@ class MpesaGateway:
         transaction.phone_number = PhoneNumber(raw_input=phone_number)
         transaction.receipt_no = receipt_no
         transaction.status = "APPROVED"
+        transaction.save()
 
         return transaction
 
@@ -164,13 +164,7 @@ class MpesaGateway:
                 invoice.paid_date = datetime.now()
                 invoice.amount_paid = transaction.amount
                 invoice.mpesa_ref = transaction.receipt_no
-
-                if (int(invoice.amount) - int(invoice.amount_paid)) == 0:
-                    invoice.status = "PAID"
-                elif (int(invoice.amount) - int(invoice.amount_paid)) < 0:
-                    invoice.status = "OVERPAYMENT"
-                else:
-                    invoice.status = "PARTIAL_PAYMENT"
+                invoice.status = "PAID"
                 invoice.save()
 
                 if invoice.status in ["PAID", "OVERPAYMENT"]:
@@ -185,8 +179,8 @@ class MpesaGateway:
 
         else:
             transaction.status = "PENDING"
+            transaction.save()
 
-        transaction.save()
         return True
 
 
