@@ -44,6 +44,7 @@ class VideoModel(BaseModel):
     unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="videos")
     videoid = models.CharField(max_length=255, blank=True, null=True)
     label = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     index = models.IntegerField(blank=True, null=True)
 
     def __str__(self):

@@ -18,7 +18,7 @@ class GetVideoOtp(APIView):
         video_id = validated_data['video_id']
 
         url = "https://dev.vdocipher.com/api/videos/{}/otp".format(video_id)
-        payload = json.dumps({"ttl": 300})
+        payload = json.dumps({"ttl": False})
         headers = {
             "Authorization": "Apisecret " + settings.VDOCIPHER_SECRET,
             "Content-Type": "application/json",
