@@ -89,7 +89,7 @@ class Transaction(BaseModel):
     description = models.TextField(blank=True, null=True)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     status = models.CharField(max_length=100, choices=STATUS, default="PENDING")
-    invoices = models.ManyToManyField(Invoice, related_name="transactions")
+    invoice = models.OneToOneField(Invoice, related_name="transaction", on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.reference

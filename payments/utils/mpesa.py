@@ -95,22 +95,22 @@ class MpesaGateway:
         res_data = res.json()
 
         if res.ok:
-            Transaction.objects.create(
-                phone_number=phone_number,
-                checkout_id=res_data["CheckoutRequestID"],
-                amount=amount,
-                reference=reference,
-                description=description
-            )
+            transaction_inst = Transaction.objects.create(
+                                    phone_number=phone_number,
+                                    checkout_id=res_data["CheckoutRequestID"],
+                                    amount=amount,
+                                    reference=reference,
+                                    description=description
+                                )
 
             invoice_inst = Invoice.objects.create(
                                 user=user,
                                 amount=amount,
-                                mpesa_ref=res_data["CheckoutRequestID"],
                                 transaction_date=datetime.now(),
                                 phone=phone_number
                             )
-
+            transaction_inst.invoice = invoice_inst
+            transaction_inst.save()
             InvoiceUnit.objects.create(
                 invoice=invoice_inst,
                 unit=unit
@@ -131,15 +131,6 @@ class MpesaGateway:
         checkout_request_id = data["Body"]["stkCallback"]["CheckoutRequestID"]
         transaction, _ = Transaction.objects.get_or_create(checkout_id=checkout_request_id)
         return transaction
-
-    @staticmethod
-    def get_invoice(reference_no):
-        try:
-            invoice = Invoice.objects.get(mpesa_ref=reference_no)
-            return invoice
-        except Exception as e:
-            print(e)
-            return
 
     @staticmethod
     def handle_successful_pay(data, transaction):
@@ -163,7 +154,7 @@ class MpesaGateway:
     def callback(self, data):
         status = self.check_status(data)
         transaction = self.get_transaction_object(data)
-        invoice = self.get_invoice(transaction.id)
+        invoice = transaction.invoice
 
         if status == 0:
             transaction = self.handle_successful_pay(data, transaction)
@@ -171,6 +162,7 @@ class MpesaGateway:
             if invoice:
                 invoice.paid_date = datetime.now()
                 invoice.amount_paid = transaction.amount
+                invoice.mpesa_ref = transaction.receipt_no
 
                 if (invoice.amount - transaction.amount) == 0:
                     invoice.status = "PAID"
