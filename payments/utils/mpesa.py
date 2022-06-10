@@ -147,8 +147,7 @@ class MpesaGateway:
         transaction.amount = amount
         transaction.phone_number = PhoneNumber(raw_input=phone_number)
         transaction.receipt_no = receipt_no
-        transaction.status = "APPROVED"
-        transaction.save()
+        transaction.status = "COMPLETE"
 
         return transaction
 
@@ -179,8 +178,8 @@ class MpesaGateway:
 
         else:
             transaction.status = "PENDING"
-            transaction.save()
 
+        transaction.save()
         return True
 
 
