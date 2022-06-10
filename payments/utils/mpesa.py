@@ -73,8 +73,9 @@ class MpesaGateway:
         return token
 
     @Decorators.refresh_token
-    def stk_push_request(self, amount, phone_number):
-
+    def stk_push_request(self, amount, phone_number, unit, period, user):
+        reference = str(user.id)
+        description = "{} subscription payment for {} days".format(unit.name, period)
         req = {
             "BusinessShortCode": self.shortcode,
             "Password": self.password,
@@ -85,8 +86,8 @@ class MpesaGateway:
             "PartyB": self.shortcode,
             "PhoneNumber": phone_number,
             "CallBackURL": self.c2b_callback,
-            "AccountReference": "Testing",
-            "TransactionDesc": "Test",
+            "AccountReference": reference,
+            "TransactionDesc": description,
             "headers": self.headers
         }
 
@@ -98,8 +99,8 @@ class MpesaGateway:
                 phone_number=phone_number,
                 checkout_id=res_data["CheckoutRequestID"],
                 amount=amount,
-                reference="Test",
-                description="Test"
+                reference=reference,
+                description=description
             )
 
         return res_data

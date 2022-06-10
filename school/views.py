@@ -38,7 +38,7 @@ class SubjectView(View):
             form = units.first().form
         else:
             return redirect("/")
-        context = {"units": units, "subject": instance, "form": form}
+        context = {"units": units, "subject": instance, "form": form, "user": request.user}
         return render(request, self.template_name, context=context)
 
 

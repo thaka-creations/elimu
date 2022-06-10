@@ -111,8 +111,11 @@ class MpesaCheckout(APIView):
         validated_data = serializer.validated_data
         amount = validated_data['amount']
         phone_number = validated_data['phone_number']
-        res = gateway.stk_push_request(amount, phone_number)
-        return Response(res, status=status.HTTP_200_OK)
+        period = validated_data['period']
+        unit = validated_data['unit']
+        user = validated_data['user']
+        gateway.stk_push_request(amount, phone_number, unit, period, user)
+        return Response({"details": "Payment process initiated successfully"}, status=status.HTTP_200_OK)
 
 
 class MpesaCallBack(APIView):

@@ -61,25 +61,27 @@
             <p class="mb-1 fs-6 font-weight-bold" id="wl-md-title"></p>
             <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
             
-            <form action="" method="POST">
+            <form action="/api/v1/payments/checkout" method="POST" id="submit-ps">
                 {% csrf_token %}
                 
                 <div class="mb-3">
                     <label for="phone" class="col-form-label col-label-required">Phone Number</label>
-                    <input type="text" class="form-control rounded-0 shadow-none" name="phone" placeholder="Enter phone number" required>
+                    <input type="text" class="form-control rounded-0 shadow-none" name="phone_number" placeholder="Enter phone number" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="period" class="col-form-label col-label-required">Duration</label>
-                    <select name="period" id="id-period" class="form-select rounded-0 shadow-none">
+                    <select id="id-period" class="form-select rounded-0 shadow-none">
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label for="amount" class="col-form-label">Amount</label>
-                    <input type="text" id="amount" class="form-control rounded-0 shadow-none" readonly>
+                    <input type="text" id="amount" name="amount" class="form-control rounded-0 shadow-none" readonly>
                 </div>
-
+                
+                <input type="hidden" name="user" value={{user.id}}>
+                <input type="hidden" name="unit" id="reference">
 
             </form>
 
@@ -106,6 +108,8 @@
         name = e.target.innerHTML
         var el = document.getElementById("wl-md-title")
         el.innerHTML = "Dear Client, subscribe to view videos in " + name + ".";
+        ref = document.getElementById("reference")
+        ref.value = id
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200) {
@@ -187,6 +191,17 @@
     btn.addEventListener("click", processPayment);
 
     function processPayment(){
+        ps = document.getElementById("submit-ps");
+        const formData = new FormData(ps);
+        url = ps.getAttribute("action")
+        
+        xhttp  = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            console.log("True")
+        }
+
+        xhttp.open("POST", url)
+        xhttp.send(formData);
     }
 
 </script>
