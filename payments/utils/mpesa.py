@@ -4,10 +4,10 @@ import math
 import requests
 import time
 from requests.auth import HTTPBasicAuth
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from phonenumber_field.phonenumber import PhoneNumber
-from payments.models import Transaction
+from payments.models import Transaction, Invoice, InvoiceUnit, Subscription
 
 
 class Decorators:
@@ -75,7 +75,7 @@ class MpesaGateway:
     @Decorators.refresh_token
     def stk_push_request(self, amount, phone_number, unit, period, user):
         reference = str(user.id)
-        description = "{} subscription payment for {} days".format(unit.name, period)
+        description = period
         req = {
             "BusinessShortCode": self.shortcode,
             "Password": self.password,
@@ -103,6 +103,19 @@ class MpesaGateway:
                 description=description
             )
 
+            invoice_inst = Invoice.objects.create(
+                                user=user,
+                                amount=amount,
+                                mpesa_ref=res_data["CheckoutRequestID"],
+                                transaction_date=datetime.now(),
+                                phone=phone_number
+                            )
+
+            InvoiceUnit.objects.create(
+                invoice=invoice_inst,
+                unit=unit
+            )
+
         return res_data
 
     @staticmethod
@@ -118,6 +131,15 @@ class MpesaGateway:
         checkout_request_id = data["Body"]["stkCallback"]["CheckoutRequestID"]
         transaction, _ = Transaction.objects.get_or_create(checkout_id=checkout_request_id)
         return transaction
+
+    @staticmethod
+    def get_invoice(reference_no):
+        try:
+            invoice = Invoice.objects.get(mpesa_ref=reference_no)
+            return invoice
+        except Exception as e:
+            print(e)
+            return
 
     @staticmethod
     def handle_successful_pay(data, transaction):
@@ -141,9 +163,33 @@ class MpesaGateway:
     def callback(self, data):
         status = self.check_status(data)
         transaction = self.get_transaction_object(data)
+        invoice = self.get_invoice(transaction.id)
 
         if status == 0:
             transaction = self.handle_successful_pay(data, transaction)
+
+            if invoice:
+                invoice.paid_date = datetime.now()
+                invoice.amount_paid = transaction.amount
+
+                if (invoice.amount - transaction.amount) == 0:
+                    invoice.status = "PAID"
+                elif (invoice.amount - transaction.amount) < 0:
+                    invoice.status = "OVERPAYMENT"
+                else:
+                    invoice.status = "PARTIAL_PAYMENT"
+                invoice.save()
+
+                if invoice.status in ["PAID", "OVERPAYMENT"]:
+                    subscription_inst = Subscription.objects.create(
+                        user=invoice.user,
+                        period=int(transaction.description),
+                        expiry_date=timedelta(days=int(transaction.description)) + datetime.now(),
+                        status="ACTIVE"
+                    )
+
+                    InvoiceUnit.objects.filter(invoice=invoice).update(subscription=subscription_inst)
+
         else:
             transaction.status = "PENDING"
 

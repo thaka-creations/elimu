@@ -7,9 +7,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 ALLOWED_STATUS = [
     ("PENDING", "PENDING"),
-    ("APPROVED", "APPROVED"),
+    ("PAID", "PAID"),
     ("REVOKED", "REVOKED"),
-    ("CANCELLED", "CANCELLED")
+    ("CANCELLED", "CANCELLED"),
+    ("OVERPAYMENT", "OVERPAYMENT"),
+    ("PARTIAL_PAYMENT", "PARTIAL_PAYMENT")
 ]
 
 ALLOWED_PERIOD_TYPE = [
@@ -57,6 +59,7 @@ class Invoice(BaseModel):
     amount = models.DecimalField(max_digits=19, decimal_places=2)
     mpesa_ref = models.CharField(max_length=255, blank=True, null=True)
     transaction_date = models.DateTimeField(blank=True, null=True)
+    paid_date = models.DateTimeField(blank=True, null=True)
     phone = models.CharField(max_length=255, blank=True, null=True)
     amount_paid = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=255, choices=ALLOWED_STATUS, default="PENDING")
@@ -67,7 +70,6 @@ class Subscription(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_subcriptions")
     status = models.CharField(max_length=255, choices=SUBSCRIPTION_STATUS)
     period = models.IntegerField(blank=True, null=True)
-    period_type = models.CharField(max_length=100, blank=True, null=True, choices=ALLOWED_PERIOD_TYPE)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
 
