@@ -72,7 +72,7 @@ class ListRetrieveVideoSerializer(serializers.ModelSerializer):
 class CreateVideoSerializer(serializers.Serializer):
     video = serializers.FileField(required=True)
     unit = serializers.UUIDField(required=True)
-    label = serializers.CharField(allow_blank=True, allow_null=True)
+    label = serializers.CharField(required=True)
     index = serializers.IntegerField(min_value=0)
 
     def validate(self, obj):

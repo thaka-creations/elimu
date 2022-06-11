@@ -1,0 +1,162 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Videos</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+        <li class="breadcrumb-item active">Add Video</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body mt-3 px-4">
+                    <form action="/api/v1/school/video" method="post" id="video-form" enctype="multipart/form-data">
+                        {{form}}
+                    </form>
+                </div>
+                <div class="card-footer border-0 pt-0 px-4">
+                    <button class="btn btn-primary shadow-none rounded-0" id="add-video">Add Video</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <img src="..." class="rounded me-2" alt="...">
+      <strong class="me-auto">Bootstrap</strong>
+      <small>11 mins ago</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var toast = document.getElementById("toast");
+    var btn = document.getElementById("add-video");
+    btn.addEventListener("click", addVideo);
+    
+    function addVideo(){
+        var el = document.getElementById("video-form");
+        var url = el.getAttribute("action");
+        var formData = new FormData(el);
+
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200){
+                console.log(xhttp.responseText)
+            }
+            else if (this.readyState ==4 && this.status == 400){
+                console.log(xhttp.responseText)
+            }
+        }
+
+        xhttp.open("POST", url);
+        xhttp.send(formData);
+    }
+</script>
+<script>
+    fm = document.getElementById("_form");
+    sb = document.getElementById("_subject");
+    un = document.getElementById("_unit");
+    fm.addEventListener("change", fmChangeEvent);
+    sb.addEventListener("change", sbChangeEvent);
+
+    function fmChangeEvent(){
+        form = fm.value;
+        subject = sb.value;
+        
+        if (subject != "") {
+            
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    obj = JSON.parse(xhttp.responseText);
+                    
+                    for(const key of Object.keys(obj)){
+                        Object.getOwnPropertyNames(obj[key]).forEach(function(val){
+                            if (obj[key].length == 0) {
+                                while (un.hasChildNodes()) {
+                                    un.removeChild(un.firstChild);
+                                }
+                            }
+
+                            name = obj[key][val].name
+                            id = obj[key][val].id
+
+                            if (name != "undefined"){
+                                const option = document.createElement("option");
+                                textNode = document.createTextNode(name);
+                                option.appendChild(textNode);
+                                option.value = id;
+                                un.appendChild(option);
+                            }
+        
+                        })
+                    }
+
+                }
+            }
+
+            xhttp.open("GET", "/api/v1/school/unit?form="+form+"&subject="+subject)
+            xhttp.send()
+        }
+    }
+
+    function sbChangeEvent(){
+        form = fm.value;
+        subject = sb.value;
+
+        if (form != ""){
+
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    obj = JSON.parse(xhttp.responseText);
+                    
+                    for(const key of Object.keys(obj)){
+                        Object.getOwnPropertyNames(obj[key]).forEach(function(val){
+                            if (obj[key].length == 0) {
+                                while (un.hasChildNodes()) {
+                                    un.removeChild(un.firstChild);
+                                }
+                            }
+
+                            name = obj[key][val].name
+                            id = obj[key][val].id
+
+                            if (name != "undefined"){
+                                const option = document.createElement("option");
+                                textNode = document.createTextNode(name);
+                                option.appendChild(textNode);
+                                option.value = id;
+                                un.appendChild(option);
+                            }
+        
+                        })
+                    }
+
+                }
+            }
+
+            xhttp.open("GET", "/api/v1/school/unit?form="+form+"&subject="+subject)
+            xhttp.send()
+
+        }
+    }
+</script>
+{% endblock %}

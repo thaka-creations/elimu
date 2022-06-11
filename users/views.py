@@ -38,6 +38,7 @@ class RegistrationView(View):
             )
             user.set_password(password)
             oauth2_user.create_application_user(user)
+            return redirect("/login")
         return render(request, self.template_name, {"form": form})
 
 
