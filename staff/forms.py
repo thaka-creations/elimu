@@ -23,8 +23,6 @@ class AddVideoForm(forms.Form):
 class AddSubjectForm(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
-    description = forms.CharField(label="Description", label_suffix="",
-                                  widget=forms.Textarea(attrs={"class": "form-control shadow-none rounded-0"}))
 
 
 class AddForm(forms.Form):

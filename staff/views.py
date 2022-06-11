@@ -39,24 +39,26 @@ class ListSubjects(ListView):
     template_name = "admin/subjects/index.html"
     context_object_name = "subjects"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.AddSubjectForm
+        return context
+
 
 class AddSubject(View):
     form_class = forms.AddSubjectForm
     template_name = "admin/subjects/create.html"
 
-    def get(self, request):
-        form = self.form_class()
-        return render(request, self.template_name, {"form": form})
-
     def post(self, request):
+        subjects = school_models.SubjectModel.objects.all()
         form = self.form_class(request.POST)
 
         if form.is_valid():
             data = form.cleaned_data
             school_models.SubjectModel.objects.create(**data)
-            context = {"details": "Subject added successfully"}
+            context = {"details": "Subject added successfully", "subjects": subjects}
             return redirect("/admin/subjects", context=context)
-        return render(request, self.template_name, {"form": form})
+        return redirect("/admin/subjects", {"form": form, "subjects": subjects})
 
 
 class ListForm(ListView):
