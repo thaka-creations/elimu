@@ -1,0 +1,72 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block styles %}
+<style>
+    .list-group-item {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Videos</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+        <li class="breadcrumb-item active">List Videos</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row">
+        <div class="col-sm-9">
+            <div id="embedBox"></div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card border rounded-0">
+                <div class="card-header border-success fs-5">
+                    <b>{{unit.name.title}} Videos</b>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush rounded-0">
+                        {% for video in videos %}
+                            <li class="list-group-item list-group-item-action" id="{{video.videoid}}" data-unit={{unit.id}}>{{video.label}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div> 
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function(v,i,d,e,o){v[o]=v[o]||{}; v[o].add = v[o].add || function V(a){ (v[o].d=v[o].d||[]).push(a);};
+      if(!v[o].l) { v[o].l=1*new Date(); a=i.createElement(d), m=i.getElementsByTagName(d)[0];
+      a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
+      })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
+      vdo.add({
+      otp: "20160313versUSE323gnJ1xE28Vypz8l8K0C0IsbCrDXA5sZPGgqi1d7ueFJBEM0",
+      playbackInfo: "eyJ2aWRlb0lkIjoiYWU1YjFjYjQ2NzE3NGVmZmEwZGU4MWE2NzBhNjkzNTEifQ==",
+      theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
+      container: document.querySelector( "#embedBox" ),
+      });
+</script>
+<script>
+    gl = document.getElementsByClassName("list-group-item")
+    Array.from(gl).forEach(function(element) {
+        element.addEventListener('click', glClickEvent);
+    });
+
+    function glClickEvent(e){
+        video = e.target.getAttribute("id");
+        unit = e.target.getAttribute("data-unit");
+        window.location.href = "/admin/videos?unit="+unit+"&video="+video;
+    }
+</script>
+{% endblock %}

@@ -3,7 +3,7 @@ from staff import views
 
 urlpatterns = [
     path("admin", views.Admin.as_view()),
-    path("admin/videos/list-videos", views.ListVideos.as_view()),
+    path("admin/videos", views.ListVideos.as_view()),
     path("admin/videos/add-video", views.AddVideo.as_view()),
     path("admin/forms", views.ListForm.as_view()),
     path("admin/forms/add-form", views.AddForm.as_view()),

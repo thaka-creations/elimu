@@ -1,8 +1,12 @@
+import requests
 from django.shortcuts import render, redirect
 from django.views import View
+from django.conf import settings
 from django.views.generic import ListView
 from school import models as school_models
 from staff import forms
+
+CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
 # Create your views here.
@@ -13,9 +17,47 @@ class Admin(View):
         return render(request, self.template_name)
 
 
-class ListVideos(ListView):
-    model = school_models.VideoModel
-    template_name = "admin/videos/list.html"
+class ListVideos(View):
+    template_name = "admin/videos/index.html"
+
+    def get(self, request):
+        unit = request.GET.get("unit", False)
+        video = request.GET.get("video", False)
+        if not unit:
+            return redirect("/admin")
+
+        try:
+            instance = school_models.UnitModel.objects.get(id=unit)
+        except school_models.UnitModel.DoesNotExist:
+            return redirect("/admin")
+
+        videos = school_models.VideoModel.objects.filter(unit=instance).order_by('index')
+        if not videos.exists():
+            otp = False
+            return render(request, self.template_name, {"videos": videos, "unit": instance, "otp": otp})
+
+        if video:
+            try:
+                video = school_models.VideoModel.objects.get(videoid=video)
+            except school_models.VideoModel.DoesNotExist:
+                return redirect("/admin")
+            video_id = video.videoid
+        else:
+            video_id = videos.first().videoid
+
+        url = CALLBACK_URL + 'video/get-video-otp'
+        headers = {"Authorization": "Apisecret "+settings.VDOCIPHER_SECRET}
+
+        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        res = resp.json()
+        if not res:
+            return redirect("/")
+
+        otp = res['otp']
+        playback = res['playbackInfo']
+
+        return render(request, self.template_name,
+                      {"videos": videos, "unit": instance, "otp": otp, "playback": playback})
 
 
 class AddVideo(View):
