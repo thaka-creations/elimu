@@ -37,6 +37,7 @@ class AddVideo(View):
 class ListSubjects(ListView):
     model = school_models.SubjectModel
     template_name = "admin/subjects/index.html"
+    context_object_name = "subjects"
 
 
 class AddSubject(View):
@@ -61,25 +62,29 @@ class AddSubject(View):
 class ListForm(ListView):
     model = school_models.FormModel
     template_name = "admin/forms/index.html"
+    context_object_name = "qs"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.AddForm
+        return context
 
 
 class AddForm(View):
     form_class = forms.AddForm
     template_name = "admin/forms/create.html"
 
-    def get(self, request):
-        form = self.form_class()
-        return render(request, self.template_name, {"form": form})
-
     def post(self, request):
         form = self.form_class(request.POST)
+        qs = school_models.FormModel.objects.all()
 
         if form.is_valid():
             data = form.cleaned_data
             school_models.FormModel.objects.create(**data)
-            context = {"details": "Form added successfully"}
-            return redirect("/admin/form", context=context)
-        return render(request, self.template_name, {"form": form})
+            context = {"details": "Form added successfully", "qs": qs}
+            return redirect("/admin/forms", context=context)
+
+        return redirect("/admin/forms", {"qs": qs, "form": form})
 
 
 class ListUnits(ListView):

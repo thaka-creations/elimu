@@ -1,0 +1,42 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block content %}
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Units
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>
+
+                </td>
+                <td>
+                    {{subject.name.title}}
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
