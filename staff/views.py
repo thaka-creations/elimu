@@ -174,3 +174,15 @@ class UnitDetailView(View):
         amounts = payment_models.UnitAmount.objects.filter(unit=instance)
         context = {"unit": instance, "amounts": amounts}
         return render(request, self.template_name, context)
+
+
+class ListInvoices(ListView):
+    model = payment_models.Invoice
+    template_name = "admin/payments/invoices.html"
+    context_object_name = "invoices"
+
+
+class ListTransactions(ListView):
+    model = payment_models.Transaction
+    template_name = "admin/payments/transactions.html"
+    context_object_name = "transactions"
