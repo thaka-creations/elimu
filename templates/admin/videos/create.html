@@ -54,11 +54,13 @@
         var el = document.getElementById("video-form");
         var url = el.getAttribute("action");
         var formData = new FormData(el);
+        var unt = document.getElementById("_unit").value;
 
         xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200){
                 console.log(xhttp.responseText)
+                window.location.load = "/admin/videos?unit="+unt;
             }
             else if (this.readyState ==4 && this.status == 400){
                 console.log(xhttp.responseText)
