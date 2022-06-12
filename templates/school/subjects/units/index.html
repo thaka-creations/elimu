@@ -19,7 +19,7 @@
 {% block content %}
 <div class="mt-4 mb-5 heading-bar px-md-3 d-flex py-2">
     <div class="flex-fill"><p class="fs-4 mb-0">{{unit.name.title}} Sub Topics Videos</p></div>
-    <div class="flex-fill d-flex justify-content-end"><button type="button" class="btn btn-primary btn-sm px-3 shadow-none">Back</button></div>
+    <div class="flex-fill d-flex justify-content-end"><button type="button" class="btn btn-primary btn-sm px-3 shadow-none" onclick="history.back()">Back</button></div>
 </div>
 
 <div class="container">
@@ -30,15 +30,13 @@
         <div class="col-sm-3">
             <div class="card border rounded-0">
                 <div class="card-header border-success fs-5">
-                    <b>Sub topic Videos</b>
+                    <b>{{unit.name.title}} Videos</b>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush rounded-0">
-                        <li class="list-group-item list-group-item-action active">Cras justo odio</li>
-                        <li class="list-group-item list-group-item-action">Dapibus ac facilisis in</li>
-                        <li class="list-group-item list-group-item-action">Morbi leo risus</li>
-                        <li class="list-group-item list-group-item-action">Porta ac consectetur ac</li>
-                        <li class="list-group-item list-group-item-action">Vestibulum at eros</li>
+                        {% for video in videos %}
+                            <li class="list-group-item list-group-item-action {%if video.videoid == video_id%} active {%endif%}" data-bs-id="{{video.id}}">{{video.label}}</li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -54,10 +52,19 @@
       a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
       })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
       vdo.add({
-      otp: "20160313versUSE323gnJ1xE28Vypz8l8K0C0IsbCrDXA5sZPGgqi1d7ueFJBEM0",
-      playbackInfo: "eyJ2aWRlb0lkIjoiYWU1YjFjYjQ2NzE3NGVmZmEwZGU4MWE2NzBhNjkzNTEifQ==",
+      otp: "{{otp}}",
+      playbackInfo: "{{playback}}",
       theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
       container: document.querySelector( "#embedBox" ),
       });
+</script>
+<script>
+    elements = document.getElementsByClassName("list-group-item")
+    Array.from(elements).forEach(function(element){
+        element.addEventListener("click", function(e){
+            k = e.target.getAttribute("data-bs-id");
+            window.location.href = "/form/subject/unit/{{unit.id}}?videoid="+k;
+        });
+    });
 </script>
 {% endblock %}
