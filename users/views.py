@@ -44,6 +44,7 @@ class RegistrationView(View):
                 county=county
             )
             user.set_password(password)
+            user.save()
             oauth2_user.create_application_user(user)
             return redirect("/login")
         return render(request, self.template_name, {"form": form})
@@ -63,7 +64,7 @@ class LoginView(View):
             data = form.cleaned_data
             username = data['email']
             password = data['password']
-
+            print(username, password)
             user = authenticate(username=username, password=password)
 
             if user is None:
