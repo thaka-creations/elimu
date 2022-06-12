@@ -88,7 +88,7 @@ class ProtectedView(View):
     def get(self, request):
         qs = school_models.FormModel.objects.all()[0:4]
         context = {"forms": qs}
-        video_id = "73e935bd2fe44c9c95ceea1524f0501c"
+        video_id = "d50f1948fd8d4f1194ee874d1f593484"
         url = CALLBACK_URL + 'video/get-video-otp'
         headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
 
