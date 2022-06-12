@@ -95,6 +95,7 @@ class Authentication(viewsets.ViewSet):
     def logout(self, request):
         pass
 
+
 class UserViewSet(viewsets.ViewSet):
 
     @action(
@@ -118,9 +119,3 @@ class UserViewSet(viewsets.ViewSet):
 
         serializer = serializers.UserProfileSerializer(instance, many=False)
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
-
-
-
-
-
-
