@@ -171,8 +171,25 @@ class UnitDetailView(View):
         except school_models.UnitModel.DoesNotExist:
             return redirect("/admin/units")
 
+        videos = instance.videos.all()
         amounts = payment_models.UnitAmount.objects.filter(unit=instance)
-        context = {"unit": instance, "amounts": amounts}
+        context = {"unit": instance, "amounts": amounts, "otp": False}
+        if not videos.exists:
+            return render(request, self.template_name, context)
+
+        video_id = videos.first()
+        url = CALLBACK_URL + 'video/get-video-otp'
+        headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+
+        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        res = resp.json()
+
+        if not resp:
+            return render(request, self.template_name, context)
+
+        otp = res['otp']
+        playback = res['playbackInfo']
+        context.update({"otp": otp, "playback": playback})
         return render(request, self.template_name, context)
 
 
