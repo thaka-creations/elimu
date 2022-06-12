@@ -29,8 +29,13 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
         if not form_id:
             return super().get_queryset()
 
-        qs = school_models.SubjectModel.objects.\
-            filter(form_units__form__id=form_id, form_units__videos__isnull=False).distinct()
+        try:
+            form_inst = school_models.FormModel.objects.get(id=form_id)
+        except school_models.FormModel.DoesNotExist:
+            return super().get_queryset()
+
+        qs = school_models.SubjectModel.objects. \
+            filter(form_units__videos__isnull=False, form_units__form=form_inst).distinct()
         return qs
 
     @staticmethod
