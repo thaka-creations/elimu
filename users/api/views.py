@@ -117,7 +117,7 @@ class UserViewSet(viewsets.ViewSet):
             return Response({"details": "Invalid user"}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = serializers.UserProfileSerializer(instance, many=False)
-        return Response({"details": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
 
 
