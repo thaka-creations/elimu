@@ -186,3 +186,33 @@ class ListTransactions(ListView):
     model = payment_models.Transaction
     template_name = "admin/payments/transactions.html"
     context_object_name = "transactions"
+
+
+class ListCurrentSubscription(ListView):
+    model = payment_models.Subscription
+    template_name = "admin/subscriptions/index.html"
+    context_object_name = "subscriptions"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        qs = payment_models.Subscription.objects.filter(status="ACTIVE")
+        return {"subscriptions": qs, "status": "Active"}
+
+
+class ListExpiredSubscriptions(ListView):
+    model = payment_models.Subscription
+    template_name = "admin/subscriptions/index.html"
+    context_object_name = "subscriptions"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        qs = payment_models.Subscription.objects.filter(status="EXPIRED")
+        return {"subscriptions": qs, "status": "Expired"}
+
+
+class ListRevokedSubscriptions(ListView):
+    model = payment_models.Subscription
+    template_name = "admin/subscriptions/index.html"
+    context_object_name = "subscriptions"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        qs = payment_models.Subscription.objects.filter(status="REVOKED")
+        return {"subscriptions": qs, "status": "Revoked"}

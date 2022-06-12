@@ -75,6 +75,9 @@ class Subscription(BaseModel):
     period = models.IntegerField(blank=True, null=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['-date_created']
+
 
 class InvoiceUnit(BaseModel):
     unit = models.ForeignKey(UnitModel, on_delete=models.DO_NOTHING, related_name="invoice_units")

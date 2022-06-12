@@ -1,0 +1,58 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>{{status}} Subscriptions</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">{{status}} Subscriptions</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section subscriptions">
+
+    <div class="card">
+        <div class="card-header">
+
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Period(days)</th>
+                        <th>Expiry date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if not subscriptions %}
+                    <tr>
+                        <td colspan="0">
+                            No {{status.lower}} subscriptions available
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% for subscription in subscriptions %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{subscription.user.name}}</td>
+                        <td>{{subscription.period}}</td>
+                        <td>{{subsription.expiry_date}}</td>
+                        <td>{{subscription.status}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section><!-- End Subsection -->
+
+
+{% endblock %}

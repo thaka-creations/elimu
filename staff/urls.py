@@ -13,5 +13,8 @@ urlpatterns = [
     path("admin/units/add-unit", views.AddUnit.as_view()),
     path("admin/units/view", views.UnitDetailView.as_view()),
     path("admin/payments/invoices", views.ListInvoices.as_view()),
-    path("admin/payments/transactions", views.ListTransactions.as_view())
+    path("admin/payments/transactions", views.ListTransactions.as_view()),
+    path("admin/subscriptions/active", views.ListCurrentSubscription.as_view()),
+    path("admin/subscriptions/expired", views.ListExpiredSubscriptions.as_view()),
+    path("admin/subscriptions/revoked", views.ListRevokedSubscriptions.as_view())
 ]
