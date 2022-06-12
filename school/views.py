@@ -19,7 +19,8 @@ class FormView(View):
         except Exception as e:
             return redirect("/")
 
-        qs = school_models.SubjectModel.objects.all()
+        qs = school_models.SubjectModel.objects.\
+            filter(form_units__videos__isnull=False, form_units__form=inst).distinct()
         context = {"subjects": qs, "instance": inst, "num": num}
         return render(request, self.template_name, context=context)
 
