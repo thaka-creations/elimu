@@ -4,6 +4,7 @@ from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
 from school import models as school_models
+from payments import models as payment_models
 from staff import forms
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
@@ -46,7 +47,7 @@ class ListVideos(View):
             video_id = videos.first().videoid
 
         url = CALLBACK_URL + 'video/get-video-otp'
-        headers = {"Authorization": "Apisecret "+settings.VDOCIPHER_SECRET}
+        headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
 
         resp = requests.get(url, params={"video_id": video_id}, headers=headers)
         res = resp.json()
@@ -134,6 +135,7 @@ class AddForm(View):
 class ListUnits(ListView):
     model = school_models.UnitModel
     template_name = "admin/units/index.html"
+    context_object_name = "units"
 
 
 class AddUnit(View):
@@ -153,3 +155,22 @@ class AddUnit(View):
             context = {"details": "Unit added successfully"}
             return redirect("/admin/units", context=context)
         return render(request, self.template_name, {"form": form})
+
+
+class UnitDetailView(View):
+    template_name = "admin/units/detail.html"
+
+    def get(self, request):
+        unit = request.GET.get("unit", False)
+
+        if not unit:
+            return redirect("/admin/units")
+
+        try:
+            instance = school_models.UnitModel.objects.get(id=unit)
+        except school_models.UnitModel.DoesNotExist:
+            return redirect("/admin/units")
+
+        amounts = payment_models.UnitAmount.objects.filter(unit=instance)
+        context = {"unit": instance, "amounts": amounts}
+        return render(request, self.template_name, context)

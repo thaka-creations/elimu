@@ -1,0 +1,108 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block  content %}
+<div class="pagetitle">
+    <h1>Units</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/units">List Units</a></li>
+        <li class="breadcrumb-item active"> Unit </li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <p class="text-primary">Name: {{unit.name}}</p>
+                    <p class="text-primary">Subject: {{unit.subject.name}}</p>
+                    <p class="text-primary">Form: {{unit.form.name}}</p>
+                    <p class="mb-0 text-primary">Videos: {{unit.videos.count}}</p>
+                </div>
+                <div class="card-body mt-3">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div id="embedBox"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="list-group rounded-0 shadow">
+                                    <li class="list-group-item disabled text-primary"><b>{{unit.name.title}} Videos</b></li>
+                                {% for video in unit.videos.all %}
+                                    <li class="list-group-item">
+                                        {{video.label}}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-end">
+                    <button class="btn btn-primary">
+                        Add Amount
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    #
+                                </th>
+                                <th class="text-center">
+                                    Period
+                                </th>
+                                <th class="text-center">
+                                    Amount
+                                </th>
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for amount in amounts %}
+                                <tr>
+                                    <td class="text-center">
+                                        {{forloop.counter}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{amount.period}} {{amount.period_type}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{amount.amount}}
+                                    </td>
+                                    <td class="text-center">
+                                        <i class='bi bi-trash text-danger'></i>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function(v,i,d,e,o){v[o]=v[o]||{}; v[o].add = v[o].add || function V(a){ (v[o].d=v[o].d||[]).push(a);};
+      if(!v[o].l) { v[o].l=1*new Date(); a=i.createElement(d), m=i.getElementsByTagName(d)[0];
+      a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
+      })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
+      vdo.add({
+      otp: "20160313versUSE323gnJ1xE28Vypz8l8K0C0IsbCrDXA5sZPGgqi1d7ueFJBEM0",
+      playbackInfo: "eyJ2aWRlb0lkIjoiYWU1YjFjYjQ2NzE3NGVmZmEwZGU4MWE2NzBhNjkzNTEifQ==",
+      theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
+      container: document.querySelector( "#embedBox" ),
+      });
+</script>
+{% endblock %}

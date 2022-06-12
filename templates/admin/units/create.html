@@ -1,1 +1,26 @@
 {% extends "admin/partials/theme.html" %}
+
+{% block  content %}
+<div class="pagetitle">
+    <h1>Units</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/units">List Units</a></li>
+        <li class="breadcrumb-item active"> Add unit</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section dashboard">
+    <div class="card w-50 shadow">
+        <div class="card-body mt-3">
+            <form action="/admin/units/add-unit" method="post">
+                {% csrf_token %}
+                {{form}}
+                <button class="btn btn-primary mt-3" type="submit">Add Unit</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

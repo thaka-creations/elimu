@@ -295,9 +295,21 @@
       </li><!-- End Subjects Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/admin/units">
-          <i class="bi bi-journal-text"></i><span>Units</span>
+        <a class="nav-link collapsed" href="#" data-bs-target="#units-nav" data-bs-toggle="collapse">
+          <i class="bi bi-journal-text"></i><span>Units</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
+        <ul id="units-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li>
+                <a href="/admin/units">
+                    <i class="bi bi-circle"></i><span>List Units</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/units/add-unit">
+                    <i class="bi bi-circle"></i><span>Add Unit</span>
+                </a>
+            </li>
+        </ul>
       </li><!-- End Units Nav -->
 
       <li class="nav-item">
@@ -368,7 +380,7 @@
 
   </aside><!-- End Sidebar-->
 
-  <main id="main" class="main">
+  <main id="main" class="main" style="min-height:85vh">
     {% block content %} {% endblock %}
   </main><!-- End #main -->
 
