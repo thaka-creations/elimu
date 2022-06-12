@@ -1,0 +1,58 @@
+{% extends "admin/partials/theme.html" %}
+{% load tags %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Payments</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/units">Payments</a></li>
+        <li class="breadcrumb-item active"> Transactions</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section payments">
+    <div class="card shadow">
+        <div class="card-header border-0">
+
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover table-bordered shadow">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Phone Number</th>
+                        <th>Reference</th>
+                        <th>Description (days)</th>
+                        <th>Amount</th>
+                        <th>Invoice</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%if not transactions %}
+                    <tr>
+                        <td class="text-center">
+                            No transaction available
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td class="text-center">{{forloop.counter}}</td>
+                        <td>{{transaction.phone_number}}</td>
+                        <td>{% get_unit transaction.reference %}</td>
+                        <td>{{transaction.description}}</td>
+                        <td>{{transaction.amount}}</td>
+                        <td>{{transaction.invoice.mpesa_ref}}</td>
+                        <td>{{transaction.status}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "admin/partials/theme.html" %}
+{% load tags %}
 
 {% block content %}
 <div class="pagetitle">
@@ -13,5 +14,49 @@
 </div><!-- End Page Title -->
 
 <section class="section payments">
+    <div class="card shadow">
+        <div class="card-header border-0">
+
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover table-bordered shadow">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>User</th>
+                        <th>Reference Number</th>
+                        <th>Phone Number</th>
+                        <th>Units</th>
+                        <th class="text-center">Period(days)</th>
+                        <th>Amount</th>
+                        <th>Amount Paid</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%if not invoices %}
+                    <tr>
+                        <td class="text-center">
+                            No invoice available
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td class="text-center">{{forloop.counter}}</td>
+                        <td>{{invoice.user.name}}</td>
+                        <td>{{invoice.mpesa_ref}}</td>
+                        <td>{{invoice.phone}}</td>
+                        <td>{% get_invoice_units invoice %}</td>
+                        <td class="text-center">{{invoice.transaction.description}}</td>
+                        <td>{{invoice.amount}}</td>
+                        <td>{{invoice.amount_paid}}</td>
+                        <td>{{invoice.status}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 {% endblock %}

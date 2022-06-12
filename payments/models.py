@@ -64,6 +64,9 @@ class Invoice(BaseModel):
     amount_paid = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=255, choices=ALLOWED_STATUS, default="PENDING")
 
+    class Meta:
+        ordering = ['-date_created']
+
 
 class Subscription(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -93,3 +96,6 @@ class Transaction(BaseModel):
 
     def __str__(self):
         return self.reference
+
+    class Meta:
+        ordering = ['-date_created']
