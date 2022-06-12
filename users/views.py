@@ -34,10 +34,14 @@ class RegistrationView(View):
             name = data['name'].upper()
             email = data['email']
             password = data['password']
+            school = data['school']
+            county = data['county']
 
             user = user_models.User.objects.create(
                 username=email,
-                name=name
+                name=name,
+                school=school,
+                county=county
             )
             user.set_password(password)
             oauth2_user.create_application_user(user)

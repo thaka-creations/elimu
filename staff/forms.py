@@ -39,3 +39,8 @@ class AddUnitForm(forms.Form):
     subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
                                                                          "rounded-0", "id": "_subject"}))
+
+
+class AddCountyForm(forms.Form):
+    name = forms.CharField(label="Name", label_suffix="", required=True,
+                           widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))

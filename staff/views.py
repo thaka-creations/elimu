@@ -6,6 +6,7 @@ from django.views.generic import ListView
 from school import models as school_models
 from payments import models as payment_models
 from staff import forms
+from users import models as user_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
@@ -233,3 +234,31 @@ class ListRevokedSubscriptions(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         qs = payment_models.Subscription.objects.filter(status="REVOKED")
         return {"subscriptions": qs, "status": "Revoked"}
+
+
+class ListCounties(ListView):
+    model = user_models.County
+    template_name = "admin/users/counties/index.html"
+    context_object_name = "counties"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.AddCountyForm
+        return context
+
+
+class AddCounty(View):
+    form_class = forms.AddForm
+    template_name = "admin/users/counties/index.html"
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        qs = user_models.County.objects.all()
+
+        if form.is_valid():
+            data = form.cleaned_data
+            user_models.County.objects.create(**data)
+            context = {"details": "County added successfully", "qs": qs}
+            return redirect("/admin/counties", context=context)
+
+        return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
