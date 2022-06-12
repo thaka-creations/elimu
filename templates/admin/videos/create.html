@@ -64,7 +64,9 @@
             }
             else if (this.readyState ==4 && this.status == 400){
                 console.log(xhttp.responseText)
+                window.location.load = "/admin/videos?unit="+unt;
             }
+            window.location.load = "/admin/videos?unit="+unt;
         }
 
         xhttp.open("POST", url);
