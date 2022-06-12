@@ -1,5 +1,7 @@
+import requests
 from django.views import View
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -9,6 +11,7 @@ from users.utils import system_utils
 from school import models as school_models
 
 oauth2_user = system_utils.ApplicationUser()
+CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
 def logout_view(request):
@@ -78,6 +81,20 @@ class ProtectedView(View):
 
     @method_decorator(login_required)
     def get(self, request):
-        qs = school_models.FormModel.objects.all()
+        qs = school_models.FormModel.objects.all()[0:4]
         context = {"forms": qs}
+        video_id = "73e935bd2fe44c9c95ceea1524f0501c"
+        url = CALLBACK_URL + 'video/get-video-otp'
+        headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+
+        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        res = resp.json()
+        if not res:
+            otp = False
+            playback = False
+        else:
+            otp = res['otp']
+            playback = res['playbackInfo']
+
+        context.update({"otp": otp, "playback": playback})
         return render(request, self.template_name, context=context)
