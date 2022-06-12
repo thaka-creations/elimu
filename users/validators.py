@@ -7,8 +7,8 @@ def validate_password(value):
     pass
 
 
-def validate_county(value):
-    try:
-        user_models.County.objects.get(id=value)
-    except user_models.County.DoesNotExist:
-        raise ValidationError(_("%(value)s does not exists"), params={"value": value}, )
+def validate_email(value):
+    qs = user_models.User.objects.filter(username=value)
+
+    if qs.exists():
+        raise ValidationError(_("%(value)s exists"), params={"value": value},)

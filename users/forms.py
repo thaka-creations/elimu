@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django import forms
 from users.models import County
-from users import validators
+from users import validators, models as user_models
 
 
 class RegistrationForm(forms.Form):
@@ -11,13 +13,28 @@ class RegistrationForm(forms.Form):
     school = forms.CharField(label="School", max_length=255, required=True, label_suffix="",
                              widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0"}))
     county = forms.ModelChoiceField(queryset=County.objects.filter(status=True), label="County", label_suffix="",
-                                    required=True, validators=[validators.validate_county],
+                                    required=True,
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0"}))
-    password = forms.CharField(label="Password", max_length=100, required=True, label_suffix="",
+    password = forms.CharField(label="Password", max_length=100, required=True, label_suffix="", min_length=6,
                                widget=forms.PasswordInput(attrs={"class": "form-control shadow-none rounded-0"}))
     confirm_password = forms.CharField(label="Confirm Password", max_length=100, required=True, label_suffix="",
+                                       min_length=6,
                                        widget=forms.PasswordInput(
                                            attrs={"class": "form-control shadow-none rounded-0"}))
+
+    def clean(self):
+        cleaned_data = super(RegistrationForm, self).clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        email = cleaned_data.get("email")
+
+        if password != confirm_password:
+            raise ValidationError(_("Passwords don't match"))
+
+        qs = user_models.User.objects.filter(username=email)
+
+        if qs.exists():
+            raise ValidationError(_("Email exists"))
 
 
 class LoginForm(forms.Form):
