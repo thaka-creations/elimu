@@ -46,7 +46,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-end">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#amountModal">
                         Add Amount
                     </button>
                 </div>
@@ -98,6 +98,28 @@
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="amountModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="subscriptionModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Unit Amount</h5>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body mt-0">
+            <form action="/admin/payments/unit-amount" method="post" id="form-add-amount">
+                {% csrf_token %}
+                {{form}}
+            </form>
+        </div>
+        <div class="modal-footer d-flex justify-content-between border-0 pt-0">
+          <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none" id="btn-add-amount">Add Amount</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -115,4 +137,11 @@
       });
 </script>
 {% endif %}
+<script>
+    bm = document.getElementById("btn-add-amount");
+    fam = document.getElementById("form-add-amount")
+    bm.addEventListener("click", function() {
+        fam.submit();
+    })
+</script>
 {% endblock %}

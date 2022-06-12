@@ -174,7 +174,8 @@ class UnitDetailView(View):
 
         videos = instance.videos.all()
         amounts = payment_models.UnitAmount.objects.filter(unit=instance)
-        context = {"unit": instance, "amounts": amounts, "otp": False}
+        form = forms.AddUnitAmount
+        context = {"unit": instance, "amounts": amounts, "otp": False, "form": form}
         if not videos.exists:
             return render(request, self.template_name, context)
 
@@ -262,3 +263,23 @@ class AddCounty(View):
             return redirect("/admin/counties", context=context)
 
         return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
+
+
+class AddUnitAmountView(View):
+    form_class = forms.AddUnitAmount
+    template_name = "admin/units/detail.html"
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        qs = user_models.County.objects.all()
+
+        if form.is_valid():
+            data = form.cleaned_data
+            print(data)
+            payment_models.UnitAmount.objects.create(**data)
+            context = {"details": "Unit Amount added successfully"}
+            return redirect("/admin")
+        return redirect("/")
+
+
+

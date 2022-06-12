@@ -44,3 +44,24 @@ class AddUnitForm(forms.Form):
 class AddCountyForm(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+
+ALLOWED_PERIOD = [
+    ("DAY", "DAY"),
+    ("DAYS", "DAYS"),
+    ("MONTH", "MONTH"),
+    ("MONTHS", "MONTHS"),
+    ("YEAR", "YEAR"),
+    ("YEARS", "YEARS")
+]
+
+
+class AddUnitAmount(forms.Form):
+    unit = forms.ModelChoiceField(queryset=school_models.UnitModel.objects.all(), label="Unit", required=True,
+                                  widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    amount = forms.IntegerField(label="Amount",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period = forms.IntegerField(label="Period",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period_type = forms.ChoiceField(label="Period Type", choices=ALLOWED_PERIOD,
+                                    widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
