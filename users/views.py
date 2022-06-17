@@ -97,6 +97,17 @@ class LoginView(View):
         return render(request, self.template_name, context)
 
 
+class ResetPasswordView(View):
+
+    template_name = "users/reset_password.html"
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        pass
+
+
 class ProtectedView(View):
     template_name = "school/client.html"
 

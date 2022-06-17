@@ -7,5 +7,6 @@ urlpatterns = [
     path('logout', views.logout_view),
     path('', views.ProtectedView.as_view()),
     path('account-settings', views.account_settings),
-    path('account-activity', views.account_activity)
+    path('account-activity', views.account_activity),
+    path('rest-password', views.ResetPasswordView.as_view())
 ]
