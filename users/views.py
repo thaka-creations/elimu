@@ -2,9 +2,11 @@ import requests
 from django.views import View
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
 from users import forms, models as user_models
 from users.utils import system_utils
@@ -17,6 +19,24 @@ CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 def logout_view(request):
     logout(request)
     return redirect("/login")
+
+
+@require_http_methods(["GET"])
+def my_learning(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
+    page = "my_learning"
+    context = {"page": page}
+    return render(request, "school/learning.html", context)
+
+
+@require_http_methods(["GET"])
+def account_activity(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
+    page = "account_activity"
+    context = {"page": page}
+    return render(request, "school/accounts/activity.html", context)
 
 
 class RegistrationView(View):
@@ -87,7 +107,7 @@ class ProtectedView(View):
     @method_decorator(login_required)
     def get(self, request):
         qs = school_models.FormModel.objects.all()[0:4]
-        context = {"forms": qs}
+        context = {"forms": qs, "page": "index"}
         video_id = "06183c5e391b424e9b90e019ac99ff93"
         url = CALLBACK_URL + 'video/get-video-otp'
         headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tafa</title>
+    {%block title %}{% endblock%}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     
     <style>
@@ -60,6 +60,8 @@
             left: -6em!important;
         }
     </style>
+
+    {% block styles %}{% endblock %}
 </head>
 <body>
     
@@ -116,32 +118,7 @@
                 </li>
             </ul>
     
-            <p class="page-header fs-4">
-                Welcome to Our Learning Videos From Form One to Form Four in all the topics in the available Subjects
-            </p>
-
-            <div class="container-fluid video-box mb-4 px-0">
-                <div id="embedBox" style="width:1280px;max-width:100%;height:auto;">
-                </div>
-            </div>
-    
-            <div class="card rounded-0">
-                <div class="card-header title">
-                    Select the Video Material to use
-                </div>
-    
-                <div class="card-body">
-                    <div class="row gx-5 gy-3">
-                        {%for i in forms%}
-                        <div class="col-md-6">
-                            <div class="border text-center py-3 fm-it text-white" item="{{i.id}}">{{i.name.title}} Subjects</div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-    
-    
+            {% block content %}{% endblock %}
         </div>
 
     </div>
@@ -160,30 +137,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-    <script>
-        const elements = document.getElementsByClassName('fm-it');
-        Array.from(elements).forEach(function(element) {
-            element.addEventListener('click', fmNavigator);
-        });
-
-        function fmNavigator(e){
-            id = e.target.getAttribute('item')
-            window.location.href = "/form/"+id
-        }
-    </script>
-    {% if otp %}
-    <script>
-          (function(v,i,d,e,o){v[o]=v[o]||{}; v[o].add = v[o].add || function V(a){ (v[o].d=v[o].d||[]).push(a);};
-            if(!v[o].l) { v[o].l=1*new Date(); a=i.createElement(d), m=i.getElementsByTagName(d)[0];
-            a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
-            })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
-            vdo.add({
-            otp: "{{otp}}",
-            playbackInfo: "{{playback}}",
-            theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
-            container: document.querySelector( "#embedBox" ),
-            });
-    </script>
-    {% endif %}
+    {% block scripts %}{% endblock %}
 </body>
 </html>
