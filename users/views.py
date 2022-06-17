@@ -84,21 +84,19 @@ class LoginView(View):
             data = form.cleaned_data
             username = data['email']
             password = data['password']
-            print(username, password)
             user = authenticate(username=username, password=password)
 
-            if user is None:
-                print("Invalid email or password")
-                return redirect("/login")
+            if user is not None:
+                login(request, user)
 
-            login(request, user)
+                if request.user.is_admin:
+                    return redirect("/admin")
+                else:
+                    return redirect("/")
 
-            if request.user.is_admin:
-                return redirect("/admin")
-            else:
-                return redirect("/")
-
-        return render(request, self.template_name, {"form": form})
+        errors = "Invalid username or password"
+        context = {"errors": errors, "form": form}
+        return render(request, self.template_name, context)
 
 
 class ProtectedView(View):
