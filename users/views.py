@@ -22,12 +22,10 @@ def logout_view(request):
 
 
 @require_http_methods(["GET"])
-def my_learning(request):
+def account_settings(request):
     if not request.user.is_authenticated:
         return redirect("/login")
-    page = "my_learning"
-    context = {"page": page}
-    return render(request, "school/learning.html", context)
+    return render(request, "school/accounts/setting.html")
 
 
 @require_http_methods(["GET"])

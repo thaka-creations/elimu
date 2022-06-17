@@ -6,6 +6,6 @@ urlpatterns = [
     path('login', views.LoginView.as_view()),
     path('logout', views.logout_view),
     path('', views.ProtectedView.as_view()),
-    path('my-learning', views.my_learning),
+    path('account-settings', views.account_settings),
     path('account-activity', views.account_activity)
 ]
