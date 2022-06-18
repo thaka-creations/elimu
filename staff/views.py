@@ -2,6 +2,7 @@ import requests
 from django.shortcuts import render, redirect
 from django.views import View
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from school import models as school_models
 from payments import models as payment_models
@@ -12,15 +13,17 @@ CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
 # Create your views here.
-class Admin(View):
+class Admin(LoginRequiredMixin, View):
     template_name = "admin/index.html"
+    login_url = "/login"
 
     def get(self, request):
         return render(request, self.template_name)
 
 
-class ListVideos(View):
+class ListVideos(LoginRequiredMixin, View):
     template_name = "admin/videos/index.html"
+    login_url = "/login"
 
     def get(self, request):
         unit = request.GET.get("unit", False)
@@ -62,9 +65,10 @@ class ListVideos(View):
                       {"videos": videos, "unit": instance, "otp": otp, "playback": playback})
 
 
-class AddVideo(View):
+class AddVideo(LoginRequiredMixin, View):
     form_class = forms.AddVideoForm
     template_name = "admin/videos/create.html"
+    login_url = "/login"
 
     def get(self, request):
         form = self.form_class()
@@ -78,10 +82,11 @@ class AddVideo(View):
         return render(request, self.template_name)
 
 
-class ListSubjects(ListView):
+class ListSubjects(LoginRequiredMixin, ListView):
     model = school_models.SubjectModel
     template_name = "admin/subjects/index.html"
     context_object_name = "subjects"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,9 +94,9 @@ class ListSubjects(ListView):
         return context
 
 
-class AddSubject(View):
+class AddSubject(LoginRequiredMixin, View):
     form_class = forms.AddSubjectForm
-    template_name = "admin/subjects/create.html"
+    login_url = "/"
 
     def post(self, request):
         subjects = school_models.SubjectModel.objects.all()
@@ -105,10 +110,25 @@ class AddSubject(View):
         return redirect("/admin/subjects", {"form": form, "subjects": subjects})
 
 
-class ListForm(ListView):
+class RetrieveSubject(LoginRequiredMixin, View):
+    template_name = "admin/subjects/detail.html"
+    login_url = "/"
+
+    def get(self, request, pk):
+        try:
+            subject = school_models.SubjectModel.objects.get(id=pk)
+        except school_models.SubjectModel.DoesNotExist:
+            return redirect("/admin")
+
+        context = {"subject": subject}
+        return render(request, self.template_name, context)
+
+
+class ListForm(LoginRequiredMixin, ListView):
     model = school_models.FormModel
     template_name = "admin/forms/index.html"
     context_object_name = "qs"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -116,9 +136,10 @@ class ListForm(ListView):
         return context
 
 
-class AddForm(View):
+class AddForm(LoginRequiredMixin, View):
     form_class = forms.AddForm
     template_name = "admin/forms/create.html"
+    login_url = "/login"
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -133,15 +154,17 @@ class AddForm(View):
         return redirect("/admin/forms", {"qs": qs, "form": form})
 
 
-class ListUnits(ListView):
+class ListUnits(LoginRequiredMixin, ListView):
     model = school_models.UnitModel
     template_name = "admin/units/index.html"
     context_object_name = "units"
+    login_url = "/login"
 
 
-class AddUnit(View):
+class AddUnit(LoginRequiredMixin, View):
     form_class = forms.AddUnitForm
     template_name = "admin/units/create.html"
+    login_url = "/login"
 
     def get(self, request):
         form = self.form_class()
@@ -158,8 +181,9 @@ class AddUnit(View):
         return render(request, self.template_name, {"form": form})
 
 
-class UnitDetailView(View):
+class UnitDetailView(LoginRequiredMixin, View):
     template_name = "admin/units/detail.html"
+    login_url = "/login"
 
     def get(self, request):
         unit = request.GET.get("unit", False)
@@ -195,52 +219,58 @@ class UnitDetailView(View):
         return render(request, self.template_name, context)
 
 
-class ListInvoices(ListView):
+class ListInvoices(LoginRequiredMixin, ListView):
     model = payment_models.Invoice
     template_name = "admin/payments/invoices.html"
     context_object_name = "invoices"
+    login_url = "/login"
 
 
-class ListTransactions(ListView):
+class ListTransactions(LoginRequiredMixin, ListView):
     model = payment_models.Transaction
     template_name = "admin/payments/transactions.html"
     context_object_name = "transactions"
+    login_url = "/login"
 
 
-class ListCurrentSubscription(ListView):
+class ListCurrentSubscription(LoginRequiredMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         qs = payment_models.Subscription.objects.filter(status="ACTIVE")
         return {"subscriptions": qs, "status": "Active"}
 
 
-class ListExpiredSubscriptions(ListView):
+class ListExpiredSubscriptions(LoginRequiredMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         qs = payment_models.Subscription.objects.filter(status="EXPIRED")
         return {"subscriptions": qs, "status": "Expired"}
 
 
-class ListRevokedSubscriptions(ListView):
+class ListRevokedSubscriptions(LoginRequiredMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         qs = payment_models.Subscription.objects.filter(status="REVOKED")
         return {"subscriptions": qs, "status": "Revoked"}
 
 
-class ListCounties(ListView):
+class ListCounties(LoginRequiredMixin, ListView):
     model = user_models.County
     template_name = "admin/users/counties/index.html"
     context_object_name = "counties"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -248,9 +278,10 @@ class ListCounties(ListView):
         return context
 
 
-class AddCounty(View):
+class AddCounty(LoginRequiredMixin, View):
     form_class = forms.AddCountyForm
     template_name = "admin/users/counties/index.html"
+    login_url = "/login"
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -265,9 +296,10 @@ class AddCounty(View):
         return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
 
 
-class AddUnitAmountView(View):
+class AddUnitAmountView(LoginRequiredMixin, View):
     form_class = forms.AddUnitAmount
     template_name = "admin/units/detail.html"
+    login_url = "/login"
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -282,10 +314,11 @@ class AddUnitAmountView(View):
         return redirect("/")
 
 
-class ListRegistrationCodes(ListView):
+class ListRegistrationCodes(LoginRequiredMixin, ListView):
     model = staff_models.RegistrationCodes
     template_name = "admin/users/registration_codes.html"
     context_object_name = "codes"
+    login_url = "/login"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -293,9 +326,10 @@ class ListRegistrationCodes(ListView):
         return context
 
 
-class AddRegistrationCodes(View):
+class AddRegistrationCodes(LoginRequiredMixin, View):
     form_class = forms.AddRegistrationCodes
     template_name = "admin/users/counties/index.html"
+    login_url = "/login"
 
     def post(self, request):
         form = self.form_class(request.POST)

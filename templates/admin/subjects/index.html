@@ -21,7 +21,7 @@
             <div class="card-header border-0">
             </div>
             <div class="card-body">
-                <table class="table table-hover table-bordered">
+                <table class="table table-hover table-bordered" id="subject-table">
                     <thead>
                         <tr>
                             <th class="text-center">
@@ -40,7 +40,7 @@
                     </thead>
                     <tbody>
                         {% for subject in subjects%}
-                        <tr>
+                        <tr data-id="{{ subject.id }}" class="subject-row">
                             <td class="text-center">
                                 {{forloop.counter}}
                             </td>
@@ -79,4 +79,13 @@
 
     </div>
   </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        subjectRows = document.querySelector(".subject-row")
+        Array(subjectRows).forEach(element, function(
+
+        ));
+    </script>
 {% endblock %}
