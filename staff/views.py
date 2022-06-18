@@ -2,18 +2,23 @@ import requests
 from django.shortcuts import render, redirect
 from django.views import View
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from school import models as school_models
 from payments import models as payment_models
 from staff import forms, models as staff_models
+from django.contrib.auth.mixins import UserPassesTestMixin
 from users import models as user_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
+class AdminMixin(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_admin
+
+
 # Create your views here.
-class Admin(LoginRequiredMixin, View):
+class Admin(AdminMixin):
     template_name = "admin/index.html"
     login_url = "/login"
 
@@ -21,7 +26,7 @@ class Admin(LoginRequiredMixin, View):
         return render(request, self.template_name)
 
 
-class ListVideos(LoginRequiredMixin, View):
+class ListVideos(AdminMixin):
     template_name = "admin/videos/index.html"
     login_url = "/login"
 
@@ -65,7 +70,7 @@ class ListVideos(LoginRequiredMixin, View):
                       {"videos": videos, "unit": instance, "otp": otp, "playback": playback})
 
 
-class AddVideo(LoginRequiredMixin, View):
+class AddVideo(AdminMixin):
     form_class = forms.AddVideoForm
     template_name = "admin/videos/create.html"
     login_url = "/login"
@@ -82,7 +87,7 @@ class AddVideo(LoginRequiredMixin, View):
         return render(request, self.template_name)
 
 
-class ListSubjects(LoginRequiredMixin, ListView):
+class ListSubjects(AdminMixin, ListView):
     model = school_models.SubjectModel
     template_name = "admin/subjects/index.html"
     context_object_name = "subjects"
@@ -94,7 +99,7 @@ class ListSubjects(LoginRequiredMixin, ListView):
         return context
 
 
-class AddSubject(LoginRequiredMixin, View):
+class AddSubject(AdminMixin):
     form_class = forms.AddSubjectForm
     login_url = "/"
 
@@ -110,7 +115,7 @@ class AddSubject(LoginRequiredMixin, View):
         return redirect("/admin/subjects", {"form": form, "subjects": subjects})
 
 
-class RetrieveSubject(LoginRequiredMixin, View):
+class RetrieveSubject(AdminMixin):
     template_name = "admin/subjects/detail.html"
     login_url = "/"
 
@@ -124,7 +129,7 @@ class RetrieveSubject(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class ListForm(LoginRequiredMixin, ListView):
+class ListForm(AdminMixin, ListView):
     model = school_models.FormModel
     template_name = "admin/forms/index.html"
     context_object_name = "qs"
@@ -136,7 +141,7 @@ class ListForm(LoginRequiredMixin, ListView):
         return context
 
 
-class AddForm(LoginRequiredMixin, View):
+class AddForm(AdminMixin):
     form_class = forms.AddForm
     template_name = "admin/forms/create.html"
     login_url = "/login"
@@ -154,14 +159,14 @@ class AddForm(LoginRequiredMixin, View):
         return redirect("/admin/forms", {"qs": qs, "form": form})
 
 
-class ListUnits(LoginRequiredMixin, ListView):
+class ListUnits(AdminMixin, ListView):
     model = school_models.UnitModel
     template_name = "admin/units/index.html"
     context_object_name = "units"
     login_url = "/login"
 
 
-class AddUnit(LoginRequiredMixin, View):
+class AddUnit(AdminMixin):
     form_class = forms.AddUnitForm
     template_name = "admin/units/create.html"
     login_url = "/login"
@@ -181,7 +186,7 @@ class AddUnit(LoginRequiredMixin, View):
         return render(request, self.template_name, {"form": form})
 
 
-class UnitDetailView(LoginRequiredMixin, View):
+class UnitDetailView(AdminMixin):
     template_name = "admin/units/detail.html"
     login_url = "/login"
 
@@ -219,21 +224,21 @@ class UnitDetailView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class ListInvoices(LoginRequiredMixin, ListView):
+class ListInvoices(AdminMixin, ListView):
     model = payment_models.Invoice
     template_name = "admin/payments/invoices.html"
     context_object_name = "invoices"
     login_url = "/login"
 
 
-class ListTransactions(LoginRequiredMixin, ListView):
+class ListTransactions(AdminMixin, ListView):
     model = payment_models.Transaction
     template_name = "admin/payments/transactions.html"
     context_object_name = "transactions"
     login_url = "/login"
 
 
-class ListCurrentSubscription(LoginRequiredMixin, ListView):
+class ListCurrentSubscription(AdminMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
@@ -244,7 +249,7 @@ class ListCurrentSubscription(LoginRequiredMixin, ListView):
         return {"subscriptions": qs, "status": "Active"}
 
 
-class ListExpiredSubscriptions(LoginRequiredMixin, ListView):
+class ListExpiredSubscriptions(AdminMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
@@ -255,7 +260,7 @@ class ListExpiredSubscriptions(LoginRequiredMixin, ListView):
         return {"subscriptions": qs, "status": "Expired"}
 
 
-class ListRevokedSubscriptions(LoginRequiredMixin, ListView):
+class ListRevokedSubscriptions(AdminMixin, ListView):
     model = payment_models.Subscription
     template_name = "admin/subscriptions/index.html"
     context_object_name = "subscriptions"
@@ -266,7 +271,7 @@ class ListRevokedSubscriptions(LoginRequiredMixin, ListView):
         return {"subscriptions": qs, "status": "Revoked"}
 
 
-class ListCounties(LoginRequiredMixin, ListView):
+class ListCounties(AdminMixin, ListView):
     model = user_models.County
     template_name = "admin/users/counties/index.html"
     context_object_name = "counties"
@@ -278,7 +283,7 @@ class ListCounties(LoginRequiredMixin, ListView):
         return context
 
 
-class AddCounty(LoginRequiredMixin, View):
+class AddCounty(AdminMixin):
     form_class = forms.AddCountyForm
     template_name = "admin/users/counties/index.html"
     login_url = "/login"
@@ -296,7 +301,7 @@ class AddCounty(LoginRequiredMixin, View):
         return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
 
 
-class AddUnitAmountView(LoginRequiredMixin, View):
+class AddUnitAmountView(AdminMixin):
     form_class = forms.AddUnitAmount
     template_name = "admin/units/detail.html"
     login_url = "/login"
@@ -314,7 +319,7 @@ class AddUnitAmountView(LoginRequiredMixin, View):
         return redirect("/")
 
 
-class ListRegistrationCodes(LoginRequiredMixin, ListView):
+class ListRegistrationCodes(AdminMixin, ListView):
     model = staff_models.RegistrationCodes
     template_name = "admin/users/registration_codes.html"
     context_object_name = "codes"
@@ -326,7 +331,7 @@ class ListRegistrationCodes(LoginRequiredMixin, ListView):
         return context
 
 
-class AddRegistrationCodes(LoginRequiredMixin, View):
+class AddRegistrationCodes(AdminMixin):
     form_class = forms.AddRegistrationCodes
     template_name = "admin/users/counties/index.html"
     login_url = "/login"
