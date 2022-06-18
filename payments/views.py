@@ -1,6 +1,6 @@
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest,HttpResponseForbidden
 from django.shortcuts import redirect, render
 from payments import models as payment_models
 from school import models as school_models
@@ -8,6 +8,8 @@ from school import models as school_models
 
 @require_http_methods(["GET"])
 def check_status(request):
+    if request.user is None:
+        return HttpResponseForbidden
     request_id = request.GET.get("request_id", False)
     if request_id:
         qs = payment_models.Subscription.objects.filter(

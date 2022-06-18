@@ -2,6 +2,7 @@ import requests
 import uuid
 from word2number import w2n
 from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.views import View
 from school import models as school_models
@@ -9,8 +10,9 @@ from school import models as school_models
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
 
-class FormView(View):
+class FormView(LoginRequiredMixin, View):
     template_name = 'school/form.html'
+    login_url = "/login"
 
     def get(self, request, pk):
         try:
@@ -30,8 +32,9 @@ class FormView(View):
         return render(request, self.template_name, context=context)
 
 
-class SubjectView(View):
+class SubjectView(LoginRequiredMixin, View):
     template_name = "school/subjects/index.html"
+    login_url = "/login"
 
     def get(self, request, pk):
         try:
@@ -48,8 +51,9 @@ class SubjectView(View):
         return render(request, self.template_name, context=context)
 
 
-class UnitView(View):
+class UnitView(LoginRequiredMixin, View):
     template_name = "school/subjects/units/index.html"
+    login_url = "/login"
 
     def get(self, request, pk):
         videoid = request.GET.get("videoid", False)
