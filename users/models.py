@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from users.utils.managers import UserManager
+from staff.models import RegistrationCodes
 
 # Create your models here.
 ACCOUNT_STATUS = [
@@ -35,6 +36,8 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=1000)
     school = models.CharField(max_length=1000, blank=True, null=True)
     county = models.ForeignKey(County, on_delete=models.DO_NOTHING, related_name="county_users", blank=True, null=True)
+    code = models.ForeignKey(RegistrationCodes, on_delete=models.DO_NOTHING, related_name="code_users", blank=True,
+                             null=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     account_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")

@@ -16,3 +16,6 @@ class RegistrationCodes(BaseModel):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=255, blank=True, null=True, unique=True)
     users = models.BigIntegerField(default=0)
+
+    def __str__(self):
+        return self.code

@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django import forms
 from users.models import County
+from staff.models import RegistrationCodes
 from users import validators, models as user_models
 
 
@@ -15,6 +16,9 @@ class RegistrationForm(forms.Form):
     county = forms.ModelChoiceField(queryset=County.objects.filter(status=True), label="County", label_suffix="",
                                     required=True,
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0"}))
+    code = forms.ModelChoiceField(queryset=RegistrationCodes.objects.all(), label="Registration Code",
+                                  label_suffix="", required=True,
+                                  widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0"}))
     password = forms.CharField(label="Password", max_length=100, required=True, label_suffix="", min_length=6,
                                widget=forms.PasswordInput(attrs={"class": "form-control shadow-none rounded-0"}))
     confirm_password = forms.CharField(label="Confirm Password", max_length=100, required=True, label_suffix="",

@@ -2,7 +2,6 @@ import requests
 from django.views import View
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -54,16 +53,20 @@ class RegistrationView(View):
             password = data['password']
             school = data['school']
             county = data['county']
+            code = data['code']
 
             user = user_models.User.objects.create(
                 username=email,
                 name=name,
                 school=school,
-                county=county
+                county=county,
+                code=code
             )
             user.set_password(password)
             user.save()
             oauth2_user.create_application_user(user)
+            code.users = code.users + 1
+            code.save()
             return redirect("/login")
         return render(request, self.template_name, {"form": form})
 
