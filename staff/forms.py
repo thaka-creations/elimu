@@ -65,3 +65,12 @@ class AddUnitAmount(forms.Form):
                                 widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     period_type = forms.ChoiceField(label="Period Type", choices=ALLOWED_PERIOD,
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+
+class AddRegistrationCodes(forms.Form):
+    id_no = forms.CharField(label="ID Number", label_suffix="", required=True,
+                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    name = forms.CharField(label="Name", label_suffix="", required=True,
+                           widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    code = forms.CharField(label="User Code", label_suffix="", required=True,
+                           widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))

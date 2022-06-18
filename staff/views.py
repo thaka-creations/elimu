@@ -5,7 +5,7 @@ from django.conf import settings
 from django.views.generic import ListView
 from school import models as school_models
 from payments import models as payment_models
-from staff import forms
+from staff import forms, models as staff_models
 from users import models as user_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
@@ -249,7 +249,7 @@ class ListCounties(ListView):
 
 
 class AddCounty(View):
-    form_class = forms.AddForm
+    form_class = forms.AddCountyForm
     template_name = "admin/users/counties/index.html"
 
     def post(self, request):
@@ -282,4 +282,29 @@ class AddUnitAmountView(View):
         return redirect("/")
 
 
+class ListRegistrationCodes(ListView):
+    model = staff_models.RegistrationCodes
+    template_name = "admin/users/registration_codes.html"
+    context_object_name = "codes"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.AddRegistrationCodes
+        return context
+
+
+class AddRegistrationCodes(View):
+    form_class = forms.AddRegistrationCodes
+    template_name = "admin/users/counties/index.html"
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        qs = staff_models.RegistrationCodes.objects.all()
+
+        if form.is_valid():
+            data = form.cleaned_data
+            staff_models.RegistrationCodes.objects.create(**data)
+            context = {"details": "Code added successfully", "qs": qs}
+            return redirect("/admin/registration-codes", context=context)
+
+        return redirect("/admin/registration-codes", {"qs": qs, "form": form})

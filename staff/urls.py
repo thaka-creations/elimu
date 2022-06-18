@@ -19,5 +19,7 @@ urlpatterns = [
     path("admin/subscriptions/revoked", views.ListRevokedSubscriptions.as_view()),
     path("admin/counties", views.ListCounties.as_view()),
     path("admin/counties/add-county", views.AddCounty.as_view()),
-    path("admin/payments/unit-amount", views.AddUnitAmountView.as_view())
+    path("admin/payments/unit-amount", views.AddUnitAmountView.as_view()),
+    path("admin/registration-codes", views.ListRegistrationCodes.as_view()),
+    path("admin/registration-codes/add-code", views.AddRegistrationCodes.as_view())
 ]
