@@ -81,7 +81,7 @@ class Subscription(BaseModel):
 
 class InvoiceUnit(BaseModel):
     unit = models.ForeignKey(UnitModel, on_delete=models.DO_NOTHING, related_name="invoice_units")
-    invoice = models.ForeignKey(Invoice, on_delete=models.DO_NOTHING, related_name="invoice_unit_set")
+    invoice = models.ForeignKey(Invoice, on_delete=models.DO_NOTHING, related_name="invoice_unit_set", null=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.DO_NOTHING, related_name="invoiceunits",
                                      blank=True, null=True)
 

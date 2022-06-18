@@ -134,3 +134,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Transaction
         fields = "__all__"
+
+
+class CheckSubjectSubscriptionSerializer(serializers.Serializer):
+    form = serializers.UUIDField(required=True)
+    subject = serializers.UUIDField(required=True)
