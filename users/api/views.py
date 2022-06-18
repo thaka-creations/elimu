@@ -43,6 +43,8 @@ class Registration(viewsets.ViewSet):
             user.set_password(password)
             user.save()
             oauth2_user.create_application_user(user)
+            county.users = county.users + 1
+            county.save()
 
             return Response({"details": "Successfully registered"}, status=status.HTTP_200_OK)
 
