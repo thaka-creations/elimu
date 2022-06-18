@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.api import serializers
 from users import models as user_models
+from staff.models import RegistrationCodes
 from users.utils import system_utils
 from oauth2_provider.models import get_application_model
 
@@ -44,6 +45,24 @@ class Registration(viewsets.ViewSet):
             oauth2_user.create_application_user(user)
 
             return Response({"details": "Successfully registered"}, status=status.HTTP_200_OK)
+
+    @action(
+        methods=["GET"],
+        detail=False
+    )
+    def list_codes(self, request):
+        qs = RegistrationCodes.objects.all()
+        serializer = serializers.ListCodes(qs, many=True)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
+
+    @action(
+        methods=["GET"],
+        detail=False
+    )
+    def list_counties(self, request):
+        qs = user_models.County.objects.all()
+        serializer = serializers.ListCounties(qs, many=True)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
 
 class Authentication(viewsets.ViewSet):

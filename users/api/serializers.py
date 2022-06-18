@@ -62,5 +62,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "name", "account_status"]
 
 
+class ListCodes(serializers.ModelSerializer):
+    class Meta:
+        model = RegistrationCodes
+        fields = ['id', 'code', 'name', 'users']
 
 
+class ListCounties(serializers.ModelSerializer):
+    class Meta:
+        model = user_models.County
+        fields = ["id", "name"]
