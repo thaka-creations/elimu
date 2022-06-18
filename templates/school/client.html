@@ -201,8 +201,8 @@
             content = e.target.value;
             xhttp = new XMLHttpRequest()
             
-
-            xhttp.onreadystatechange = function(){
+            if (content.length > 0){
+                xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200) {
                     response = JSON.parse(xhttp.responseText);
                     if (response.length > 0) {
@@ -233,7 +233,25 @@
             
              xhttp.open("GET", "/api/v1/school/unit?search="+content)
              xhttp.send()
+        }
+        else{
+            if (searchList.classList.contains("d-block")){
+                searchList.classList.remove("d-block");
+                searchList.classList.add("d-none");
+            }
+        }
         });
+
+
+        // click outside
+        window.addEventListener("click", function(e){
+            if (e.target != searchEl) {
+                if (searchList.classList.contains("d-block")){
+                    searchList.classList.remove("d-block");
+                    searchList.classList.add("d-none");
+                }
+            }
+        })
     </script>
 </body>
 </html>
