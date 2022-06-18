@@ -140,7 +140,7 @@ class RetrieveForm(AdminMixin):
             return redirect("/admin")
         subjects = school_models.SubjectModel.objects.all()
         form = forms.AddFormAmount
-        amounts = payment_models.SubjectAmount.objects.filter(form=instance)
+        amounts = payment_models.FormAmount.objects.all()
         context = {"form_inst": instance, "queryset": subjects, "form": form, "amounts": amounts}
         return render(request, self.template_name, context)
 
@@ -346,6 +346,22 @@ class AddSubjectAmountView(AdminMixin):
             data = form.cleaned_data
             payment_models.SubjectAmount.objects.create(**data)
             context = {"details": "Subject Amount added successfully"}
+            return redirect(url)
+        return redirect(url)
+
+
+class AddFormAmountView(AdminMixin):
+    form_class = forms.AddFormAmount
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        form_ = request.POST["form"]
+        url = '/admin/forms/{}'.format(form_)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            payment_models.FormAmount.objects.create(**data)
+            context = {"details": "Form Amount added successfully"}
             return redirect(url)
         return redirect(url)
 

@@ -62,9 +62,6 @@
                                     Form
                                 </th>
                                 <th class="text-center">
-                                    Subject
-                                </th>
-                                <th class="text-center">
                                     Amount
                                 </th>
                                 <th class="text-center">
@@ -80,7 +77,6 @@
                             <tr>
                                 <td class="text-center">{{forloop.counter}}</td>
                                 <td class="text-center">{{amount.form.name}}</td>
-                                <td class="text-center">{{amount.subject.name}}</td>
                                 <td class="text-center">{{amount.amount}}</td>
                                 <td class="text-center">{{amount.period}} {{amount.period_type}}</td>
                                 <td class="text-center"><i class='bi bi-trash text-danger'></i></td>
@@ -98,7 +94,7 @@
                     Add Form Price
                 </div>
                 <div class="card-body mt-2">
-                    <form action="/admin/payments/add-amount" method="post">
+                    <form action="/admin/payments/add-form-amount" method="post">
                         {% csrf_token%}
                         {{form}}
                         <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Amount</button>
