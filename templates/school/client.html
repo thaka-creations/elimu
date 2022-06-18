@@ -73,8 +73,10 @@
                         </a>
                     </div>
                     <div class="col-12 col-md-6 d-flex">
-                        <form action="" role="search" class="align-self-center w-100">
-                            <input type="search" class="form-control search shadow-none py-2 rounded-pill" placeholder="Search for topic" aria-label="Search">
+                        <form action="" role="search" class="align-self-center w-100 position-relative">
+                            <input type="search" class="form-control search shadow-none py-2 rounded-pill" placeholder="Search for topic" aria-label="Search" id="topic-search">
+                            <ul id="search-list" class="bg-white list-unstyled position-absolute border-1 border-secondary p-2 shadow d-none" style="width: 95%; left:1em">
+                            </ul>
                         </form>
                     </div>
                     <div class="col-12 col-md-3 d-flex justify-content-end">
@@ -182,5 +184,56 @@
             });
     </script>
     {% endif %}
+
+    <script>
+        var searchEl = document.getElementById("topic-search");
+        var searchList = document.getElementById("search-list")
+        searchEl.addEventListener("keyup", function(e) {
+            while (searchList.hasChildNodes()) {
+                searchList.removeChild(searchList.firstChild)
+            }
+
+            if (searchList.classList.contains("d-none")){
+                searchList.classList.remove("d-none");
+                searchList.classList.add("d-block");
+            }
+
+            content = e.target.value;
+            xhttp = new XMLHttpRequest()
+            
+
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                    response = JSON.parse(xhttp.responseText);
+                    if (response.length > 0) {
+                        i = 0
+                        for (key in Object.keys(response)) {
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        a.setAttribute("href", "/form/subject/unit/"+response[key].id);
+                        a.classList.add("text-decoration-none");
+                        textNode = document.createTextNode(response[key].name.toUpperCase());
+                        a.appendChild(textNode)
+                        li.appendChild(a);
+                        searchList.appendChild(li);
+                        i++;
+                        if (i == 5){
+                            break;
+                        }
+                    } 
+                    }
+                    else{
+                        var li = document.createElement("li");
+                        textNode = document.createTextNode("No topic found");
+                        li.appendChild(textNode);
+                        searchList.appendChild(li);
+                    }
+                }
+            }
+            
+             xhttp.open("GET", "/api/v1/school/unit?search="+content)
+             xhttp.send()
+        });
+    </script>
 </body>
 </html>
