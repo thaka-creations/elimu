@@ -23,5 +23,6 @@ urlpatterns = [
     path("admin/registration-codes", views.ListRegistrationCodes.as_view()),
     path("admin/registration-codes/add-code", views.AddRegistrationCodes.as_view()),
     path("admin/subjects/<pk>", views.RetrieveSubject.as_view(), name="retrieve_subjects"),
-    path("admin/payments/add-amount", views.AddSubjectAmountView.as_view())
+    path("admin/payments/add-amount", views.AddSubjectAmountView.as_view()),
+    path("admin/forms/<pk>", views.RetrieveForm.as_view())
 ]

@@ -117,7 +117,6 @@ class AddSubject(AdminMixin):
 
 class RetrieveSubject(AdminMixin):
     template_name = "admin/subjects/detail.html"
-    login_url = "/"
 
     def get(self, request, pk):
         try:
@@ -128,6 +127,21 @@ class RetrieveSubject(AdminMixin):
         form = forms.AddSubjectAmount
         amounts = payment_models.SubjectAmount.objects.filter(subject=subject)
         context = {"subject": subject, "queryset": qs, "form": form, "amounts": amounts}
+        return render(request, self.template_name, context)
+
+
+class RetrieveForm(AdminMixin):
+    template_name = "admin/forms/detail.html"
+
+    def get(self, request, pk):
+        try:
+            instance = school_models.FormModel.objects.get(id=pk)
+        except school_models.FormModel.DoesNotExist:
+            return redirect("/admin")
+        subjects = school_models.SubjectModel.objects.all()
+        form = forms.AddFormAmount
+        amounts = payment_models.SubjectAmount.objects.filter(form=instance)
+        context = {"form_inst": instance, "queryset": subjects, "form": form, "amounts": amounts}
         return render(request, self.template_name, context)
 
 

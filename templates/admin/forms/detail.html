@@ -1,0 +1,119 @@
+{% extends "admin/partials/theme.html"%}
+
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Forms</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/subjects">Forms</a></li>
+        <li class="breadcrumb-item active">{{form_inst.name.title}}</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section subject-detail">
+
+    <div class="row d-flex justify-content-between">
+        <div class="col-lg-3">
+
+            <div class="card">
+                <div class="card-header">
+                    {{subject.name.title}}
+                </div>
+                <div class="card-body mt-3">
+                    {% for inst in queryset %}
+                    <div class="card">
+                        <div class="card-header">
+                            {{inst.name.upper}} UNITS
+                        </div>
+                        <div class="card-body mt-2">
+                            <ul class="list-group">
+                                {% for unit in form_inst.subject_units.all %}
+                                    {% if unit.subject.id == inst.id %}
+                                        <li class="list-group-item">
+                                            {{unit.name}}
+                                        </li>
+                                    {% endif%}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    Form Prices
+                </div>
+                <div class="card-body mt-3 px-2">
+                    <table id="subject-prices" class="display">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    #
+                                </th>
+                                <th class="text-center">
+                                    Form
+                                </th>
+                                <th class="text-center">
+                                    Subject
+                                </th>
+                                <th class="text-center">
+                                    Amount
+                                </th>
+                                <th class="text-center">
+                                    Period
+                                </th>
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for amount in amounts %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{amount.form.name}}</td>
+                                <td class="text-center">{{amount.subject.name}}</td>
+                                <td class="text-center">{{amount.amount}}</td>
+                                <td class="text-center">{{amount.period}} {{amount.period_type}}</td>
+                                <td class="text-center"><i class='bi bi-trash text-danger'></i></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    Add Form Price
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/payments/add-amount" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Amount</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+     $(document).ready(function () {
+        $('#subject-prices').DataTable();
+    });
+</script>
+{% endblock%}
