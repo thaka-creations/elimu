@@ -27,10 +27,16 @@ class Registration(viewsets.ViewSet):
             name = validated_data['name'].upper()
             email = validated_data['email']
             password = validated_data['password']
+            code = validated_data['code']
+            county = validated_data['county']
+            school = validated_data['school']
 
             user = user_models.User.objects.create(
                 username=email,
-                name=name
+                name=name,
+                code=code,
+                school=school,
+                county=county
             )
 
             user.set_password(password)

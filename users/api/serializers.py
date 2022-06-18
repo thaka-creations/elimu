@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from users import models as user_models
+from staff.models import RegistrationCodes
 
 
 class BaseSerializer(serializers.Serializer):
@@ -11,6 +12,9 @@ class RegistrationSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, trim_whitespace=True)
     password = serializers.CharField(required=True, trim_whitespace=True)
     confirm_password = serializers.CharField(required=True, trim_whitespace=True)
+    code = serializers.CharField(required=True, trim_whitespace=True)
+    school = serializers.CharField(required=True, trim_whitespace=True)
+    county = serializers.UUIDField(required=True)
 
     def validate(self, obj):
         password = obj['password']
@@ -31,6 +35,18 @@ class RegistrationSerializer(serializers.Serializer):
         # validate password
         if password != password2:
             raise serializers.ValidationError("Password do not match")
+
+        try:
+            code = RegistrationCodes.objects.get(code=obj['code'])
+        except (RegistrationCodes.DoesNotExist, RegistrationCodes.MultipleObjectsReturned):
+            raise serializers.ValidationError("Invalid code")
+
+        try:
+            county = user_models.County.objects.get(id=obj['county'])
+        except user_models.County.DoesNotExist:
+            raise serializers.ValidationError("County does not exist")
+
+        obj.update({"code": code, "county": county})
 
         return obj
 
