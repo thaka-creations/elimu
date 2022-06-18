@@ -4,11 +4,12 @@ from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from rest_framework import viewsets, status
+from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from school.api import serializers as school_serializers
 from school.utils import video_util
-from school import models as school_models
+from school import models as school_models, paginator
 
 
 def valid_uuid(val):
@@ -159,23 +160,22 @@ class FormViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
 
-class UnitViewSet(viewsets.ViewSet):
+class UnitViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = school_models.UnitModel.objects.all()[0:1]
+    serializer_class = school_serializers.ListRetrieveUnitSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
-    @staticmethod
-    def list(request):
-        """
-        for form and subject
-        list units for form and subject
-        """
-        form = request.query_params.get('form', False)
-        subject = request.query_params.get('subject', False)
+    def get_queryset(self):
+        form = self.request.query_params.get('form', False)
+        subject = self.request.query_params.get('subject', False)
 
-        if not form and not subject:
-            return Response({"details": "Form and subject are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not form or subject:
+            qs = school_models.UnitModel.objects.all()
+            return self.filter_queryset(qs)
 
         qs = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
-        serializer = school_serializers.ListRetrieveUnitSerializer(qs, many=True)
-        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
+        return self.filter_queryset(qs)
 
     @staticmethod
     def create(request):
