@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
@@ -124,8 +124,10 @@ class RetrieveSubject(AdminMixin):
             subject = school_models.SubjectModel.objects.get(id=pk)
         except school_models.SubjectModel.DoesNotExist:
             return redirect("/admin")
-
-        context = {"subject": subject}
+        qs = school_models.FormModel.objects.all()
+        form = forms.AddSubjectAmount
+        amounts = payment_models.SubjectAmount.objects.filter(subject=subject)
+        context = {"subject": subject, "queryset": qs, "form": form, "amounts": amounts}
         return render(request, self.template_name, context)
 
 
@@ -312,11 +314,26 @@ class AddUnitAmountView(AdminMixin):
 
         if form.is_valid():
             data = form.cleaned_data
-            print(data)
             payment_models.UnitAmount.objects.create(**data)
             context = {"details": "Unit Amount added successfully"}
             return redirect("/admin")
         return redirect("/")
+
+
+class AddSubjectAmountView(AdminMixin):
+    form_class = forms.AddSubjectAmount
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        subject = request.POST["subject"]
+        url = '/admin/subjects/{}'.format(subject)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            payment_models.SubjectAmount.objects.create(**data)
+            context = {"details": "Subject Amount added successfully"}
+            return redirect(url)
+        return redirect(url)
 
 
 class ListRegistrationCodes(AdminMixin, ListView):

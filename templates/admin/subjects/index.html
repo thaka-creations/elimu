@@ -1,6 +1,14 @@
 {% extends "admin/partials/theme.html" %}
 {% load tags %}
 
+{% block styles %}
+<style>
+    tbody > tr{
+        cursor: pointer
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="pagetitle">
     <h1>Subjects</h1>
@@ -21,7 +29,7 @@
             <div class="card-header border-0">
             </div>
             <div class="card-body">
-                <table class="table table-hover table-bordered" id="subject-table">
+                <table class="display" id="subject-table">
                     <thead>
                         <tr>
                             <th class="text-center">
@@ -44,13 +52,13 @@
                             <td class="text-center">
                                 {{forloop.counter}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view details">
                                 {{subject.name}}
                             </td>
                             <td class="text-center">
                                 {% subject_video_count subject %}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
                                 <i class='bi bi-trash text-danger'></i>
                             </td>
                         </tr>
@@ -80,12 +88,15 @@
     </div>
   </section>
 {% endblock %}
-
 {% block scripts %}
-    <script>
-        subjectRows = document.querySelector(".subject-row")
-        Array(subjectRows).forEach(element, function(
+<script>
+    $(document).ready(function () {
+        $('#subject-table').DataTable();
 
-        ));
-    </script>
+        $("#subject-table tbody").on('click', 'tr', function(e){
+            id = $(this).attr('data-id');
+            window.location.href = "/admin/subjects/"+id;
+        })
+    });
+</script>
 {% endblock %}

@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from users.models import User
-from school.models import UnitModel
+from school import models as school_models
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
@@ -22,7 +22,6 @@ ALLOWED_PERIOD_TYPE = [
     ("YEARS", "YEARS"),
     ("MONTHS", "MONTHS")
 ]
-
 
 SUBSCRIPTION_STATUS = [
     ("ACTIVE", "ACTIVE"),
@@ -47,7 +46,24 @@ class BaseModel(models.Model):
 
 class UnitAmount(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="unit_amounts")
+    unit = models.ForeignKey(school_models.UnitModel, on_delete=models.CASCADE, related_name="unit_amounts")
+    period = models.IntegerField(default=1)
+    period_type = models.CharField(max_length=100, choices=ALLOWED_PERIOD_TYPE, default="MONTH")
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
+
+
+class SubjectAmount(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject = models.ForeignKey(school_models.SubjectModel, on_delete=models.CASCADE, related_name="subject_amounts")
+    form = models.ForeignKey(school_models.FormModel, on_delete=models.CASCADE, related_name="form_subject_amounts")
+    period = models.IntegerField(default=1)
+    period_type = models.CharField(max_length=100, choices=ALLOWED_PERIOD_TYPE, default="MONTH")
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
+
+
+class FormAmount(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    form = models.ForeignKey(school_models.FormModel, on_delete=models.CASCADE, related_name="form_amounts")
     period = models.IntegerField(default=1)
     period_type = models.CharField(max_length=100, choices=ALLOWED_PERIOD_TYPE, default="MONTH")
     amount = models.DecimalField(max_digits=19, decimal_places=2)
@@ -80,7 +96,7 @@ class Subscription(BaseModel):
 
 
 class InvoiceUnit(BaseModel):
-    unit = models.ForeignKey(UnitModel, on_delete=models.DO_NOTHING, related_name="invoice_units")
+    unit = models.ForeignKey(school_models.UnitModel, on_delete=models.DO_NOTHING, related_name="invoice_units")
     invoice = models.ForeignKey(Invoice, on_delete=models.DO_NOTHING, related_name="invoice_unit_set", null=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.DO_NOTHING, related_name="invoiceunits",
                                      blank=True, null=True)
@@ -95,7 +111,8 @@ class Transaction(BaseModel):
     description = models.TextField(blank=True, null=True)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     status = models.CharField(max_length=100, choices=STATUS, default="PENDING")
-    invoice = models.OneToOneField(Invoice, related_name="transaction", on_delete=models.DO_NOTHING, blank=True, null=True)
+    invoice = models.OneToOneField(Invoice, related_name="transaction", on_delete=models.DO_NOTHING, blank=True,
+                                   null=True)
 
     def __str__(self):
         return self.reference

@@ -67,6 +67,30 @@ class AddUnitAmount(forms.Form):
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
 
 
+class AddSubjectAmount(forms.Form):
+    subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
+                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    form = forms.ModelChoiceField(queryset=school_models.FormModel.objects.all(), label="Form", required=True,
+                                  widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    amount = forms.IntegerField(label="Amount",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period = forms.IntegerField(label="Period",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period_type = forms.ChoiceField(label="Period Type", choices=ALLOWED_PERIOD,
+                                    widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+
+class AddFormAmount(forms.Form):
+    form = forms.ModelChoiceField(queryset=school_models.FormModel.objects.all(), label="Form", required=True,
+                                  widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    amount = forms.IntegerField(label="Amount",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period = forms.IntegerField(label="Period",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period_type = forms.ChoiceField(label="Period Type", choices=ALLOWED_PERIOD,
+                                    widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+
 class AddRegistrationCodes(forms.Form):
     id_no = forms.CharField(label="ID Number", label_suffix="", required=True,
                             widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
