@@ -1,6 +1,14 @@
 {% extends "admin/partials/theme.html" %}
 {% load tags %}
 
+{% block styles %}
+<style>
+    tbody > tr{
+        cursor: pointer
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
  <div class="pagetitle">
@@ -45,13 +53,13 @@
                             <td class="text-center">
                                 {{forloop.counter}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view details">
                                 {{inst.name}}
                             </td>
                             <td class="text-center">
                                 {% form_video_count inst%}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
                                 <i class='bi bi-trash text-danger'></i>
                             </td>
                         </tr>
