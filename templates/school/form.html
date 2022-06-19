@@ -31,7 +31,9 @@
 <div class="card rounded-0 mx-4">
     <div class="card-header rounded-0 d-flex justify-content-between">
         <p class="fs-5 mb-0 text-white">{{instance.name.title}} Subjects</p>
+        {% if not subscribed %}
         <button class="btn border-1 shadow-sm bg-white text-success rounded-0" id="btn-form-subscribe">Subscribe</button>
+        {% endif %}
     </div>
 
     <div class="card-body {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">

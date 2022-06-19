@@ -30,7 +30,16 @@ class FormView(LoginRequiredMixin, View):
         qs = school_models.SubjectModel.objects. \
             filter(form_units__videos__isnull=False, form_units__form=inst).distinct()
         amounts = payment_models.FormAmount.objects.filter(form=inst)
-        context = {"subjects": qs, "instance": inst, "num": num, "amounts": amounts}
+        context = {"subjects": qs, "instance": inst, "num": num, "amounts": amounts, "subscribed": False}
+        # check status
+        units = school_models.UnitModel.objects.filter(form=inst).values_list("id", flat=True)
+        if units:
+            subscription_qs = payment_models.Subscription.objects.filter(
+                user=self.request.user, status="ACTIVE", invoiceunits__unit_id__in=units
+            )
+            if subscription_qs:
+                if len(units) == qs.count():
+                    context.update({"subscribed": True})
         return render(request, self.template_name, context=context)
 
 
