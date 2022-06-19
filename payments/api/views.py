@@ -105,7 +105,7 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
         url_path="check-subject-subscription"
     )
     def check_subject_subscription(self, request):
-        serializer = payment_serializers.CheckSubjectSubscriptionSerializer(data=request.data)
+        serializer = payment_serializers.CheckSubjectSubscriptionSerializer(data=request.query_params.dict())
 
         if not serializer.is_valid():
             return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -143,7 +143,7 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
         url_path="check-form-subscription"
     )
     def check_form_subscription(self, request):
-        serializer = payment_serializers.CheckFormSubscriptionSerializer(data=request.data)
+        serializer = payment_serializers.CheckFormSubscriptionSerializer(data=request.query_params.dict())
 
         if not serializer.is_valid():
             return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
