@@ -9,7 +9,8 @@ router.register("subscription", views.SubscriptionViewSet, basename="subscriptio
 
 urlpatterns = [
     path("checkout", views.MpesaCheckout.as_view()),
-    path("callback", views.MpesaCallBack.as_view())
+    path("callback", views.MpesaCallBack.as_view()),
+    path("check-form-subscription", views.CheckFormSubscription.as_view()),
 ]
 urlpatterns += router.urls
 

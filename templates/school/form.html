@@ -111,11 +111,11 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body d-flex justify-content-between">
-            <form action="/api/v1/payments/subscription/check-form-subscription" method="post" id="check-payment-status">
+            <button type="button" class="btn btn-danger shadow-none rounded-0" data-bs-dismiss="modal">Cancel</button>
+            <form action="/payments/subscription/check-form-subscription" method="post" id="check-payment-status">
                 {% csrf_token %}
                 <input type="hidden" name="form" value="{{instance.id}}">
             </form>
-            <button type="button" class="btn btn-danger shadow-none rounded-0" data-bs-dismiss="modal">Cancel</button>
             <button type="button" class="btn btn-primary shadow-none rounded-0" id="btn-confirm-payment">Confirm payment</button>
         </div>
       </div>
@@ -149,7 +149,6 @@
             var amount = $(this).val();
             $("#amount").val(amount);
         });
-        $("#confirm-payment").modal("show");
     });
 </script>
 <script>
@@ -179,16 +178,22 @@
     confEl = document.getElementById("btn-confirm-payment")
     confEl.addEventListener("click", function(){
         var elF = document.getElementById("check-payment-status");
-        formData = new FormData();
+        formData = new FormData(elF);
         url = elF.getAttribute("action")
         xhttp = new XMLHttpRequest()
 
         xhttp.onreadystatechange = function(){
+            $("#confirm-payment").modal("hide");
             if (this.readyState == 4 && this.status == 200){
                 console.log(xhttp.responseText);
+                $(".toast-body").addClass("bg-success");
+                $(".toast-body p").text("Payment successful");
+                $(".toast").toast("show");
             }
             else if (this.readyState == 4 && this.status ==400){
-                console.log(xhttp.responseText)
+                $(".toast-body").addClass("bg-danger")
+                $(".toast-body p").text("Payment not successful");
+                $(".toast").toast("show");
             }
         }
         xhttp.open("POST", url)
