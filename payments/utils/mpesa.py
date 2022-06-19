@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from phonenumber_field.phonenumber import PhoneNumber
 from payments.models import Transaction, Invoice, InvoiceUnit, Subscription
+from school import models as school_models
 
 
 class Decorators:
@@ -73,7 +74,9 @@ class MpesaGateway:
         return token
 
     @Decorators.refresh_token
-    def stk_push_request(self, amount, phone_number, unit, period, user):
+    def stk_push_request(self, amount, phone_number, unit=None, form=None, subject=None, period=None, user=None):
+        if not user:
+            return False
         reference = str(user.id)
         description = period
         req = {
@@ -111,12 +114,33 @@ class MpesaGateway:
                             )
             transaction_inst.invoice = invoice_inst
             transaction_inst.save()
-            InvoiceUnit.objects.create(
-                invoice=invoice_inst,
-                unit=unit
+            if unit:
+                InvoiceUnit.objects.create(
+                    invoice=invoice_inst,
+                    unit=unit
+                )
+                return True
+            elif subject:
+                if not form:
+                    return False
+                units = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
+            elif form and not subject:
+                units = school_models.UnitModel.objects.filter(form__id=form)
+            else:
+                return False
+
+            InvoiceUnit.objects.bulk_create(
+                [
+                    InvoiceUnit(
+                        invoice=invoice_inst,
+                        unit=unit
+                    )
+                    for unit in units
+                ]
             )
 
-        return res_data
+            return True
+        return False
 
     @staticmethod
     def check_status(data):

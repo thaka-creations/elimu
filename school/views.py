@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.views import View
 from school import models as school_models
+from payments import models as payment_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
@@ -28,7 +29,8 @@ class FormView(LoginRequiredMixin, View):
 
         qs = school_models.SubjectModel.objects. \
             filter(form_units__videos__isnull=False, form_units__form=inst).distinct()
-        context = {"subjects": qs, "instance": inst, "num": num}
+        amounts = payment_models.FormAmount.objects.filter(form=inst)
+        context = {"subjects": qs, "instance": inst, "num": num, "amounts": amounts}
         return render(request, self.template_name, context=context)
 
 

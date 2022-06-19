@@ -152,7 +152,15 @@ class MpesaCheckout(APIView):
         period = validated_data['period']
         unit = validated_data['unit']
         user = validated_data['user']
-        gateway.stk_push_request(amount, phone_number, unit, period, user)
+        form = validated_data['form']
+        subject = validated_data['subject']
+
+        if not unit or not form or not subject:
+            return Response({"details": "Unit or form or subject required"}, status=status.HTTP_400_BAD_REQUEST)
+        resp = gateway.stk_push_request(amount, phone_number, unit, form, subject, period, user)
+
+        if not resp:
+            return Response({"details": "An error occurred. Try again later"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"details": "Payment process initiated successfully"}, status=status.HTTP_200_OK)
 
 

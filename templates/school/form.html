@@ -31,7 +31,7 @@
 <div class="card rounded-0 mx-4">
     <div class="card-header rounded-0 d-flex justify-content-between">
         <p class="fs-5 mb-0 text-white">{{instance.name.title}} Subjects</p>
-        <button class="btn border-1 shadow-sm bg-white text-success rounded-0">Subscribe</button>
+        <button class="btn border-1 shadow-sm bg-white text-success rounded-0" id="btn-form-subscribe">Subscribe</button>
     </div>
 
     <div class="card-body {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">
@@ -53,6 +53,56 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="subscriptionModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Form Subscription Payment</h5>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p class="mb-1 fs-6 font-weight-bold" id="wl-md-title">
+                Dear {{request.user.name.title}}, subscribe to view all {{instance.name.title}} videos. 
+            </p>
+            <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
+            
+            <form action="/api/v1/payments/checkout" method="POST" id="submit-ps">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="phone" class="col-form-label col-label-required">Phone Number</label>
+                    <input type="text" class="form-control rounded-0 shadow-none" name="phone_number" placeholder="Enter phone number" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="period" class="col-form-label col-label-required">Duration</label>
+                    <select id="id-period" class="form-select rounded-0 shadow-none">
+                        {% for amount in amounts %}
+                        <option value="{{amount.amount}}">{{amount.period}} {{amount.period_type}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="col-form-label">Amount</label>
+                    <input type="text" id="amount" name="amount" class="form-control rounded-0 shadow-none" readonly>
+                </div>
+                
+                <input type="hidden" name="user" value={{request.user.id}}>
+                <input type="hidden" name="unit" id="reference">
+
+            </form>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa">Pay via MPESA</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts%}
@@ -66,5 +116,20 @@
         id = e.target.getAttribute('sub-id')
         window.location.href = "/form/subject/"+id
     }
+</script>
+<script>
+    $(document).ready(function(){
+        $("#btn-form-subscribe").on("click", function(){
+            $("#myModal").modal("show");
+        });
+        var amount = $("#id-period").val();
+        $("#amount").val(amount);
+
+        // on change 
+        $("#id-period").on("change", function(){
+            var amount = $(this).val();
+            $("#amount").val(amount);
+        });
+    })
 </script>
 {% endblock %}

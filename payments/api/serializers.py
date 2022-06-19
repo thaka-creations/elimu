@@ -77,7 +77,9 @@ class ListSubscription(serializers.ModelSerializer):
 class MpesaCheckoutSerializer(serializers.Serializer):
     phone_number = serializers.CharField(required=True)
     amount = serializers.FloatField(required=True)
-    unit = serializers.CharField(required=True)
+    unit = serializers.CharField(allow_blank=True, allow_null=True)
+    form = serializers.CharField(allow_blank=True, allow_null=True)
+    subject = serializers.CharField(allow_blank=True, allow_null=True)
     user = serializers.UUIDField(required=True)
 
     def validate(self, obj):
