@@ -90,7 +90,7 @@
                 </div>
                 
                 <input type="hidden" name="user" value={{request.user.id}}>
-                <input type="hidden" name="unit" id="reference">
+                <input type="hidden" name="form" id="reference" value="{{instance.id}}">
 
             </form>
 
@@ -130,6 +130,29 @@
             var amount = $(this).val();
             $("#amount").val(amount);
         });
-    })
+
+    });
+</script>
+<script>
+    //form submission
+    var mpesaEl = document.getElementById("pay-mpesa");
+    mpesaEl.addEventListener("click", function(){
+        var el = document.getElementById("submit-ps");
+            formData = new FormData(el);
+            url = $("#submit-ps").attr("action")
+            xhttp = new XMLHttpRequest();
+    
+
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    console.log(xhttp.responseText);
+                }
+                else if (this.readyState == 4 && this.status == 400){
+                    console.log(xhttp.responseText);
+                }
+            }
+            xhttp.open("POST", url);
+            xhttp.send(formData);
+    });
 </script>
 {% endblock %}

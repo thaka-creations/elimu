@@ -89,7 +89,7 @@ class MpesaGateway:
             "PartyB": self.shortcode,
             "PhoneNumber": phone_number,
             "CallBackURL": self.c2b_callback,
-            "AccountReference": reference,
+            "AccountReference": str(user.name),
             "TransactionDesc": description,
             "headers": self.headers
         }

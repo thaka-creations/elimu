@@ -77,15 +77,14 @@ class ListSubscription(serializers.ModelSerializer):
 class MpesaCheckoutSerializer(serializers.Serializer):
     phone_number = serializers.CharField(required=True)
     amount = serializers.FloatField(required=True)
-    unit = serializers.CharField(allow_blank=True, allow_null=True)
-    form = serializers.CharField(allow_blank=True, allow_null=True)
-    subject = serializers.CharField(allow_blank=True, allow_null=True)
+    unit = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    form = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    subject = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     user = serializers.UUIDField(required=True)
 
     def validate(self, obj):
         phone = obj['phone_number']
         amount = obj['amount']
-        unit = obj['unit']  # unit id
         user = obj['user']
 
         try:
@@ -94,8 +93,16 @@ class MpesaCheckoutSerializer(serializers.Serializer):
             raise serializers.ValidationError("User does not exist")
 
         try:
-            instance = models.UnitAmount.objects.get(unit__id=unit, amount=amount)
-        except (models.UnitAmount.DoesNotExist, models.UnitAmount.MultipleObjectsReturned):
+            if "unit" in obj.keys():
+                instance = models.UnitAmount.objects.get(unit__id=obj['unit'], amount=amount)
+                obj.update({"unit": instance.unit})
+            elif "subject" in obj.keys() and "form" in obj.keys():
+                instance = models.SubjectAmount.objects.get(subject__id=obj['subject'], form__id=obj['form'],
+                                                            amount=amount)
+            else:
+                instance = models.FormAmount.objects.get(form__id=obj['form'], amount=amount)
+        except Exception as e:
+            print(e)
             raise serializers.ValidationError("An error occurred. Try again later")
 
         period = str(instance.period) + ' ' + instance.period_type
@@ -128,7 +135,7 @@ class MpesaCheckoutSerializer(serializers.Serializer):
         else:
             period = int(_period_list[0])
 
-        obj.update({"period": period, "unit": instance.unit, "user": user})
+        obj.update({"period": period, "user": user, "phone_number": str(phone_number)[1:]})
         return obj
 
 
