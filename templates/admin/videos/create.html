@@ -28,19 +28,18 @@
 
         </div>
     </div>
-  </section>
+    <div class="position-absolute d-flex w-100" style="top:5em;">
 
-  <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <img src="..." class="rounded me-2" alt="...">
-      <strong class="me-auto">Bootstrap</strong>
-      <small>11 mins ago</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true"
+        style="z-index:1000;">
+            <div class="toast-body text-white text-center">
+                <p class="fs-5 mb-0"></p>
+            </div>
+        </div>
+
     </div>
-    <div class="toast-body">
-      Hello, world! This is a toast message.
-    </div>
-  </div>
+
+  </section>
 
 {% endblock %}
 
@@ -60,11 +59,15 @@
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200){
                 console.log(xhttp.responseText)
-                window.location.load = "/admin/videos?unit="+unt;
+                $(".toast-body").addClass("bg-success");
+                $(".toast-body p").text("Video added successfully");
+                $(".toast").toast("show");
             }
             else if (this.readyState ==4 && this.status == 400){
                 console.log(xhttp.responseText)
-                window.location.load = "/admin/videos?unit="+unt;
+                $(".toast-body").addClass("bg-danger");
+                $(".toast-body p").text("Enter all required details");
+                $(".toast").toast("show");
             }
             window.location.load = "/admin/videos?unit="+unt;
         }
@@ -76,7 +79,7 @@
 <script>
     fm = document.getElementById("_form");
     sb = document.getElementById("_subject");
-    un = document.getElementById("_unit");
+    unitEl = document.getElementById("_unit");
     fm.addEventListener("change", fmChangeEvent);
     sb.addEventListener("change", sbChangeEvent);
 
@@ -94,8 +97,8 @@
                     for(const key of Object.keys(obj)){
                         Object.getOwnPropertyNames(obj[key]).forEach(function(val){
                             if (obj[key].length == 0) {
-                                while (un.hasChildNodes()) {
-                                    un.removeChild(un.firstChild);
+                                while (unitEl.hasChildNodes()) {
+                                    unitEl.removeChild(un.firstChild);
                                 }
                             }
 
@@ -107,7 +110,7 @@
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
-                                un.appendChild(option);
+                                unitEl.appendChild(option);
                             }
         
                         })
@@ -135,8 +138,8 @@
                     for(const key of Object.keys(obj)){
                         Object.getOwnPropertyNames(obj[key]).forEach(function(val){
                             if (obj[key].length == 0) {
-                                while (un.hasChildNodes()) {
-                                    un.removeChild(un.firstChild);
+                                while (unitEl.hasChildNodes()) {
+                                    unitEl.removeChild(unitEl.firstChild);
                                 }
                             }
 
@@ -148,7 +151,7 @@
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
-                                un.appendChild(option);
+                                unitEl.appendChild(option);
                             }
         
                         })
