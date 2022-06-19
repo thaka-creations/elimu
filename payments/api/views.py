@@ -137,6 +137,40 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response({"details": "Subscribed to view subject"}, status=status.HTTP_200_OK)
 
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path="check-form-subscription"
+    )
+    def check_form_subscription(self, request):
+        serializer = payment_serializers.CheckFormSubscriptionSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+
+        try:
+            form = school_models.FormModel.objects.get(id=validated_data['form'])
+        except school_models.FormModel.DoesNotExist:
+            return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        units = school_models.UnitModel.objects.filter(form=form).values_list("id", flat=True)
+
+        if not units:
+            return Response({"details": "Form does not have units"}, status=status.HTTP_400_BAD_REQUEST)
+
+        qs = payment_models.Subscription.objects.filter(
+            user=request.user, status="ACTIVE", invoiceunits__unit_id__in=units
+        )
+        if not qs.exists():
+            return Response({"details": "Not subscribed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if qs.count() != len(units):
+            return Response({"details": "Not subscribed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"details": "Subscribed"}, status=status.HTTP_200_OK)
+
 
 class MpesaCheckout(APIView):
 

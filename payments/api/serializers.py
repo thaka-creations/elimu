@@ -148,3 +148,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 class CheckSubjectSubscriptionSerializer(serializers.Serializer):
     form = serializers.UUIDField(required=True)
     subject = serializers.UUIDField(required=True)
+
+
+class CheckFormSubscriptionSerializer(serializers.Serializer):
+    form = serializers.UUIDField(required=True)
