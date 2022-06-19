@@ -58,7 +58,8 @@ class SubjectView(LoginRequiredMixin, View):
             form = units.first().form
         else:
             return redirect("/")
-        context = {"units": units, "subject": instance, "form": form, "user": request.user}
+        amounts = payment_models.SubjectAmount.objects.filter(subject=instance, form=form)
+        context = {"units": units, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
         return render(request, self.template_name, context=context)
 
 

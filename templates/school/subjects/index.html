@@ -24,7 +24,7 @@
 <div class="card rounded-0">
     <div class="card-header rounded-0 d-flex justify-content-between">
         <p class="fs-5 mb-0">{{form.name.title}} {{subject.name.title}} Units</p>
-        <button class="btn border-1 shadow-sm btn-success rounded-0">Subscribe</button>
+        <button class="btn border-1 shadow-sm btn-success rounded-0" id="btn-subject-subscribe">Subscribe</button>
     </div>
     <div class="card-body">
         <div class="container">
@@ -90,6 +90,76 @@
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa">Pay via MPESA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+<div class="modal fade" id="subjectModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="subscriptionModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Subject Subscription Payment</h5>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p class="mb-1 fs-6 font-weight-bold" id="wl-md-title">
+                Dear {{request.user.name.title}}, subscribe to view all {{subject.name.title}} videos. 
+            </p>
+            <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
+            
+            <form action="/api/v1/payments/checkout" method="POST" id="subject-amount-form">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="phone" class="col-form-label col-label-required">Phone Number</label>
+                    <input type="text" class="form-control rounded-0 shadow-none" name="phone_number" placeholder="Enter phone number" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="period" class="col-form-label col-label-required">Duration</label>
+                    <select id="id-period-subject" class="form-select rounded-0 shadow-none">
+                        {% for amount in amounts %}
+                        <option value="{{amount.amount}}">{{amount.period}} {{amount.period_type}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="col-form-label">Amount</label>
+                    <input type="text" id="subject-amount" name="amount" class="form-control rounded-0 shadow-none" readonly>
+                </div>
+                
+                <input type="hidden" name="user" value={{request.user.id}}>
+                <input type="hidden" name="form" value="{{form.id}}">
+                <input type="hidden" name="subject" value="{{subject.id}}">
+
+            </form>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa-sb">Pay via MPESA</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="confirm-payment" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered rounded-0">
+      <div class="modal-content rounded-0 w-75">
+        <div class="modal-header">
+          <h5 class="modal-title">CONFIRM PAYMENT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex justify-content-between">
+            <button type="button" class="btn btn-danger shadow-none rounded-0" data-bs-dismiss="modal">Cancel</button>
+            <form action="/payments/subscription/check-form-subscription" method="post" id="check-payment-status">
+                {% csrf_token %}
+                <input type="hidden" name="form" value="{{instance.id}}">
+            </form>
+            <button type="button" class="btn btn-primary shadow-none rounded-0" id="btn-confirm-payment">Confirm payment</button>
         </div>
       </div>
     </div>
@@ -205,5 +275,69 @@
         xhttp.send(formData);
     }
 
+</script>
+<script>
+    $(document).ready(function(){
+        $("#btn-subject-subscribe").on("click", function(){
+            $("#subjectModal").modal("show");
+        });
+        var amount = $("#id-period-subject").val();
+        $("#subject-amount").val(amount);
+
+        // on change 
+        $("#id-period-subject").on("change", function(){
+            var amount = $(this).val();
+            $("#subject-amount").val(amount);
+        });
+    })
+</script>
+<script>
+    //form submission
+    var mpesaEl = document.getElementById("pay-mpesa-sb");
+    mpesaEl.addEventListener("click", function(){
+        var el = document.getElementById("subject-amount-form");
+            formData = new FormData(el);
+            url = $("#subject-amount-form").attr("action")
+            xhttp = new XMLHttpRequest();
+    
+
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    console.log(xhttp.responseText);
+                    $("#subjectModal").modal("hide");
+                    $("#confirm-payment").modal("show");
+                }
+                else if (this.readyState == 4 && this.status == 400){
+                    console.log(xhttp.responseText);
+                }
+            }
+            xhttp.open("POST", url);
+            xhttp.send(formData);
+    });
+
+    confEl = document.getElementById("btn-confirm-payment")
+    confEl.addEventListener("click", function(){
+        var elF = document.getElementById("check-payment-status");
+        formData = new FormData(elF);
+        url = elF.getAttribute("action")
+        xhttp = new XMLHttpRequest()
+
+        xhttp.onreadystatechange = function(){
+            $("#confirm-payment").modal("hide");
+            if (this.readyState == 4 && this.status == 200){
+                console.log(xhttp.responseText);
+                $(".toast-body").addClass("bg-success");
+                $(".toast-body p").text("Payment successful");
+                $(".toast").toast("show");
+            }
+            else if (this.readyState == 4 && this.status ==400){
+                $(".toast-body").addClass("bg-danger")
+                $(".toast-body p").text("Payment not successful");
+                $(".toast").toast("show");
+            }
+        }
+        xhttp.open("POST", url)
+        xhttp.send(formData)
+    });
 </script>
 {% endblock %}
