@@ -93,27 +93,47 @@
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200){
                     obj = JSON.parse(xhttp.responseText);
+                    while (unitEl.hasChildNodes()) {
+                                    unitEl.removeChild(unitEl.firstChild);
+                                }
                     
                     for(const key of Object.keys(obj)){
-                        Object.getOwnPropertyNames(obj[key]).forEach(function(val){
-                            if (obj[key].length == 0) {
-                                while (unitEl.hasChildNodes()) {
-                                    unitEl.removeChild(un.firstChild);
+                        // Object.getOwnPropertyNames(obj[key]).forEach(function(val){
+                        //     if (obj[key].length == 0) {
+                        //         while (unitEl.hasChildNodes()) {
+                        //             unitEl.removeChild(un.firstChild);
+                        //         }
+                        //     }
+
+                        //     name = obj[key].name
+                        //     id = obj[key].id
+
+                        //     if (name != "undefined"){
+                        //         const option = document.createElement("option");
+                        //         textNode = document.createTextNode(name);
+                        //         option.appendChild(textNode);
+                        //         option.value = id;
+                        //         unitEl.appendChild(option);
+                        //     }
+        
+                        // })
+
+                        if (obj[key].length == 0){
+                            while (unitEl.hasChildNodes()) {
+                                    unitEl.removeChild(unitEl.firstChild);
                                 }
-                            }
+                        }
 
-                            name = obj[key][val].name
-                            id = obj[key][val].id
-
-                            if (name != "undefined"){
+                        name = obj[key].name
+                        id = obj[key].id
+                        
+                        if (name != "undefined"){
                                 const option = document.createElement("option");
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
                                 unitEl.appendChild(option);
                             }
-        
-                        })
                     }
 
                 }
@@ -134,29 +154,24 @@
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200){
                     obj = JSON.parse(xhttp.responseText);
-                    
-                    for(const key of Object.keys(obj)){
-                        Object.getOwnPropertyNames(obj[key]).forEach(function(val){
-                            if (obj[key].length == 0) {
-                                while (unitEl.hasChildNodes()) {
+
+                    while (unitEl.hasChildNodes()) {
                                     unitEl.removeChild(unitEl.firstChild);
                                 }
-                            }
-
-                            name = obj[key][val].name
-                            id = obj[key][val].id
-
-                            if (name != "undefined"){
+                    
+                    for(const key of Object.keys(obj)){
+                        
+                        name = obj[key].name
+                        id = obj[key].id
+                        
+                        if (name != "undefined"){
                                 const option = document.createElement("option");
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
                                 unitEl.appendChild(option);
                             }
-        
-                        })
                     }
-
                 }
             }
 
