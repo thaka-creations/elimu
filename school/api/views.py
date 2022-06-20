@@ -170,7 +170,7 @@ class UnitViewSet(viewsets.ReadOnlyModelViewSet):
         form = self.request.query_params.get('form', False)
         subject = self.request.query_params.get('subject', False)
 
-        if not form or subject:
+        if not form or not subject:
             qs = school_models.UnitModel.objects.all()
             return self.filter_queryset(qs)
 
