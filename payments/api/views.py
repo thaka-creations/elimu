@@ -57,6 +57,32 @@ class UnitAmountViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"details": "Unit amount updated successfully"}, status=status.HTTP_200_OK)
 
 
+class ListFormAmount(viewsets.ReadOnlyModelViewSet):
+    queryset = payment_models.FormAmount.objects.all()
+    serializer_class = payment_serializers.FormAmountSerializer
+
+    def get_queryset(self):
+        form = self.request.query_params.get("form", False)
+        if not form:
+            return payment_models.FormAmount.objects.none()
+        else:
+            return payment_models.FormAmount.objects.filter(form__id=form)
+
+
+class ListSubjectAmount(viewsets.ReadOnlyModelViewSet):
+    queryset = payment_models.SubjectAmount.objects.all()
+    serializer_class = payment_serializers.SubjectAmountSerializer
+
+    def get_queryset(self):
+        form = self.request.query_params.get("form", False)
+        subject = self.request.query_params.get("subject", False)
+
+        if not form or not subject:
+            return payment_models.SubjectAmount.objects.none()
+        else:
+            return payment_models.SubjectAmount.objects.filter(form__id=form, subject__id=subject)
+
+
 class InvoiceViewSet(viewsets.ViewSet):
 
     def create(self, request):

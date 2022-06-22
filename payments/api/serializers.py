@@ -26,11 +26,47 @@ class UnitAmountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UnitAmount
-        fields = "__all__"
+        fields = ['unit', 'period', 'amount']
 
     @staticmethod
     def get_period(obj):
         return str(obj.period) + " " + obj.period_type
+
+
+class FormAmountSerializer(serializers.ModelSerializer):
+    period = serializers.SerializerMethodField()
+    form = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.FormAmount
+        fields = ['form', 'amount', 'period']
+
+    @staticmethod
+    def get_period(obj):
+        return str(obj.period) + " " + obj.period_type
+
+    def get_form(self, obj):
+        return obj.form.name
+
+
+class SubjectAmountSerializer(serializers.ModelSerializer):
+    period = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
+    form = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.SubjectAmount
+        fields = ['subject', 'form', 'period', 'amount']
+
+    @staticmethod
+    def get_period(obj):
+        return str(obj.period) + " " + obj.period_type
+
+    def get_subject(self, obj):
+        return obj.subject.name
+
+    def get_form(self, obj):
+        return obj.form.name
 
 
 class CreateUnitAmountSerializer(serializers.Serializer):
