@@ -173,9 +173,9 @@ SERVICES_URLS = {
 LOGIN_URL = "/login"
 LOGOUT_REDIRECT_URL = "/login"
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # STATICFILES_DIRS = ['/var/www/static/']
 STATIC_ROOT = "/var/www/static/"
