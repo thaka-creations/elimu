@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 TOKEN_SECRET_KEY = os.environ.get('TOKEN_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG")
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -109,11 +109,11 @@ WSGI_APPLICATION = 'Elimu.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'elimu',
-        'USER': 'root',
-        'PASSWORD': 'root0425@',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': os.environ.get("DATABASE_NAME"),
+        'USER': os.environ.get("DATABASE_USER"),
+        'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
+        'HOST': os.environ.get("DATABASE_HOST"),
+        'PORT': os.environ.get("DATABASE_PORT")
     }
 }
 
@@ -184,11 +184,19 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-MPESA_CONSUMER_KEY = 'uQH9B9rRvYHvpM2ICYyvBdwR0UE6Pvz4'
-MPESA_CONSUMER_SECRET = 'DurpnNk6Z21uDjaW'
-MPESA_SHORTCODE = '4083027'
-MPESA_SHORTCODE_TYPE = 'paybill'
-MPESA_PASSKEY = '9cd4dd3777a83ffc18c70766a77e1f2077dbaea17188f98235158ed533f3331d'
-MPESA_CALLBACK_URL = 'https://60df-105-166-128-242.eu.ngrok.io/api/v1/payments/callback'
+MPESA_CONSUMER_KEY = os.environ.get("MPESA_CONSUMER_KEY")
+MPESA_CONSUMER_SECRET = os.environ.get("MPESA_CONSUMER_SECRET")
+MPESA_SHORTCODE = os.environ.get("MPESA_SHORTCODE")
+MPESA_SHORTCODE_TYPE = os.environ.get("MPESA_SHORTCODE_TYPE")
+MPESA_PASSKEY = os.environ.get("MPESA_PASSKEY")
+MPESA_CALLBACK_URL = os.environ.get("MPESA_CALLBACK_URL")
+VDOCIPHER_SECRET = os.environ.get("VDOCIPHER_SECRET")
 
-VDOCIPHER_SECRET = 'MPv32VRtyY5lpuT7VFTWNQxLhstDB7XoA5nEMjB501XpZlSjSFx5iYHiij8bnmOr'
+# MPESA_CONSUMER_KEY = 'uQH9B9rRvYHvpM2ICYyvBdwR0UE6Pvz4'
+# MPESA_CONSUMER_SECRET = 'DurpnNk6Z21uDjaW'
+# MPESA_SHORTCODE = '4083027'
+# MPESA_SHORTCODE_TYPE = 'paybill'
+# MPESA_PASSKEY = '9cd4dd3777a83ffc18c70766a77e1f2077dbaea17188f98235158ed533f3331d'
+# MPESA_CALLBACK_URL = 'https://60df-105-166-128-242.eu.ngrok.io/api/v1/payments/callback'
+#
+# VDOCIPHER_SECRET = 'MPv32VRtyY5lpuT7VFTWNQxLhstDB7XoA5nEMjB501XpZlSjSFx5iYHiij8bnmOr'
