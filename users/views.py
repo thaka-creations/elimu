@@ -118,18 +118,22 @@ class ProtectedView(View):
     def get(self, request):
         qs = school_models.FormModel.objects.all()[0:4]
         context = {"forms": qs, "page": "index"}
-        video_id = "a110bf85edccb63e90f618b939c37640"
         url = CALLBACK_URL + 'video/get-video-otp'
         headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
-
-        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
-        res = resp.json()
-        if not res:
+        vid_exist = school_models.CoverVideo.objects.exists()
+        if not vid_exist:
             otp = False
             playback = False
         else:
-            otp = res['otp']
-            playback = res['playbackInfo']
+            video_id = school_models.CoverVideo.objects.last().videoid
+            resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+            res = resp.json()
+            try:
+                otp = res['otp']
+                playback = res['playbackInfo']
+            except Exception as e:
+                otp = False
+                playback = False
 
         context.update({"otp": otp, "playback": playback})
         return render(request, self.template_name, context=context)

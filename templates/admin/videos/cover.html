@@ -20,11 +20,11 @@
                     Add Video
                 </div>
                 <div class="card-body mt-2">
-                    <form action="/admin/videos/cover-video", method="post">
+                    <form action="/admin/videos/cover-video" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{form}}
 
-                        <button class="btn btn-primary shadow-none rounded-0 mt-3">
+                        <button type="submit" class="btn btn-primary shadow-none rounded-0 mt-3">
                             Add Video
                         </button>
                     </form>

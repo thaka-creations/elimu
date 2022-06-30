@@ -100,12 +100,12 @@ class CoverVideo(AdminMixin):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        form = self.form_class(request.POST)
+        form = self.form_class(request.POST, request.FILES)
         context = {"form": form}
         if form.is_valid():
             data = form.cleaned_data
-            vid = request.FILES.get('video')
-            video_instance = school_models.VideoModel.objects.create(label=data['label'])
+            video_instance = school_models.CoverVideo.objects.create(label=data['label'])
+            vid = request.FILES['video']
 
             try:
                 name_list = vid.name.split(".")
