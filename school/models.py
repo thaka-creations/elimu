@@ -49,3 +49,8 @@ class VideoModel(BaseModel):
 
     def __str__(self):
         return self.videoid
+
+
+class CoverVideo(BaseModel):
+    label = models.CharField(max_length=255, blank=True, null=True)
+    videoid = models.CharField(max_length=255, blank=True, null=True)

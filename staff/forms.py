@@ -20,6 +20,13 @@ class AddVideoForm(forms.Form):
                             widget=forms.FileInput(attrs={"class": "form-control shadow-none rounded-0"}))
 
 
+class CoverVideoForm(forms.Form):
+    label = forms.CharField(label="Video Label", max_length=255, required=True,
+                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    video = forms.FileField(label="Video File", required=True,
+                            widget=forms.FileInput(attrs={"class": "form-control shadow-none rounded-0"}))
+
+
 class AddSubjectForm(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))

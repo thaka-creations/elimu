@@ -1,9 +1,13 @@
 import requests
-from django.shortcuts import render, redirect, reverse
+import os
+from threading import Thread
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import render, redirect
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
 from school import models as school_models
+from school.utils import video_util
 from payments import models as payment_models
 from staff import forms, models as staff_models
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -85,6 +89,39 @@ class AddVideo(AdminMixin):
         if form.is_valid():
             pass
         return render(request, self.template_name)
+
+
+class CoverVideo(AdminMixin):
+    template_name = "admin/videos/cover.html"
+    form_class = forms.CoverVideoForm
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        context = {"form": form}
+        if form.is_valid():
+            data = form.cleaned_data
+            vid = request.FILES.get('video')
+            video_instance = school_models.VideoModel.objects.create(label=data['label'])
+
+            try:
+                name_list = vid.name.split(".")
+                vid_name = str(video_instance.id) + "." + name_list[-1]
+            except Exception as e:
+                vid_name = vid.name
+
+            fs = FileSystemStorage()
+            file = fs.save(vid_name, vid)
+            file_url = fs.url(file)
+            filepath = "media/" + os.path.basename(file_url)
+            Thread(target=video_util.upload_video, args=(filepath, vid_name, video_instance)).start()
+            context.update({"message": "Video added successfully"})
+        else:
+            context.update({"message": "Enter all required fields"})
+        return redirect("/admin/videos/cover-video", context)
 
 
 class ListSubjects(AdminMixin, ListView):
