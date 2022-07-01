@@ -33,6 +33,11 @@
         .dropdown-menu{
             left: -6em!important;
         }
+        @media (max-width: 767.98px) { 
+            .search-div{
+                display:none!important;
+            }
+        }
     </style>
     {% block title%}{% endblock %}
 
@@ -44,19 +49,19 @@
         <nav class="navbar navbar-expand-lg bg-light pt-0 pb-5">
             <div class="container-fluid">
                 <div class="row w-100 py-2">
-                    <div class="col-12 col-md-3">
+                    <div class="col-6 col-md-3">
                         <a href="/" class="navbar-brand">
                             <img src="{% static 'images/tafa/logo.png'%}" alt="Tafa logs" class="tf-logo border border-3 rounded-circle">
                         </a>
                     </div>
-                    <div class="col-12 col-md-6 d-flex">
+                    <div class="col-12 col-md-6 d-flex search-div">
                         <form action="" role="search" class="align-self-center w-100 position-relative">
                             <input type="search" class="form-control search shadow-none py-2 rounded-pill" placeholder="Search for topic" aria-label="Search" id="topic-search">
                             <ul id="search-list" class="bg-white list-unstyled position-absolute border-1 border-secondary p-2 shadow d-none" style="width: 95%; left:1em">
                             </ul>
                         </form>
                     </div>
-                    <div class="col-12 col-md-3 d-flex justify-content-end">
+                    <div class="col-6 col-md-3 d-flex justify-content-end">
                         <div class="dropdown">
                             <div class="dropdown-toggle d-flex rounded-circle border border-dark bg-dark justify-content-center align-content-center user-cont p-2" data-bs-toggle="dropdown">
                                 <p class="text-white align-self-center mb-0">
