@@ -3,6 +3,7 @@ import os
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
@@ -100,28 +101,21 @@ class CoverVideo(AdminMixin):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        form = self.form_class(request.POST, request.FILES)
-        context = {"form": form}
-        if form.is_valid():
-            data = form.cleaned_data
-            video_instance = school_models.CoverVideo.objects.create(label=data['label'])
-            vid = request.FILES['video']
+        video_instance = school_models.CoverVideo.objects.create(label="cover")
+        vid = request.FILES['file']
+        try:
+            name_list = vid.name.split(".")
+            vid_name = str(video_instance.id) + "." + name_list[-1]
+        except Exception as e:
+            vid_name = vid.name
 
-            try:
-                name_list = vid.name.split(".")
-                vid_name = str(video_instance.id) + "." + name_list[-1]
-            except Exception as e:
-                vid_name = vid.name
+        fs = FileSystemStorage()
+        file = fs.save(vid_name, vid)
+        file_url = fs.url(file)
 
-            fs = FileSystemStorage()
-            file = fs.save(vid_name, vid)
-            file_url = fs.url(file)
-            filepath = "media/" + os.path.basename(file_url)
-            Thread(target=video_util.upload_video, args=(filepath, vid_name, video_instance)).start()
-            context.update({"message": "Video added successfully"})
-        else:
-            context.update({"message": "Enter all required fields"})
-        return redirect("/admin/videos/cover-video", context)
+        filepath = "media/" + os.path.basename(file_url)
+        Thread(target=video_util.upload_video, args=(filepath, vid_name, video_instance)).start()
+        return JsonResponse({"message":"Uploaded successfully"})
 
 
 class ListSubjects(AdminMixin, ListView):

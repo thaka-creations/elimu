@@ -27,3 +27,14 @@ class GetVideoOtp(APIView):
 
         response = requests.post(url, data=payload, headers=headers)
         return Response(json.loads(response.text), status=status.HTTP_200_OK)
+
+
+class Video(APIView):
+    def post(self, request):
+        # url = "https://dev.vdocipher.com/api/videos"
+        # headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+        # querystring = {"title": "cover"}
+        # resp = requests.request("PUT", url, headers=headers, params=querystring)
+        # print("testing")
+        # print(resp)
+        return Response("one")
