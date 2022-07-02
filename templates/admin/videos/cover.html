@@ -1,7 +1,7 @@
 {% extends "admin/partials/theme.html" %}
 
 {% block styles %}
-<link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 {% endblock %}
 {% block content %}
 <div class="pagetitle">
@@ -20,57 +20,122 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    Add Video
+                    Add Cover Video
                 </div>
                 <div class="card-body mt-2">
-                    <form action="/admin/videos/cover-video" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{form}}
-
-                        <button type="submit" class="btn btn-primary shadow-none rounded-0 mt-3">
-                            Add Video
-                        </button>
-                    </form>
+                    <div id="myId" class="dropbox d-flex align-items-center justify-content-center">
+                        Click to upload video or drop video here
+                    </div>
                 </div>
             </div>
-
-            <div class="card mt-2">
+            <!-- <div class="card mt-2">
                 <div class="card-header">
                     List Cover Videos
                 </div>
                 <div class="card-body">
                 </div>
-            </div>
+            </div> -->
         </div>
 
-        <div class="col-md-8">
+        <!-- <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
                     Video Player
                 </div>
                 <div class="card-body">
-                    <form enctype='multipart/form-data' action="admin/videos/cover-video" method='POST' class="dropzone dz" id="my-dropzone" >
-                        {% csrf_token %}
-                        <input type="text" name="label" class="form-control" placeholder="Video label">
-                        <div class="fallback">
-                          <input name="file" type="file" multiple />
-                        </div>
-                    </form>
+                    
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </section>
 {% endblock content%}
 
 {% block scripts %}
-<script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script>
-    Dropzone.autoDiscover=false;
-    const myDropzone= new Dropzone('#my-dropzone',{
-        url:'./cover-video',
-        maxFiles:1
-    })
+    Dropzone.autoDiscover = false;
+      var myDropzone = new Dropzone(
+        "div#myId",
+        {
+          url: "./cover-video-id",
+          maxFilesize: 5120, // MB
+          acceptedFiles: 'video/*',
+          accept: function(file, done) {
+            // REPLACE THE BELOW URL WITH YOUR AJAX BACKEND URL
+            let response;
+            fetch("./cover-video-id", {
+              method: 'POST',
+              body: JSON.stringify({
+                // use this to send contexual information to your AJAX URL
+                // these contexual information can be saved in your DB
+                name: file.name
+              })
+            })
+              .then(resp=> {
+                response = resp;
+                return response.json();
+              })
+              .then((uploadCreds) => {
+                console.log(response.status)
+                if (response.status !== 200) {
+                  done(uploadCreds.message);
+                  return;
+                } 
+                else {
+                    this.awsOptions = uploadCreds;
+                    this.options.url = this.awsOptions.clientPayload.uploadLink;
+                    done();
+                }                
+              })
+              .catch(e => done(e.message))
+          },
+          init: function() {
+            this.url = '#/sdfjsldf'
+            this.on("sending", function(file, xhr, formData) {
+              formData.append("x-amz-credential", this.awsOptions.clientPayload['x-amz-credential']);
+              formData.append("x-amz-algorithm", this.awsOptions.clientPayload['x-amz-algorithm']);
+              formData.append("x-amz-date ", this.awsOptions.clientPayload['x-amz-date']);
+              formData.append("x-amz-signature", this.awsOptions.clientPayload['x-amz-signature']);
+              formData.append("key", this.awsOptions.clientPayload['key']);
+              formData.append("policy", this.awsOptions.clientPayload['policy']);
+              formData.append("success_action_status", 201);
+              formData.append("success_action_redirect", "");
+            });
+            document.querySelector('div#myId').className += ' dropzone';
+
+            this.on("success", function(file, response){
+                console.log("testing")
+                console.log(response)
+            })
+          }
+        }
+      );
+    //     accept: function(file, done) {
+    //             getCredentials({}, () => {
+    //             this.awsOptions = "Apisecret ODKk0yo2532mOFD1ruHqKBN3dyPhoM0qR0HL2grFFc85593lGeJUuxTWhHxHgTD2";
+    //             this.options.url = this.awsOptions.uploadLink;
+    //             done();
+    //         })},
+    //     init: function() {
+    //     this.url = '#/sdfjsldf'
+    //     this.on("sending", function(file, xhr, formData) {
+    //         formData.append("x-amz-credential", this.awsOptions['x-amz-credential']);
+    //         formData.append("x-amz-algorithm", this.awsOptions['x-amz-algorithm']);
+    //         formData.append("x-amz-date ", this.awsOptions['x-amz-date']);
+    //         formData.append("x-amz-signature", this.awsOptions['x-amz-signature']);
+    //         formData.append("key", this.awsOptions['key']);
+    //         formData.append("policy", this.awsOptions['policy']);
+    //         formData.append("success_action_status", 201);
+    //         formData.append("success_action_redirect", "");
+    //     });
+    // }
+    // })
 </script>
 
+<!-- <script>
+    function done(response) {
+        console.log(response)
+    }
+</script> -->
 {% endblock %}

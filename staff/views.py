@@ -1,7 +1,9 @@
 import requests
 import os
+import json
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views import View
@@ -92,7 +94,28 @@ class AddVideo(AdminMixin):
         return render(request, self.template_name)
 
 
-class CoverVideo(AdminMixin):
+@csrf_exempt
+def cover_videoid(request):
+    url = "https://dev.vdocipher.com/api/videos"
+    headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    name = body['name']
+    video_instance = school_models.CoverVideo.objects.create(label="cover")
+    try:
+        name_list = name.split(".")
+        vid_name = str(video_instance.id) + "." + name_list[-1]
+    except Exception as e:
+        vid_name = name
+    querystring = {"title": vid_name}
+    resp = requests.request("PUT", url, headers=headers, params=querystring)
+    upload_info = resp.json()
+    video_instance.videoid = upload_info['videoId']
+    video_instance.save()
+    return JsonResponse(upload_info)
+
+
+class CoverVideo(View):
     template_name = "admin/videos/cover.html"
     form_class = forms.CoverVideoForm
 
@@ -101,6 +124,8 @@ class CoverVideo(AdminMixin):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
+        print("Testing")
+        print(request.__dict__)
         video_instance = school_models.CoverVideo.objects.create(label="cover")
         vid = request.FILES['file']
         try:
@@ -115,7 +140,7 @@ class CoverVideo(AdminMixin):
 
         filepath = "media/" + os.path.basename(file_url)
         Thread(target=video_util.upload_video, args=(filepath, vid_name, video_instance)).start()
-        return JsonResponse({"message":"Uploaded successfully"})
+        return JsonResponse({"message": "Uploaded successfully"})
 
 
 class ListSubjects(AdminMixin, ListView):

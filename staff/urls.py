@@ -6,6 +6,7 @@ urlpatterns = [
     path("admin/videos", views.ListVideos.as_view()),
     path("admin/videos/add-video", views.AddVideo.as_view()),
     path("admin/videos/cover-video", views.CoverVideo.as_view()),
+    path("admin/videos/cover-video-id", views.cover_videoid),
     path("admin/forms", views.ListForm.as_view()),
     path("admin/forms/add-form", views.AddForm.as_view()),
     path("admin/subjects", views.ListSubjects.as_view()),
