@@ -481,3 +481,16 @@ class AddRegistrationCodes(AdminMixin):
             return redirect("/admin/registration-codes", context=context)
 
         return redirect("/admin/registration-codes", {"qs": qs, "form": form})
+
+
+class ListUsers(AdminMixin, ListView):
+    model = user_models.User
+    template_name = "admin/users/index.html"
+    context_object_name = "users"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_admin=False, is_staff=False)
