@@ -5,19 +5,17 @@ from school import models as school_models
 class AddVideoForm(forms.Form):
     form = forms.ModelChoiceField(queryset=school_models.FormModel.objects.all(), label="Form", required=True,
                                   widget=forms.Select(attrs={"class": "form-control "
-                                                                      "shadow-none rounded-0 mb-2", "id": "_form"}))
+                                                                      "shadow-none rounded-0 mb-2", "id": "a_form"}))
     subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
-                                                                         "rounded-0 mb-2", "id": "_subject"}))
+                                                                         "rounded-0 mb-2", "id": "a_subject"}))
     unit = forms.ChoiceField(label="Unit", required=True,
                              widget=forms.Select(attrs={"class": "form-control "
-                                                                 "shadow-none rounded-0 mb-2", "id": "_unit"}))
+                                                                 "shadow-none rounded-0 mb-2", "id": "a_unit"}))
     label = forms.CharField(label="Video Label", max_length=255, required=True,
                             widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     index = forms.IntegerField(label="Video Index",
                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
-    video = forms.FileField(label="Video File", required=True,
-                            widget=forms.FileInput(attrs={"class": "form-control shadow-none rounded-0"}))
 
 
 class CoverVideoForm(forms.Form):

@@ -1,5 +1,9 @@
 {% extends "admin/partials/theme.html" %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+{% endblock %}
+
 {% block content %}
 
 <div class="pagetitle">
@@ -17,12 +21,16 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-body mt-3 px-4">
-                    <form action="/api/v1/school/video" method="post" id="video-form" enctype="multipart/form-data">
+                    <form action="/admin/videos/add-video" method="post" id="video-form" enctype="multipart/form-data">
+                        {% csrf_token %}
                         {{form}}
+
+                        <div id="myId" class="dropbox d-flex align-items-center justify-content-center">
+                            Click to upload video or drop video here
+                        </div>
+                        <input type="hidden" name="file" id="video-file">
+                        <button class="btn btn-primary rounded-0 shadow-none mt-2 disabled" type="submit" id="add-unit-video">Add Video</button>
                     </form>
-                </div>
-                <div class="card-footer border-0 pt-0 px-4">
-                    <button class="btn btn-primary shadow-none rounded-0" id="add-video">Add Video</button>
                 </div>
             </div>
 
@@ -44,48 +52,49 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script>
-    var toast = document.getElementById("toast");
-    var btn = document.getElementById("add-video");
-    btn.addEventListener("click", addVideo);
+    // var toast = document.getElementById("toast");
+    // var btn = document.getElementById("add-video");
+    // btn.addEventListener("click", addVideo);
     
-    function addVideo(){
-        var el = document.getElementById("video-form");
-        var url = el.getAttribute("action");
-        var formData = new FormData(el);
-        var unt = document.getElementById("_unit").value;
+    // function addVideo(){
+    //     var el = document.getElementById("video-form");
+    //     var url = el.getAttribute("action");
+    //     var formData = new FormData(el);
+    //     var unt = document.getElementById("_unit").value;
 
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-            if (this.readyState == 4 && this.status == 200){
-                console.log(xhttp.responseText)
-                $(".toast-body").addClass("bg-success");
-                $(".toast-body p").text("Video added successfully");
-                $(".toast").toast("show");
-            }
-            else if (this.readyState ==4 && this.status == 400){
-                console.log(xhttp.responseText)
-                $(".toast-body").addClass("bg-danger");
-                $(".toast-body p").text("Enter all required details");
-                $(".toast").toast("show");
-            }
-            window.location.load = "/admin/videos?unit="+unt;
-        }
+    //     xhttp = new XMLHttpRequest();
+    //     xhttp.onreadystatechange = function(){
+    //         if (this.readyState == 4 && this.status == 200){
+    //             console.log(xhttp.responseText)
+    //             $(".toast-body").addClass("bg-success");
+    //             $(".toast-body p").text("Video added successfully");
+    //             $(".toast").toast("show");
+    //         }
+    //         else if (this.readyState ==4 && this.status == 400){
+    //             console.log(xhttp.responseText)
+    //             $(".toast-body").addClass("bg-danger");
+    //             $(".toast-body p").text("Enter all required details");
+    //             $(".toast").toast("show");
+    //         }
+    //         window.location.load = "/admin/videos?unit="+unt;
+    //     }
 
-        xhttp.open("POST", url);
-        xhttp.send(formData);
-    }
+    //     xhttp.open("POST", url);
+    //     xhttp.send(formData);
+    // }
 </script>
 <script>
-    fm = document.getElementById("_form");
-    sb = document.getElementById("_subject");
-    unitEl = document.getElementById("_unit");
-    fm.addEventListener("change", fmChangeEvent);
-    sb.addEventListener("change", sbChangeEvent);
+    afm = document.getElementById("a_form");
+    asb = document.getElementById("a_subject");
+    aun = document.getElementById("a_unit");
+    afm.addEventListener("change", fmChangeEvent);
+    asb.addEventListener("change", sbChangeEvent);
 
     function fmChangeEvent(){
-        form = fm.value;
-        subject = sb.value;
+        form = afm.value;
+        subject = asb.value;
         
         if (subject != "") {
             
@@ -93,34 +102,14 @@
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200){
                     obj = JSON.parse(xhttp.responseText);
-                    while (unitEl.hasChildNodes()) {
-                                    unitEl.removeChild(unitEl.firstChild);
+                    while (aun.hasChildNodes()) {
+                                    aun.removeChild(aun.firstChild);
                                 }
                     
                     for(const key of Object.keys(obj)){
-                        // Object.getOwnPropertyNames(obj[key]).forEach(function(val){
-                        //     if (obj[key].length == 0) {
-                        //         while (unitEl.hasChildNodes()) {
-                        //             unitEl.removeChild(un.firstChild);
-                        //         }
-                        //     }
-
-                        //     name = obj[key].name
-                        //     id = obj[key].id
-
-                        //     if (name != "undefined"){
-                        //         const option = document.createElement("option");
-                        //         textNode = document.createTextNode(name);
-                        //         option.appendChild(textNode);
-                        //         option.value = id;
-                        //         unitEl.appendChild(option);
-                        //     }
-        
-                        // })
-
                         if (obj[key].length == 0){
-                            while (unitEl.hasChildNodes()) {
-                                    unitEl.removeChild(unitEl.firstChild);
+                            while (aun.hasChildNodes()) {
+                                    aun.removeChild(aun.firstChild);
                                 }
                         }
 
@@ -132,7 +121,7 @@
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
-                                unitEl.appendChild(option);
+                                aun.appendChild(option);
                             }
                     }
 
@@ -145,8 +134,8 @@
     }
 
     function sbChangeEvent(){
-        form = fm.value;
-        subject = sb.value;
+        form = afm.value;
+        subject = asb.value;
 
         if (form != ""){
 
@@ -155,8 +144,8 @@
                 if (this.readyState == 4 && this.status == 200){
                     obj = JSON.parse(xhttp.responseText);
 
-                    while (unitEl.hasChildNodes()) {
-                                    unitEl.removeChild(unitEl.firstChild);
+                    while (aun.hasChildNodes()) {
+                                    aun.removeChild(aun.firstChild);
                                 }
                     
                     for(const key of Object.keys(obj)){
@@ -169,7 +158,7 @@
                                 textNode = document.createTextNode(name);
                                 option.appendChild(textNode);
                                 option.value = id;
-                                unitEl.appendChild(option);
+                                aun.appendChild(option);
                             }
                     }
                 }
@@ -180,5 +169,65 @@
 
         }
     }
+</script>
+<script>
+    Dropzone.autoDiscover = false;
+      var myDropzone = new Dropzone(
+        "div#myId",
+        {
+          url: "./cover-video-id",
+          maxFilesize: 5120, // MB
+          acceptedFiles: 'video/*',
+          accept: function(file, done) {
+            // REPLACE THE BELOW URL WITH YOUR AJAX BACKEND URL
+            let response;
+            fetch("./add-video-id", {
+              method: 'POST',
+              body: JSON.stringify({
+                // use this to send contexual information to your AJAX URL
+                // these contexual information can be saved in your DB
+                name: file.name
+              })
+            })
+              .then(resp=> {
+                response = resp;
+                return response.json();
+              })
+              .then((uploadCreds) => {
+                console.log(response.status)
+                if (response.status !== 200) {
+                  done(uploadCreds.message);
+                  return;
+                } 
+                else {
+                    this.awsOptions = uploadCreds;
+                    this.options.url = this.awsOptions.clientPayload.uploadLink;
+                    var avid = document.getElementById("video-file");
+                    avid.value = this.awsOptions.videoId;
+                    done();
+                }                
+              })
+              .catch(e => done(e.message))
+          },
+          init: function() {
+            this.url = '#/sdfjsldf'
+            this.on("sending", function(file, xhr, formData) {
+              formData.append("x-amz-credential", this.awsOptions.clientPayload['x-amz-credential']);
+              formData.append("x-amz-algorithm", this.awsOptions.clientPayload['x-amz-algorithm']);
+              formData.append("x-amz-date ", this.awsOptions.clientPayload['x-amz-date']);
+              formData.append("x-amz-signature", this.awsOptions.clientPayload['x-amz-signature']);
+              formData.append("key", this.awsOptions.clientPayload['key']);
+              formData.append("policy", this.awsOptions.clientPayload['policy']);
+              formData.append("success_action_status", 201);
+              formData.append("success_action_redirect", "");
+            });
+            document.querySelector('div#myId').className += ' dropzone';
+
+            this.on("success", function(file, response){
+                $("#add-unit-video").removeClass("disabled");
+            })
+          }
+        }
+      );
 </script>
 {% endblock %}

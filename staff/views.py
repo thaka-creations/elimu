@@ -88,10 +88,41 @@ class AddVideo(AdminMixin):
 
     def post(self, request):
         form = self.form_class(request.POST)
+        data = form.data
+        video_id = data['file']
+        unit_id = data['unit']
+        try:
+            video_instance = school_models.VideoModel.objects.get(videoid=video_id)
+        except Exception as e:
+            print("error")
+            return redirect("/admin/videos/add-video", {"form": form})
 
-        if form.is_valid():
-            pass
-        return render(request, self.template_name)
+        try:
+            unit = school_models.UnitModel.objects.get(id=unit_id)
+        except Exception as e:
+            print("unit error")
+            return redirect("/admin/videos/add-video", {"form": form})
+
+        video_instance.unit = unit
+        video_instance.index = data['index']
+        video_instance.label = data['label']
+        video_instance.save()
+
+        return redirect("/admin/units")
+
+
+@csrf_exempt
+def add_videoid(request):
+    url = "https://dev.vdocipher.com/api/videos"
+    headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    name = body['name']
+    querystring = {"title": name}
+    resp = requests.request("PUT", url, headers=headers, params=querystring)
+    upload_info = resp.json()
+    school_models.VideoModel.objects.create(videoid=upload_info['videoId'])
+    return JsonResponse(upload_info)
 
 
 @csrf_exempt

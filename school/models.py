@@ -41,7 +41,7 @@ class UnitModel(BaseModel):
 
 class VideoModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="videos")
+    unit = models.ForeignKey(UnitModel, on_delete=models.CASCADE, related_name="videos", blank=True, null=True)
     videoid = models.CharField(max_length=255, blank=True, null=True)
     label = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
