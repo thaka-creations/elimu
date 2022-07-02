@@ -12,6 +12,7 @@
     }
     .sb-it{
         cursor: pointer;
+        background-color:rgba(189, 189, 189, 0.4);
     }
     .form-two{
         background-color:#5968B0;
@@ -28,21 +29,21 @@
     </div>
 </div>
 
-<div class="card rounded-0 mx-4">
-    <div class="card-header rounded-0 d-flex justify-content-between">
+<div class="card rounded-0">
+    <div class="card-header rounded-0 d-flex justify-content-between {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">
         <p class="fs-5 mb-0 text-white">{{instance.name.title}} Subjects</p>
         {% if not subscribed %}
         <button class="btn border-1 shadow-sm bg-white text-success rounded-0" id="btn-form-subscribe">Subscribe</button>
         {% endif %}
     </div>
 
-    <div class="card-body {%if num == 1 %}form-one {%elif num == 2 %}form-two {%elif num == 3 %}form-three {%else%}form-four {%endif%}">
+    <div class="card-body">
         <div class="container py-2">
             <div class="row gx-3 gy-3">
                 {% if subjects %}
                     {% for subject in subjects %}
                         <div class="col-md-3">
-                            <div class="py-2 border text-center sb-it bg-white" sub-id="{{subject.id}}">
+                            <div class="py-2 border text-center sb-it" sub-id="{{subject.id}}">
                                 {{subject.name}}
                             </div>
                         </div>
