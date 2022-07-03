@@ -186,6 +186,18 @@ class ListSubjects(AdminMixin, ListView):
         return context
 
 
+@csrf_exempt
+def delete_subject(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = school_models.SubjectModel.objects.get(id=body_unicode)
+    except school_models.FormModel.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
+
+
 class AddSubject(AdminMixin):
     form_class = forms.AddSubjectForm
     login_url = "/"

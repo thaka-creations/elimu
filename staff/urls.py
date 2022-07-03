@@ -12,6 +12,7 @@ urlpatterns = [
     path("admin/delete-form", views.delete_form),
     path("admin/forms/add-form", views.AddForm.as_view()),
     path("admin/subjects", views.ListSubjects.as_view()),
+    path("admin/delete-subject", views.delete_subject),
     path("admin/subjects/add-subject", views.AddSubject.as_view()),
     path("admin/units", views.ListUnits.as_view()),
     path("admin/units/add-unit", views.AddUnit.as_view()),

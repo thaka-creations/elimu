@@ -91,12 +91,25 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $('#subject-table').DataTable();
+        var myTable = $('#subject-table').DataTable();
 
         $("#subject-table tbody").on('click', 'tr', function(e){
             id = $(this).attr('data-id');
             window.location.href = "/admin/subjects/"+id;
-        })
+        });
+
+        $(".bi-trash").on("click", function (e) {
+            e.stopPropagation();
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    myTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/delete-subject");
+            xhttp.send(tr.attr('data-id'));
+        });
     });
 </script>
 {% endblock %}
