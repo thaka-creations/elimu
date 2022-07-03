@@ -5,7 +5,7 @@ from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
@@ -463,6 +463,18 @@ class ListRegistrationCodes(AdminMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['form'] = forms.AddRegistrationCodes
         return context
+
+
+@csrf_exempt
+def delete_registration_code(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = user_models.RegistrationCodes.objects.get(id=json.loads(body_unicode))
+    except user_models.RegistrationCodes.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
 
 
 class AddRegistrationCodes(AdminMixin):
