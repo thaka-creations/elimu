@@ -244,6 +244,18 @@ class ListForm(AdminMixin, ListView):
         return context
 
 
+@csrf_exempt
+def delete_form(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = school_models.FormModel.objects.get(id=body_unicode)
+    except school_models.FormModel.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
+
+
 class AddForm(AdminMixin):
     form_class = forms.AddForm
     template_name = "admin/forms/create.html"

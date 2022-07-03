@@ -93,12 +93,25 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $('#form-table').DataTable();
+        var myTable = $('#form-table').DataTable();
 
         $("#form-table tbody").on('click', 'tr', function(e){
             id = $(this).attr('data-id');
             window.location.href = "/admin/forms/"+id;
-        })
+        });
+
+        $(".bi-trash").on("click", function (e) {
+            e.stopPropagation();
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    myTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/delete-form");
+            xhttp.send(tr.attr('data-id'))
+        });
     });
 </script>
 {% endblock %}
