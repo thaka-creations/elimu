@@ -4,6 +4,7 @@ import json
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views import View
@@ -187,6 +188,7 @@ class ListSubjects(AdminMixin, ListView):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def delete_subject(request):
     body_unicode = request.body.decode('utf-8')
     try:
@@ -257,6 +259,7 @@ class ListForm(AdminMixin, ListView):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def delete_form(request):
     body_unicode = request.body.decode('utf-8')
     try:
@@ -291,6 +294,19 @@ class ListUnits(AdminMixin, ListView):
     template_name = "admin/units/index.html"
     context_object_name = "units"
     login_url = "/login"
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def delete_unit(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = school_models.UnitModel.objects.get(id=body_unicode)
+    except school_models.UnitModel.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
 
 
 class AddUnit(AdminMixin):

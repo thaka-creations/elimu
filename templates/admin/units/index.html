@@ -25,7 +25,7 @@
             <a href="/admin/units/add-unit" class="btn btn-primary shadow-none">Add Unit</a>
         </div>
         <div class="card-body px-4">
-            <table class="table table-hover table-bordered">
+            <table class="display" id="unit-table">
                 <thead>
                     <tr>
                         <th class="text-center">
@@ -90,5 +90,23 @@
         });
     });
     
+</script>
+<script>
+     $(document).ready(function () {
+        var myTable = $('#unit-table').DataTable();
+
+        $(".bi-trash").on("click", function (e) {
+        e.stopPropagation();
+        tr = $(this).parents("tr");
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200){
+                myTable.row( tr ).remove().draw( false );
+            }
+        }
+        xhttp.open("POST", "/admin/delete-unit");
+        xhttp.send(tr.attr('data-bs-unit'));
+    })
+     });
 </script>
 {% endblock %}
