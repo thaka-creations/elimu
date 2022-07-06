@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from users.utils.managers import UserManager
 from staff.models import RegistrationCodes
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 ACCOUNT_STATUS = [
@@ -34,12 +35,10 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.EmailField(unique=True)
     name = models.CharField(max_length=1000)
-    school = models.CharField(max_length=1000, blank=True, null=True)
-    county = models.ForeignKey(County, on_delete=models.DO_NOTHING, related_name="county_users", blank=True, null=True)
-    code = models.ForeignKey(RegistrationCodes, on_delete=models.DO_NOTHING, related_name="code_users", blank=True,
-                             null=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_agent = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
     account_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
 
     USERNAME_FIELD = "username"
@@ -54,3 +53,32 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+
+class Agent(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="agent_user")
+    code = models.CharField(max_length=255)
+    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+
+
+class Staff(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff_user")
+    phone = PhoneNumberField(blank=False, null=False)
+    employee_num = models.CharField(max_length=255, blank=True, null=True)
+    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+
+
+class PublicUser(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="public_user")
+    school = models.CharField(max_length=1000, blank=True, null=True)
+    county = models.ForeignKey(County, on_delete=models.DO_NOTHING, related_name="county_users", blank=True, null=True)
+    profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+
+
+class AgentUser(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    agent = models.OneToOneField(Agent, on_delete=models.CASCADE, related_name="agent_user")
+    users = models.ManyToManyField(User, related_name="agent_users")

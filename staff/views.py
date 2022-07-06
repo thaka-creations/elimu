@@ -518,16 +518,26 @@ def delete_registration_code(request):
 
 
 class AddRegistrationCodes(AdminMixin):
-    form_class = forms.AddRegistrationCodes
+    form_class = forms.AddAgent
     template_name = "admin/users/counties/index.html"
-    login_url = "/login"
 
     def post(self, request):
         form = self.form_class(request.POST)
-        qs = staff_models.RegistrationCodes.objects.all()
+        qs = user_models.Agent.objects.all()
 
         if form.is_valid():
             data = form.cleaned_data
+            email = data['email']
+            name = data['name']
+            code = data['code']
+
+            user = user_models.User.objects.create(
+                name=name, username=email, is_agent=True)
+
+            user_models.Agent.objects.create(
+                user=user,
+                code=code
+            )
             staff_models.RegistrationCodes.objects.create(**data)
             context = {"details": "Code added successfully", "qs": qs}
             return redirect("/admin/registration-codes", context=context)

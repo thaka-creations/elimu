@@ -96,10 +96,12 @@ class AddFormAmount(forms.Form):
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
 
 
-class AddRegistrationCodes(forms.Form):
-    id_no = forms.CharField(label="ID Number", label_suffix="", required=True,
-                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+class AddAgent(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    email = forms.EmailField(label="Email", label_suffix="", required=True,
+                             widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     code = forms.CharField(label="User Code", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    email_otp = forms.CharField(label="Email OTP Code", label_suffix="", required=True,
+                                widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
