@@ -493,33 +493,32 @@ class AddFormAmountView(AdminMixin):
         return redirect(url)
 
 
-class ListRegistrationCodes(AdminMixin, ListView):
-    model = staff_models.RegistrationCodes
-    template_name = "admin/users/registration_codes.html"
-    context_object_name = "codes"
-    login_url = "/login"
+class ListAgents(AdminMixin, ListView):
+    model = user_models.Agent
+    template_name = "admin/users/agents/index.html"
+    context_object_name = "agents"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = forms.AddRegistrationCodes
+        context['form'] = forms.AddAgent
         return context
 
 
-@csrf_exempt
-def delete_registration_code(request):
-    body_unicode = request.body.decode('utf-8')
-    try:
-        instance = user_models.RegistrationCodes.objects.get(id=json.loads(body_unicode))
-    except user_models.RegistrationCodes.DoesNotExist:
-        return HttpResponseBadRequest
+# @csrf_exempt
+# def delete_agents(request):
+#     body_unicode = request.body.decode('utf-8')
+#     try:
+#         instance = user_models.RegistrationCodes.objects.get(id=json.loads(body_unicode))
+#     except user_models.RegistrationCodes.DoesNotExist:
+#         return HttpResponseBadRequest
+#
+#     instance.delete()
+#     return JsonResponse({"message": "Successful"})
 
-    instance.delete()
-    return JsonResponse({"message": "Successful"})
 
-
-class AddRegistrationCodes(AdminMixin):
+class AddAgent(AdminMixin):
     form_class = forms.AddAgent
-    template_name = "admin/users/counties/index.html"
+    template_name = "admin/users/agents/index.html"
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -538,11 +537,10 @@ class AddRegistrationCodes(AdminMixin):
                 user=user,
                 code=code
             )
-            staff_models.RegistrationCodes.objects.create(**data)
-            context = {"details": "Code added successfully", "qs": qs}
-            return redirect("/admin/registration-codes", context=context)
+            context = {"details": "Agent added successfully", "qs": qs}
+            return redirect("/admin/agents", context=context)
 
-        return redirect("/admin/registration-codes", {"qs": qs, "form": form})
+        return redirect("/admin/agents", {"qs": qs, "form": form})
 
 
 class ListUsers(AdminMixin, ListView):

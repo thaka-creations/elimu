@@ -1,0 +1,116 @@
+'{% extends "admin/partials/theme.html" %}
+
+{% block content %}
+
+ <div class="pagetitle">
+    <h1>Agents</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">Agents</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row d-flex justify-content-between">
+
+      <!-- Left side columns -->
+      <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header border-0">
+            </div>
+            <div class="card-body">
+                <table class="display" id="registration-code-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                #
+                            </th>
+                            <th class="text-center">
+                                Name
+                            </th>
+                            <th class="text-center">
+                                User Code
+                            </th>
+                            <th class="text-center">
+                                Email
+                            </th>
+                            <th class="text-center">
+                                Users
+                            </th>
+                            <th class="text-center">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for agent in agents %}
+                        <tr data-id="{{agent.id}}">
+                            <td class="text-center">
+                                {{forloop.counter}}
+                            </td>
+                            <td class="text-center">
+                                {{agent.name}}
+                            </td>
+                            <td class="text-center">
+                                {{agent.user_code}}
+                            </td>
+                            <td class="text-center">
+                                {{agent.email}}
+                            </td>
+                            <td class="text-center">
+                                {{agent.users}}
+                            </td>
+                            <td class="text-center">
+                                <i class='bi bi-trash text-danger'></i>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+      </div><!-- End Left side columns -->
+
+      <div class="col-lg-4 col-md-4">
+          <div class="card shadow">
+              <div class="card-header">
+                  Add Agent
+              </div>
+              <div class="card-body mt-3">
+                    <form action="/admin/registration-codes/add-code" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary rounded-0" type="submit">Add Agent</button>
+                    </form>
+              </div>
+          </div>
+      </div>
+
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+    var myTable = $('#registration-code-table').DataTable();
+
+    $(".bi-trash").on("click", function () {
+        tr = $(this).parents("tr");
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200){
+                myTable.row( tr ).remove().draw( false );
+            }
+        }
+        xhttp.open("POST", "/admin/delete-registration-code");
+        xhttp.send(tr.attr('data-id'))
+    })
+
+    });
+</script>
+{% endblock %}
