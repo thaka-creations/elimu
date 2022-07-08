@@ -1,5 +1,8 @@
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django import forms
 from school import models as school_models
+from users import models as user_models
 
 
 class AddVideoForm(forms.Form):
@@ -100,6 +103,23 @@ class AddAgent(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     email = forms.EmailField(label="Email", label_suffix="", required=True,
-                             widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+                             widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0 mb-2",
+                                                            "id": "in-email"}))
     code = forms.CharField(label="User Code", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+    def clean(self):
+        cleaned_data = super(AddAgent, self).clean()
+        email = cleaned_data.get("email")
+        code = cleaned_data.get("code")
+
+        qs = user_models.User.objects.filter(username=email)
+
+        if qs.exists():
+            raise ValidationError(_("Email exists"))
+
+        code_exists = user_models.User.objects.filter(code=code).exists()
+
+        if code_exists:
+            raise ValidationError(_("Agent code exists"))
+

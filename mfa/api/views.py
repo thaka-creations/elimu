@@ -32,7 +32,7 @@ class OtpViewSet(viewsets.ViewSet):
         expiry_time = int(validated_data['expiry_time'])
         generation_time = timezone.now()
         expiry_date = generation_time + timedelta(seconds=expiry_time)
-        otp_code = klass.generate_otp_code()
+        otp_code = klass.generate_otp_code(send_to, expiry_time)
 
         with transaction.atomic():
             otp_instance = mfa_models.OtpCode.objects.create(
@@ -59,7 +59,9 @@ class OtpViewSet(viewsets.ViewSet):
 
         validated_data = payload_serializer.validated_data
         otp = validated_data['otp']
+        print(otp)
         send_to = validated_data['send_to']
+        print(send_to)
         valid, message = klass.verify_otp_code(otp, send_to)
 
         if not valid:

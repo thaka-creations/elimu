@@ -80,11 +80,20 @@
                   Add Agent
               </div>
               <div class="card-body mt-3">
-                    <form action="/admin/registration-codes/add-code" method="post">
+                    <form action="/admin/registration-codes/add-code" method="post" id="form-agent">
                         {% csrf_token%}
                         {{form}}
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="email-otp" class="control-label">Email OTP Code</label>
+                                <input type="text" name="otp" class="form-control shadow-none rounded-0" required id="in-otp">
+                            </div>
 
-                        <button class="btn btn-primary rounded-0" type="submit">Add Agent</button>
+                            <div class="col-md-4 mt-4">
+                                <button type="button" class="btn btn-primary shadow-none rounded-0 align-items-end" id="otp-btn">GET OTP</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary rounded-0 disabled" type="submit" id="btn-add-agent">Add Agent</button>
                     </form>
               </div>
           </div>
@@ -110,7 +119,48 @@
         }
         xhttp.open("POST", "/admin/delete-registration-code");
         xhttp.send(tr.attr('data-id'))
-    })
+    });
+
+    // button click
+    $("#otp-btn").on("click", function(){
+        email = $("#in-email").val()
+        if (!document.getElementById("in-email").checkValidity()) {
+            alert("Valid email is required");
+        }
+        else{
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    alert("OTP Code has been sent to "+email);
+                    $("#btn-add-agent").removeClass("disabled");
+                    console.log(this.responseText);
+                }
+            }
+            xhttp.open("POST", "/api/v1/mfa/otp/generate");
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("send_to="+email+"&expiry_time=600");
+
+        }
+    });
+
+    $("#form-agent").on("submit", function(e){
+        e.preventDefault();
+        var otp = $("#in-otp").val();
+        var self = $(this);
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    self.unbind('submit').submit();
+                }
+                else if (this.readyState == 4 && this.status ==400){
+                    alert("Invalid OTP Code");
+                }
+            }
+        xhttp.open("POST", "/api/v1/mfa/otp/verify");
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify({"otp": otp, "send_to": email}));
+
+    });
 
     });
 </script>
