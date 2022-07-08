@@ -37,8 +37,8 @@ class RegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Password do not match")
 
         try:
-            code = RegistrationCodes.objects.get(code=obj['code'])
-        except (RegistrationCodes.DoesNotExist, RegistrationCodes.MultipleObjectsReturned):
+            code = user_models.Agent.objects.get(code=obj['code'])
+        except user_models.Agent.DoesNotExist:
             raise serializers.ValidationError("Invalid code")
 
         try:

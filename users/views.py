@@ -58,15 +58,20 @@ class RegistrationView(View):
             user = user_models.User.objects.create(
                 username=email,
                 name=name,
-                school=school,
-                county=county,
-                code=code
+                email_verified=True
             )
+
+            # create public user
+            user_models.PublicUser.objects.create(
+                user=user,
+                school=school,
+                county=county
+            )
+            code.users.add(user)
             user.set_password(password)
             user.save()
             oauth2_user.create_application_user(user)
-            code.users = code.users + 1
-            code.save()
+
             return redirect("/login")
         return render(request, self.template_name, {"form": form})
 

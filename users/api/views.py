@@ -35,16 +35,21 @@ class Registration(viewsets.ViewSet):
             user = user_models.User.objects.create(
                 username=email,
                 name=name,
-                code=code,
-                school=school,
-                county=county
+                email_verified=True
             )
 
             user.set_password(password)
             user.save()
+
+            # create public user
+            user_models.PublicUser.objects.create(
+                user=user,
+                school=school,
+                county=county
+            )
             oauth2_user.create_application_user(user)
-            code.users = code.users + 1
-            code.save()
+
+            code.users.add(user)
 
             return Response({"details": "Successfully registered"}, status=status.HTTP_200_OK)
 

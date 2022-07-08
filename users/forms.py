@@ -16,7 +16,7 @@ class RegistrationForm(forms.Form):
     county = forms.ModelChoiceField(queryset=County.objects.filter(status=True), label="County", label_suffix="",
                                     required=True,
                                     widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0"}))
-    code = forms.ModelChoiceField(queryset=RegistrationCodes.objects.all(), label="Registration Code",
+    code = forms.ModelChoiceField(queryset=user_models.Agent.objects.all(), label="Registration Code",
                                   label_suffix="", required=True,
                                   widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0"}))
     password = forms.CharField(label="Password", max_length=100, required=True, label_suffix="", min_length=6,
@@ -39,6 +39,8 @@ class RegistrationForm(forms.Form):
 
         if qs.exists():
             raise ValidationError(_("Email exists"))
+
+
 
 
 class LoginForm(forms.Form):
