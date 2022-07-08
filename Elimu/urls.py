@@ -32,6 +32,7 @@ urlpatterns = api_patterns + [
     path('', include('school.urls')),
     path('', include('users.urls')),
     path('', include('staff.urls')),
+    path('', include('agents.urls')),
     path('payments/', include('payments.urls')),
 ]
 
