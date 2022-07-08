@@ -17,7 +17,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -56,7 +55,8 @@ INSTALLED_APPS = [
     'users',
     'payments',
     'video',
-    'staff'
+    'staff',
+    'agents'
 ]
 
 REST_FRAMEWORK = {
@@ -102,7 +102,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Elimu.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -116,7 +115,6 @@ DATABASES = {
         'PORT': os.environ.get("DATABASE_PORT")
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -136,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -147,7 +144,6 @@ TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -167,7 +163,7 @@ ACCESS_TOKEN_EXPIRY = os.environ.get('ACCESS_TOKEN_EXPIRY')
 
 SERVICES_URLS = {
     'callback_url': os.environ.get('TRANSFER_PROTOCOL') + '://' + os.environ.get('ACL_SERVICE') +
-    os.environ.get('API_VERSION')
+                    os.environ.get('API_VERSION')
 }
 
 LOGIN_URL = "/login"
@@ -192,11 +188,9 @@ MPESA_PASSKEY = os.environ.get("MPESA_PASSKEY")
 MPESA_CALLBACK_URL = os.environ.get("MPESA_CALLBACK_URL")
 VDOCIPHER_SECRET = os.environ.get("VDOCIPHER_SECRET")
 
-# MPESA_CONSUMER_KEY = 'uQH9B9rRvYHvpM2ICYyvBdwR0UE6Pvz4'
-# MPESA_CONSUMER_SECRET = 'DurpnNk6Z21uDjaW'
-# MPESA_SHORTCODE = '4083027'
-# MPESA_SHORTCODE_TYPE = 'paybill'
-# MPESA_PASSKEY = '9cd4dd3777a83ffc18c70766a77e1f2077dbaea17188f98235158ed533f3331d'
-# MPESA_CALLBACK_URL = 'https://60df-105-166-128-242.eu.ngrok.io/api/v1/payments/callback'
-#
-# VDOCIPHER_SECRET = 'MPv32VRtyY5lpuT7VFTWNQxLhstDB7XoA5nEMjB501XpZlSjSFx5iYHiij8bnmOr'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'thakacreations@gmail.com'
+EMAIL_HOST_PASSWORD = 'zbvnfbasbhktjlst'

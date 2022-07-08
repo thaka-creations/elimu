@@ -1,3 +1,5 @@
+import logging
+
 import requests
 import os
 import json
@@ -7,17 +9,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.db import transaction
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
 from school import models as school_models
 from school.utils import video_util
 from payments import models as payment_models
-from staff import forms, models as staff_models
+from staff import forms, util
 from django.contrib.auth.mixins import UserPassesTestMixin
 from users import models as user_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
+password_manager = util.PasswordManager()
+service_manager = util.ServiceManager()
 
 
 class AdminMixin(UserPassesTestMixin, View):
@@ -494,7 +499,7 @@ class AddFormAmountView(AdminMixin):
 
 
 class ListAgents(AdminMixin, ListView):
-    model = user_models.Agent
+    model = user_models.User
     template_name = "admin/users/agents/index.html"
     context_object_name = "agents"
 
@@ -502,6 +507,9 @@ class ListAgents(AdminMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['form'] = forms.AddAgent
         return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_agent=True)
 
 
 # @csrf_exempt
@@ -522,7 +530,7 @@ class AddAgent(AdminMixin):
 
     def post(self, request):
         form = self.form_class(request.POST)
-        qs = user_models.Agent.objects.all()
+        qs = user_models.User.objects.filter(is_agent=True)
 
         if form.is_valid():
             data = form.cleaned_data
@@ -530,17 +538,35 @@ class AddAgent(AdminMixin):
             name = data['name']
             code = data['code']
 
-            user = user_models.User.objects.create(
-                name=name, username=email, is_agent=True)
+            with transaction.atomic():
+                user = user_models.User.objects.create(
+                    name=name, username=email, is_agent=True, email_verified=True)
 
-            user_models.Agent.objects.create(
-                user=user,
-                code=code
-            )
-            context = {"details": "Agent added successfully", "qs": qs}
-            return redirect("/admin/agents", context=context)
+                user_models.Agent.objects.create(
+                    user=user,
+                    code=code
+                )
 
-        return redirect("/admin/agents", {"qs": qs, "form": form})
+                password = password_manager.generate_password()
+                user.set_password(password)
+                user.save()
+
+                # send email
+                try:
+                    service_manager.send_email(
+                        subject="TAFA AGENT REGISTRATION",
+                        message="Dear agent, your Tafa account password is %s" % password,
+                        recipient=email
+                    )
+                except Exception as e:
+                    logging.error(e)
+                    return redirect("/admin/agents", {"agents": qs, "form": form, "message": "An error occurred. Try "
+                                                                                             "again later"})
+
+                context = {"details": "Agent added successfully", "agents": qs, "form": form}
+                return redirect("/admin/agents", context=context)
+
+        return redirect("/admin/agents", {"agents": qs, "form": form})
 
 
 class ListUsers(AdminMixin, ListView):

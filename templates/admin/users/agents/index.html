@@ -1,5 +1,12 @@
 '{% extends "admin/partials/theme.html" %}
 
+{% block styles %}
+<style>
+    #otp-btn{
+        font-size:0.9em;
+    }
+</style>
+{% endblock %}
 {% block content %}
 
  <div class="pagetitle">
@@ -16,7 +23,7 @@
     <div class="row d-flex justify-content-between">
 
       <!-- Left side columns -->
-      <div class="col-lg-6">
+      <div class="col-lg-7 col-md-7">
         <div class="card shadow">
             <div class="card-header border-0">
             </div>
@@ -54,13 +61,13 @@
                                 {{agent.name}}
                             </td>
                             <td class="text-center">
-                                {{agent.user_code}}
+                                {{agent.agent_user.code}}
                             </td>
                             <td class="text-center">
-                                {{agent.email}}
+                                {{agent.username}}
                             </td>
                             <td class="text-center">
-                                {{agent.users}}
+                                {{agent.agent_user.subscribers.count}}
                             </td>
                             <td class="text-center">
                                 <i class='bi bi-trash text-danger'></i>
@@ -80,7 +87,7 @@
                   Add Agent
               </div>
               <div class="card-body mt-3">
-                    <form action="/admin/registration-codes/add-code" method="post" id="form-agent">
+                    <form action="/admin/agents/add-agent" method="post" id="form-agent">
                         {% csrf_token%}
                         {{form}}
                         <div class="row mb-3">
@@ -90,7 +97,7 @@
                             </div>
 
                             <div class="col-md-4 mt-4">
-                                <button type="button" class="btn btn-primary shadow-none rounded-0 align-items-end" id="otp-btn">GET OTP</button>
+                                <button type="button" class="btn btn-primary shadow-none rounded-0" id="otp-btn">GET OTP</button>
                             </div>
                         </div>
                         <button class="btn btn-primary rounded-0 disabled" type="submit" id="btn-add-agent">Add Agent</button>

@@ -58,8 +58,9 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 class Agent(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="agent_user")
-    code = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, blank=True, null=True)
     profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
+    subscribers = models.ManyToManyField(User, related_name="agent_subscribers", blank=True, null=True)
 
 
 class Staff(BaseModel):
@@ -76,9 +77,3 @@ class PublicUser(BaseModel):
     school = models.CharField(max_length=1000, blank=True, null=True)
     county = models.ForeignKey(County, on_delete=models.DO_NOTHING, related_name="county_users", blank=True, null=True)
     profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
-
-
-class AgentUser(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agent = models.OneToOneField(Agent, on_delete=models.CASCADE, related_name="agent_user")
-    users = models.ManyToManyField(User, related_name="agent_users")

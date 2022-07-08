@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from mfa.api import serializers as mfa_serializers
 from mfa.utils import two_factor
 from mfa import models as mfa_models
+from staff import util
 
+service_manager = util.ServiceManager()
 klass = two_factor.MultiFactorAuthentication()
 
 
@@ -39,6 +41,11 @@ class OtpViewSet(viewsets.ViewSet):
                 code=otp_code,
                 send_to=send_to,
                 expiry_date=expiry_date
+            )
+            service_manager.send_email(
+                subject="TAFA OTP CODE",
+                message="Your otp code is %s" % otp_code['code'],
+                recipient=send_to
             )
             serializer = mfa_serializers.OtpSerializer(otp_instance, many=False)
             return Response({"details": serializer.data}, status=status.HTTP_200_OK)

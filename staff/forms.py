@@ -118,7 +118,7 @@ class AddAgent(forms.Form):
         if qs.exists():
             raise ValidationError(_("Email exists"))
 
-        code_exists = user_models.User.objects.filter(code=code).exists()
+        code_exists = user_models.Agent.objects.filter(code=code).exists()
 
         if code_exists:
             raise ValidationError(_("Agent code exists"))

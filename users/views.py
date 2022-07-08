@@ -92,6 +92,8 @@ class LoginView(View):
 
                 if request.user.is_admin:
                     return redirect("/admin")
+                elif request.user.is_agent:
+                    return redirect("/agent")
                 else:
                     return redirect("/")
 
