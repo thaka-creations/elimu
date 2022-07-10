@@ -62,6 +62,9 @@ class Agent(BaseModel):
     profile_status = models.CharField(max_length=255, choices=ACCOUNT_STATUS, default="ACTIVE")
     subscribers = models.ManyToManyField(User, related_name="agent_subscribers", blank=True, null=True)
 
+    def __str__(self):
+        return self.code
+
 
 class Staff(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

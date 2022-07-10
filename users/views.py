@@ -67,7 +67,7 @@ class RegistrationView(View):
                 school=school,
                 county=county
             )
-            code.users.add(user)
+            code.subscribers.add(user)
             user.set_password(password)
             user.save()
             oauth2_user.create_application_user(user)

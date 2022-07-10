@@ -1,4 +1,5 @@
 import base64
+import logging
 import math
 
 import requests
@@ -7,7 +8,7 @@ from requests.auth import HTTPBasicAuth
 from datetime import datetime, timedelta
 from django.conf import settings
 from phonenumber_field.phonenumber import PhoneNumber
-from payments.models import Transaction, Invoice, InvoiceUnit, Subscription
+from payments.models import Transaction, Invoice, InvoiceUnit, Subscription, Commission
 from school import models as school_models
 
 
@@ -99,19 +100,19 @@ class MpesaGateway:
 
         if res.ok:
             transaction_inst = Transaction.objects.create(
-                                    phone_number=phone_number,
-                                    checkout_id=res_data["CheckoutRequestID"],
-                                    amount=amount,
-                                    reference=reference,
-                                    description=description
-                                )
+                phone_number=phone_number,
+                checkout_id=res_data["CheckoutRequestID"],
+                amount=amount,
+                reference=reference,
+                description=description
+            )
 
             invoice_inst = Invoice.objects.create(
-                                user=user,
-                                amount=amount,
-                                transaction_date=datetime.now(),
-                                phone=phone_number
-                            )
+                user=user,
+                amount=amount,
+                transaction_date=datetime.now(),
+                phone=phone_number
+            )
             transaction_inst.invoice = invoice_inst
             transaction_inst.save()
             if unit:
@@ -184,9 +185,18 @@ class MpesaGateway:
             transaction = self.handle_successful_pay(data, transaction)
 
             if invoice:
+                # commission
+                try:
+                    commission_rate = float(int(Commission.objects.first().rate))
+                except Exception as e:
+                    logging.error(e)
+                    commission_rate = 10.0
+
+                commission = (commission_rate/100)*transaction.amount
                 invoice.paid_date = datetime.now()
                 invoice.amount_paid = transaction.amount
                 invoice.mpesa_ref = transaction.receipt_no
+                invoice.commission = commission
                 invoice.status = "PAID"
                 invoice.save()
 
@@ -205,6 +215,3 @@ class MpesaGateway:
 
         transaction.save()
         return True
-
-
-

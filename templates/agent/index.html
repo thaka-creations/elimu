@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card rounded-0">
+            <div class="card rounded-0 shadow">
                 <div class="card-header text-success">
                     User summary
                 </div>
@@ -15,15 +15,64 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>Users</th>
-                                <th>County</th>
-                                <th>School</th>
-                                <th>Amount Paid</th>
-                                <th>Commission</th>
+                                <th class="text-center">User</th>
+                                <th class="text-center">County</th>
+                                <th class="text-center">School</th>
+                                <th class="text-center">Date Registered</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{user.name.title}}</td>
+                                <td class="text-center">{{user.public_user.county.name.title}}</td>
+                                <td class="text-center">{{user.public_user.school.title}}</td>
+                                <td class="text-center">{{user.date_created}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
+            <div class="card rounded-0 shadow">
+                <div class="card-header text-success">
+                    Commission summary
+                </div>
+
+                <div class="card-body mt-2">
+                    <table class="display" id="commission-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">User</th>
+                                <th class="text-center">County</th>
+                                <th class="text-center">School</th>
+                                <th class="text-center">Invoice</th>
+                                <th class="text-center">Amount</th>
+                                <th class="text-center">Amount Paid</th>
+                                <th class="text-center">Invoice Status</th>
+                                <th class="text-center">Commission</th>
+                                <th class="text-center">Transaction Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{invoice.user.name.title}}</td>
+                                <td class="text-center">{{invoice.user.public_user.county.name.title}}</td>
+                                <td class="text-center">{{invoice.user.public_user.school.title}}</td>
+                                <td class="text-center">{{invoice.mpesa_ref}}</td>
+                                <td class="text-center">{{invoice.amount}}</td>
+                                <td class="text-center">{{invoice.amount_paid}}</td>
+                                <td class="text-center">{{invoice.status}}</td>
+                                <td class="text-center">{{invoice.commission}}</td>
+                                <td class="text-center">{{invoice.transaction_date}}</td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -38,6 +87,7 @@
 <script>
     $(document).ready(function () {
         var myTable = $('#by-county').DataTable();
+        var commissionTable = $("#commission-table").DataTable();
     });
 </script>
 {% endblock %}

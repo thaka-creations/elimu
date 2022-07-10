@@ -78,10 +78,19 @@ class Invoice(BaseModel):
     paid_date = models.DateTimeField(blank=True, null=True)
     phone = models.CharField(max_length=255, blank=True, null=True)
     amount_paid = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+    commission = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=255, choices=ALLOWED_STATUS, default="PENDING")
 
     class Meta:
         ordering = ['-date_created']
+
+
+class Commission(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    rate = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.rate
 
 
 class Subscription(BaseModel):

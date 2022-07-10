@@ -49,7 +49,7 @@ class Registration(viewsets.ViewSet):
             )
             oauth2_user.create_application_user(user)
 
-            code.users.add(user)
+            code.subscribers.add(user)
 
             return Response({"details": "Successfully registered"}, status=status.HTTP_200_OK)
 
