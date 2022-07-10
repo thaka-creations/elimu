@@ -4,6 +4,7 @@ import requests
 import os
 import json
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
@@ -524,7 +525,17 @@ class AgentDetails(AdminMixin, View):
             return redirect("/admin")
         users = agent.agent_user.subscribers.all()
         invoices = payment_models.Invoice.objects.filter(user__in=users)
-        context = {"users": users, "invoices": invoices, "agent": agent}
+        start_date = datetime.now().replace(day=1)
+        end_date = start_date + relativedelta(months=1)
+        default_invoices = invoices.filter(commission__isnull=False, transaction_date__gte=start_date,
+                                           transaction_date__lte=end_date)
+        commission = 0
+        if default_invoices.exists():
+            for invoice in default_invoices:
+                commission += invoice.commission
+
+        context = {"users": users, "invoices": invoices, "agent": agent, "start_date": start_date.strftime("%Y-%m-%d"),
+                   "end_date": end_date.strftime("%Y-%m-%d"), "commission": commission}
         return render(request, self.template_name, context)
 
     def post(self, request, pk):
