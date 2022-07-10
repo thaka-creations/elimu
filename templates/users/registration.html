@@ -50,7 +50,7 @@
                         </div>
                     </div>
         
-                    <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100 disabled">Create Account</button>
+                    <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100 disabled" id="btn-add-user">Create Account</button>
         
                 </form>
             </div>
@@ -61,7 +61,7 @@
         </div>
 
     </div>
-
+<script src="{% static 'assets/js/jquery.js' %}"></script>
 <script>
     var otpBtn = document.getElementById("otp-btn");
     var inEmail = document.getElementById("in-email");
@@ -78,10 +78,9 @@
                 if (this.readyState == 4 && this.status == 200){
                     alert("OTP Code has been sent to "+email);
                     btnAddUser.classList.remove("disabled");
-                    console.log(this.responseText);
                 }
-                else{
-                    alert("Invalid Email");
+                else if (this.readyState == 4 && this.status == 400){
+                    console.log(this.responseText);
                 }
             }
             xhttp.open("POST", "/api/v1/mfa/otp/generate");
@@ -89,13 +88,17 @@
             xhttp.send("send_to="+email+"&expiry_time=600");
         }
     });
+</script>
+<script>
+    $(document).ready(function(){
+        $("#fm-add-user").on("submit", function(e){
+            e.preventDefault();
+            var otp = inOtp.value;
+            var email = inEmail.value;
+            var self = $(this);
 
-    var form = document.getElementById("fm-add-user");
-    form.addEventListener("submit", function(e){
-        e.preventDefault();
-        var otp = inOtp.value;
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200){
                     self.unbind('submit').submit();
                 }
@@ -103,9 +106,10 @@
                     alert("Invalid OTP Code");
                 }
             }
-        xhttp.open("POST", "/api/v1/mfa/otp/verify");
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send(JSON.stringify({"otp": otp, "send_to": email}));
+            xhttp.open("POST", "/api/v1/mfa/otp/verify");
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send(JSON.stringify({"otp": otp, "send_to": email}));
+        });
     });
 </script>
 </body>
