@@ -1,5 +1,13 @@
 {% extends "admin/partials/theme.html" %}
 
+{% block styles %}
+<style>
+    .user-agent{
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <div class="pagetitle">
@@ -23,20 +31,23 @@
                         <th class="text-center">
                             #
                         </th>
-                        <th>
+                        <th class="text-center">
                             Name
                         </th>
-                        <th>
+                        <th class="text-center">
                             Email
                         </th>
-                        <th>
+                        <th class="text-center">
                             School
                         </th>
-                        <th>
+                        <th class="text-center">
                             County
                         </th>
-                        <th>
-                            Registration code
+                        <th class="text-center">
+                            Agent
+                        </th>
+                        <th class="text-center">
+                            Date Registered
                         </th>
                     </tr>
                 </thead>
@@ -46,20 +57,24 @@
                         <td class="text-center">
                             {{forloop.counter}}
                         </td>
-                        <td>
+                        <td class="text-center">
                             {{user.name.title}}
                         </td>
-                        <td>
+                        <td class="text-center">
                             {{user.username}}
                         </td>
-                        <td>
-                            {{user.school.title}}
+                        <td class="text-center">
+                            {{user.public_user.school.title}}
                         </td>
-                        <td>
-                            {{user.county.name.title}}
+                        <td class="text-center">
+                            {{user.public_user.county.name.title}}
                         </td>
-                        <td>
-                            {{user.code.code}}
+                        <td class="text-center user-agent" data-agent="{{user.agent_subscribers.first.user.id}}"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="view agent">
+                            {{user.agent_subscribers.first.user}}
+                        </td>
+                        <td class="text-center">
+                            {{user.date_created}}
                         </td>
                     </tr>
                     {% endfor %}
@@ -77,7 +92,12 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $('#user-table').DataTable();
+        var userTable = $('#user-table').DataTable();
+
+        userTable.on('click', '.user-agent', function(e){
+            id = $(this).attr('data-agent');
+            window.location.href = "/admin/agents/"+id;
+        });
     });
 </script>
 {% endblock %}

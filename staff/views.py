@@ -3,6 +3,7 @@ import logging
 import requests
 import os
 import json
+from datetime import datetime
 from threading import Thread
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
@@ -10,6 +11,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db import transaction
+from django.db.models import Count
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
@@ -512,16 +514,41 @@ class ListAgents(AdminMixin, ListView):
         return super().get_queryset().filter(is_agent=True)
 
 
-# @csrf_exempt
-# def delete_agents(request):
-#     body_unicode = request.body.decode('utf-8')
-#     try:
-#         instance = user_models.RegistrationCodes.objects.get(id=json.loads(body_unicode))
-#     except user_models.RegistrationCodes.DoesNotExist:
-#         return HttpResponseBadRequest
-#
-#     instance.delete()
-#     return JsonResponse({"message": "Successful"})
+class AgentDetails(AdminMixin, View):
+    template_name = "admin/users/agents/detail.html"
+
+    def get(self, request, pk):
+        try:
+            agent = user_models.User.objects.get(id=pk)
+        except user_models.User.DoesNotExist:
+            return redirect("/admin")
+        users = agent.agent_user.subscribers.all()
+        invoices = payment_models.Invoice.objects.filter(user__in=users)
+        context = {"users": users, "invoices": invoices, "agent": agent}
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        data = request.POST
+        agent_id = data['agent']
+        format_ = '%Y-%m-%d'
+        date_from = datetime.strptime(data['date_from'], format_)
+        date_to = datetime.strptime(data['date_to'], format_)
+
+        try:
+            agent = user_models.User.objects.get(id=agent_id)
+        except user_models.Agent.DoesNotExist:
+            return JsonResponse({"message": "invalid agent"})
+
+        users = list(agent.agent_user.subscribers.values_list("id", flat=True))
+        invoices = payment_models.Invoice.objects.filter(
+            user__id__in=users, commission__isnull=False, transaction_date__date__gte=date_from,
+            transaction_date__date__lte=date_to)
+
+        commission = 0
+        if invoices.exists():
+            for invoice in invoices:
+                commission += invoice.commission
+        return JsonResponse({"commission": commission})
 
 
 class AddAgent(AdminMixin):
@@ -579,4 +606,45 @@ class ListUsers(AdminMixin, ListView):
         return context
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_admin=False, is_staff=False)
+        return super().get_queryset().filter(is_admin=False, is_staff=False, is_agent=False)
+
+
+class ListAgentCommission(AdminMixin, ListView):
+    model = payment_models.Commission
+    template_name = "admin/payments/commission.html"
+    context_object_name = "commissions"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = forms.AddCommissionForm
+        return context
+
+
+class AddAgentCommission(AdminMixin, View):
+    form_class = forms.AddCommissionForm
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        commissions = payment_models.Commission.objects.all()
+        context = {"commissions": commissions, "form": form}
+        if form.is_valid():
+            data = form.cleaned_data
+            payment_models.Commission.objects.create(**data)
+            context.update({"message": "Commission added successfully"})
+
+        else:
+            context.update({"message": "Invalid data"})
+
+        return redirect("/admin/payments/agent-commission", context)
+
+
+@csrf_exempt
+def delete_commission(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = payment_models.Commission.objects.get(id=body_unicode)
+    except payment_models.Commission.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})

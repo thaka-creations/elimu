@@ -1,0 +1,163 @@
+{% extends "admin/partials/theme.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+
+<section class="section dashboard">
+
+    <div class="row d-flex justify-content-between">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header text-success">
+                    Agent
+                </div>
+                <div class="card-body mt-2">
+                    <p>Name: {{agent.name.title}}</p>
+                    <p>Email: {{agent.username}}</p>
+                    <p>Agent Code: {{agent.agent_user.code}}</p>
+                    <p class="mb-0">Users: {{agent.agent_user.subscribers.count}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-success">
+                    Agent Commission
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/agents/{{agent.id}}" method="post" id="agent-cm-form">
+                        {% csrf_token %}
+                        <div>
+                            <label for="date_from" class="control-label">Date From</label>
+                            <input type="text" class="form-control shadow-none rounded-0" name="date_from" id="date_from" autocomplete="off">
+                        </div>
+
+                        <div class="my-2">
+                            <label for="date_to" class="control-label">Date To</label>
+                            <input type="text" class="form-control shadow-none rounded-0" id="date_to" name="date_to" autocomplete="off">
+                        </div>
+                        <input type="hidden" name="agent" value="{{agent.id}}">
+                        <p id="d-ag-commission" class="fs-5 mb-2"><b>Commission:</b> <span></span></p>
+                        <button class="btn btn-success rounded-0 shadow-none text-white" type="submit">Get Commission</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card rounded-0 shadow">
+                <div class="card-header text-success">
+                    User summary
+                </div>
+                <div class="card-body mt-2">
+                    <table class="display" id="by-county">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">User</th>
+                                <th class="text-center">County</th>
+                                <th class="text-center">School</th>
+                                <th class="text-center">Date Registered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{user.name.title}}</td>
+                                <td class="text-center">{{user.public_user.county.name.title}}</td>
+                                <td class="text-center">{{user.public_user.school.title}}</td>
+                                <td class="text-center">{{user.date_created}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card rounded-0 shadow">
+                <div class="card-header text-success">
+                    Commission summary
+                </div>
+
+                <div class="card-body mt-2">
+                    <table class="display" id="commission-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">User</th>
+                                <th class="text-center">County</th>
+                                <th class="text-center">School</th>
+                                <th class="text-center">Invoice</th>
+                                <th class="text-center">Amount</th>
+                                <th class="text-center">Amount Paid</th>
+                                <th class="text-center">Invoice Status</th>
+                                <th class="text-center">Commission</th>
+                                <th class="text-center">Transaction Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{invoice.user.name.title}}</td>
+                                <td class="text-center">{{invoice.user.public_user.county.name.title}}</td>
+                                <td class="text-center">{{invoice.user.public_user.school.title}}</td>
+                                <td class="text-center">{{invoice.mpesa_ref}}</td>
+                                <td class="text-center">{{invoice.amount}}</td>
+                                <td class="text-center">{{invoice.amount_paid}}</td>
+                                <td class="text-center">{{invoice.status}}</td>
+                                <td class="text-center">{{invoice.commission}}</td>
+                                <td class="text-center">{{invoice.transaction_date}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#by-county').DataTable(
+            {buttons: ['csv']}
+        );
+        var commissionTable = $("#commission-table").DataTable({
+            buttons: ['csv']
+        });
+
+        $("#date_from").datepicker({
+            dateFormat:"yy-mm-dd",
+        });
+        $("#date_to").datepicker({
+            dateFormat:"yy-mm-dd",
+        });
+
+    });
+</script>
+<script>
+    var form = document.getElementById("agent-cm-form");
+    form.addEventListener("submit", function(e){
+        e.preventDefault();
+        formData = new FormData(form)
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+            }
+        }
+        xhttp.open("POST", "/admin/agents/{{agent.id}}");
+        xhttp.send(formData);
+    });
+</script>
+{% endblock %}

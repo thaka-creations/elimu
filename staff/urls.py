@@ -28,9 +28,13 @@ urlpatterns = [
     path("admin/payments/unit-amount", views.AddUnitAmountView.as_view()),
     path("admin/agents", views.ListAgents.as_view()),
     path("admin/agents/add-agent", views.AddAgent.as_view()),
+    path("admin/agents/<pk>", views.AgentDetails.as_view()),
     path("admin/subjects/<pk>", views.RetrieveSubject.as_view(), name="retrieve_subjects"),
     path("admin/payments/add-amount", views.AddSubjectAmountView.as_view()),
     path("admin/forms/<pk>", views.RetrieveForm.as_view()),
     path("admin/payments/add-form-amount", views.AddFormAmountView.as_view()),
-    path("admin/users", views.ListUsers.as_view())
+    path("admin/users", views.ListUsers.as_view()),
+    path("admin/payments/agent-commission", views.ListAgentCommission.as_view()),
+    path("admin/payments/add-agent-commission", views.AddAgentCommission.as_view()),
+    path("admin/payments/delete-agent-commission", views.delete_commission)
 ]

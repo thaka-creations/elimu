@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django import forms
 from school import models as school_models
 from users import models as user_models
+from payments import models as payment_models
 
 
 class AddVideoForm(forms.Form):
@@ -123,3 +124,8 @@ class AddAgent(forms.Form):
         if code_exists:
             raise ValidationError(_("Agent code exists"))
 
+
+class AddCommissionForm(forms.ModelForm):
+    class Meta:
+        model = payment_models.Commission
+        fields = ['rate']

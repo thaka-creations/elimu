@@ -1,0 +1,101 @@
+{% extends "admin/partials/theme.html" %}
+{% load tags %}
+
+{% block styles %}
+<style>
+    .bi-trash{
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="pagetitle">
+    <h1>Payments</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item active"> Agent Commission</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section payments">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header border-0">
+        
+                </div>
+                <div class="card-body">
+                    <table class="display" id="commission-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Rate</th>
+                                <th class="text-center">Date Created</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for commission in commissions %}
+                            <tr data-id="{{commission.id}}">
+                                <td class="text-center">
+                                    {{forloop.counter}}
+                                </td>
+                                <td class="text-center">
+                                    {{commission.rate}}
+                                </td>
+                                <td class="text-center">
+                                    {{commission.date_created}}
+                                </td>
+                                <td class="text-center">
+                                    <i class='bi bi-trash text-danger'></i>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow rounded-0">
+                <div class="card-header">
+                    Add Agent Commission
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/payments/add-agent-commission" method="post">
+                        {% csrf_token %}
+                        {{form}}
+                        <div class="mt-3"></div>
+                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">
+                            Add Commission
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        var myTable = $('#commission-table').DataTable();
+
+        $(".bi-trash").on("click", function () {
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    myTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/payments/delete-agent-commission");
+            xhttp.send(tr.attr('data-id'))
+        });
+    });
+</script>
+{% endblock %}

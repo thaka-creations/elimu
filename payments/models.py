@@ -92,6 +92,9 @@ class Commission(BaseModel):
     def __str__(self):
         return self.rate
 
+    class Meta:
+        ordering = ['-date_created']
+
 
 class Subscription(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

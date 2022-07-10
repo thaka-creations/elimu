@@ -5,6 +5,9 @@
     #otp-btn{
         font-size:0.9em;
     }
+    td{
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -57,19 +60,19 @@
                             <td class="text-center">
                                 {{forloop.counter}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view agent">
                                 {{agent.name}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view agent">
                                 {{agent.agent_user.code}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view agent">
                                 {{agent.username}}
                             </td>
                             <td class="text-center">
                                 {{agent.agent_user.subscribers.count}}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
                                 <i class='bi bi-trash text-danger'></i>
                             </td>
                         </tr>
@@ -115,8 +118,14 @@
 <script>
     $(document).ready(function () {
     var myTable = $('#registration-code-table').DataTable();
+    
+    myTable.on('click', 'tr', function(e){
+            id = $(this).attr('data-id');
+            window.location.href = "/admin/agents/"+id;
+        });
 
-    $(".bi-trash").on("click", function () {
+    $(".bi-trash").on("click", function (e) {
+        e.stopPropagation();
         tr = $(this).parents("tr");
         xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
