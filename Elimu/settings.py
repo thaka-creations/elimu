@@ -167,7 +167,7 @@ SERVICES_URLS = {
 }
 
 LOGIN_URL = "/login"
-LOGOUT_REDIRECT_URL = "/login"
+LOGOUT_REDIRECT_URL = "/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
