@@ -121,7 +121,6 @@ class ResetPasswordView(View):
 class ProtectedView(View):
     template_name = "school/client.html"
 
-    @method_decorator(login_required)
     def get(self, request):
         qs = school_models.FormModel.objects.all()[0:4]
         context = {"forms": qs, "page": "index"}

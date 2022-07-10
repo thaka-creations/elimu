@@ -59,12 +59,19 @@
         .dropdown-menu{
             left: -6em!important;
         }
+        .align-self-center > a{
+            margin-left: 2em;
+        }
         @media (max-width: 767.98px) { 
             .search-div{
                 display:none!important;
             }
             .main-container{
                 width: 100%!important;
+            }
+            .align-self-center > a{
+                font-size: 1.1em!important;
+                margin-left:1em!important;
             }
         }
     </style>
@@ -87,7 +94,15 @@
                             </ul>
                         </form>
                     </div>
-                    <div class="col-6 col-md-3 d-flex justify-content-end">
+                    {% if request.user.is_anonymous %}
+                    <div class="col-md-3 col-6 d-flex">
+                        <div class="align-self-center">
+                            <a href="/registration" class="text-white fs-5 text-decoration-none">Sign Up</a>
+                            <a href="/login" class="text-white fs-5 text-decoration-none">Login</a>
+                        </div>
+                    </div>
+                    {% else%}
+                    <div class="col-8 col-md-3 d-flex justify-content-end">
                         <div class="dropdown">
                             <div class="dropdown-toggle d-flex rounded-circle border border-dark bg-dark justify-content-center align-content-center user-cont p-2" data-bs-toggle="dropdown">
                                 <p class="text-white align-self-center mb-0">
@@ -106,6 +121,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
             </div>
