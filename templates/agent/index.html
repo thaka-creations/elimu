@@ -1,1 +1,43 @@
 {% extends "agent/partials/theme.html" %}
+
+{% block content %}
+
+<section class="section dashboard">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card rounded-0">
+                <div class="card-header text-success">
+                    User summary
+                </div>
+                <div class="card-body mt-2">
+                    <table class="display" id="by-county">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Users</th>
+                                <th>County</th>
+                                <th>School</th>
+                                <th>Amount Paid</th>
+                                <th>Commission</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        var myTable = $('#by-county').DataTable();
+    });
+</script>
+{% endblock %}
