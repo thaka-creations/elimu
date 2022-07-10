@@ -108,14 +108,18 @@ class LoginView(View):
 
 
 class ResetPasswordView(View):
-
     template_name = "users/reset_password.html"
+    form_class = forms.ResetPasswordForm
 
     def get(self, request):
-        pass
+        form = self.form_class
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        pass
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
 
 
 class ProtectedView(View):

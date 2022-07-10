@@ -8,7 +8,8 @@ from users import validators, models as user_models
 
 class RegistrationForm(forms.Form):
     name = forms.CharField(label="Full Name", max_length=255, required=True, label_suffix="",
-                           widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0", "autocomplete": "off"}))
+                           widget=forms.TextInput(
+                               attrs={"class": "form-control shadow-none rounded-0", "autocomplete": "off"}))
     email = forms.EmailField(label="Email Address", required=True, label_suffix="",
                              widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0",
                                                             "autocomplete": "off", "id": "in-email"}))
@@ -29,7 +30,8 @@ class RegistrationForm(forms.Form):
     confirm_password = forms.CharField(label="Confirm Password", max_length=100, required=True, label_suffix="",
                                        min_length=6,
                                        widget=forms.PasswordInput(
-                                           attrs={"class": "form-control shadow-none rounded-0", "autocomplete": "off"}))
+                                           attrs={"class": "form-control shadow-none rounded-0",
+                                                  "autocomplete": "off"}))
 
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
@@ -46,10 +48,13 @@ class RegistrationForm(forms.Form):
             raise ValidationError(_("Email exists"))
 
 
-
-
 class LoginForm(forms.Form):
     email = forms.EmailField(label="Email Address",
                              widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0"}))
     password = forms.CharField(label="Password", max_length=100,
                                widget=forms.PasswordInput(attrs={"class": "form-control shadow-none rounded-0"}))
+
+
+class ResetPasswordForm(forms.Form):
+    email = forms.EmailField(label="Email Address",
+                             widget=forms.EmailInput(attrs={"class": "form-control shadow-none rounded-0"}))
