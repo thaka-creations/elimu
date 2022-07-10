@@ -34,12 +34,23 @@
             </div>
 
             <div class="card-body border shadow px-4 py-4">
-                <form action="/registration" method="post">
+                <form action="/registration" method="post" id="fm-add-user">
                     {% csrf_token %}
         
                     {{form}}
+
+                    <div class="row mb-3">
+                        <div class="col-md-9">
+                            <label for="email-otp" class="control-label">Email OTP Code</label>
+                            <input type="text" name="otp" class="form-control shadow-none rounded-0" required id="in-otp">
+                        </div>
+
+                        <div class="col-md-3 my-4 d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary shadow-none rounded-0" id="otp-btn">GET OTP</button>
+                        </div>
+                    </div>
         
-                    <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100">Create Account</button>
+                    <button type="submit" class="btn btn-primary rounded-0 shadow-none w-100 disabled">Create Account</button>
         
                 </form>
             </div>
@@ -51,5 +62,51 @@
 
     </div>
 
+<script>
+    var otpBtn = document.getElementById("otp-btn");
+    var inEmail = document.getElementById("in-email");
+    var btnAddUser = document.getElementById("btn-add-user");
+    var inOtp = document.getElementById("in-otp");
+    otpBtn.addEventListener("click", function(){
+        if (!inEmail.checkValidity()){
+            alert("Valid email is required");
+        }
+        else {
+            var email = inEmail.value;
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    alert("OTP Code has been sent to "+email);
+                    btnAddUser.classList.remove("disabled");
+                    console.log(this.responseText);
+                }
+                else{
+                    alert("Invalid Email");
+                }
+            }
+            xhttp.open("POST", "/api/v1/mfa/otp/generate");
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("send_to="+email+"&expiry_time=600");
+        }
+    });
+
+    var form = document.getElementById("fm-add-user");
+    form.addEventListener("submit", function(e){
+        e.preventDefault();
+        var otp = inOtp.value;
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    self.unbind('submit').submit();
+                }
+                else if (this.readyState == 4 && this.status ==400){
+                    alert("Invalid OTP Code");
+                }
+            }
+        xhttp.open("POST", "/api/v1/mfa/otp/verify");
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify({"otp": otp, "send_to": email}));
+    });
+</script>
 </body>
 </html>
