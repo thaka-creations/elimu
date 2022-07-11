@@ -216,10 +216,40 @@ class UpdateSubject(AdminMixin, View):
         try:
             instance = school_models.SubjectModel.objects.get(id=pk)
         except school_models.SubjectModel.DoesNotExist:
-            return redirect("/admin/subjects/"+pk)
+            return redirect("/admin/subjects/" + pk)
         instance.name = name
         instance.save()
-        return redirect("/admin/subjects/"+pk)
+        return redirect("/admin/subjects/" + pk)
+
+
+class UpdateUnit(AdminMixin, View):
+    def post(self, request):
+        data = request.POST
+        pk = data['id']
+        name = data['name']
+        subject_id = data['subject']
+        form_id = data['form_id']
+
+        try:
+            form_inst = school_models.FormModel.objects.get(id=form_id)
+        except school_models.FormModel.DoesNotExist:
+            return redirect("/admin/units/view?unit="+pk)
+
+        try:
+            subject = school_models.SubjectModel.objects.get(id=subject_id)
+        except school_models.SubjectModel.DoesNotExist:
+            return redirect("/admin/units/view?unit="+pk)
+
+        try:
+            instance = school_models.UnitModel.objects.get(id=pk)
+        except school_models.UnitModel.DoesNotExist:
+            return redirect("/admin/units/view?unit="+pk)
+
+        instance.name = name
+        instance.subject = subject
+        instance.form = form_inst
+        instance.save()
+        return redirect("/admin/units/view?unit="+pk)
 
 
 class AddSubject(AdminMixin):
@@ -288,10 +318,11 @@ class UpdateForm(AdminMixin, View):
         try:
             instance = school_models.FormModel.objects.get(id=pk)
         except school_models.FormModel.DoesNotExist:
-            return redirect("/admin/forms/"+pk)
+            return redirect("/admin/forms/" + pk)
         instance.name = name
         instance.save()
-        return redirect("/admin/forms/"+pk)
+        return redirect("/admin/forms/" + pk)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -381,8 +412,11 @@ class UnitDetailView(AdminMixin):
 
         videos = instance.videos.all()
         amounts = payment_models.UnitAmount.objects.filter(unit=instance)
+        subjects = school_models.SubjectModel.objects.all()
+        form_qs = school_models.FormModel.objects.all()
         form = forms.AddUnitAmount
-        context = {"unit": instance, "amounts": amounts, "otp": False, "form": form}
+        context = {"unit": instance, "amounts": amounts, "otp": False, "form": form, "form_qs": form_qs,
+                   "subjects": subjects}
         if not videos.exists:
             return render(request, self.template_name, context)
 

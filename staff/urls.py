@@ -11,6 +11,7 @@ urlpatterns = [
     path("admin/forms", views.ListForm.as_view()),
     path("admin/update-form", views.UpdateForm.as_view()),
     path("admin/update-subject", views.UpdateSubject.as_view()),
+    path("admin/update-unit", views.UpdateUnit.as_view()),
     path("admin/delete-form", views.delete_form),
     path("admin/forms/add-form", views.AddForm.as_view()),
     path("admin/subjects", views.ListSubjects.as_view()),
