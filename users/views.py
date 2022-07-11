@@ -2,10 +2,11 @@ import requests
 from django.views import View
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
-from django.http import JsonResponse
 from users import forms, models as user_models
 from users.utils import system_utils
 from school import models as school_models
@@ -126,7 +127,7 @@ class ResetPasswordView(View):
 
             if not resp:
                 return redirect("/reset-password", {"form": form, "message": "An error occurred"})
-
+            messages.success(request, _("Reset password otp has been sent to your email"))
             return redirect("/forgot-password")
         return render(request, self.template_name, {"form": form})
 
