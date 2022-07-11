@@ -59,6 +59,17 @@
         .dropdown-menu{
             left: -6em!important;
         }
+        @media print {
+            html,
+            body {
+
+                /* Hide the whole page */
+                display: none;
+            }
+        }
+        html {
+            user-select: none;
+        }
     </style>
 
     {% block styles %}{% endblock %}
