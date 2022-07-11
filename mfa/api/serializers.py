@@ -10,7 +10,7 @@ class CreateOtpSerializer(serializers.Serializer):
 class OtpSerializer(serializers.ModelSerializer):
     class Meta:
         model = mfa_models.OtpCode
-        fields = ['id', 'send_to', 'code', 'date_created', 'expiry_date']
+        fields = ['code']
 
 
 class VerifyOtpSerializer(serializers.Serializer):

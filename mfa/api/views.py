@@ -47,8 +47,8 @@ class OtpViewSet(viewsets.ViewSet):
                 message="Your otp code is %s" % otp_code['code'],
                 recipient=send_to
             )
-            serializer = mfa_serializers.OtpSerializer(otp_instance, many=False)
-            return Response({"details": serializer.data}, status=status.HTTP_200_OK)
+            # serializer = mfa_serializers.OtpSerializer(otp_instance, many=False)
+            return Response({"otp": otp_code['code']}, status=status.HTTP_200_OK)
 
     @action(
         methods=['POST'],
@@ -66,9 +66,7 @@ class OtpViewSet(viewsets.ViewSet):
 
         validated_data = payload_serializer.validated_data
         otp = validated_data['otp']
-        print(otp)
         send_to = validated_data['send_to']
-        print(send_to)
         valid, message = klass.verify_otp_code(otp, send_to)
 
         if not valid:

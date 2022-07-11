@@ -3,10 +3,9 @@ from django.views import View
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
+from django.http import JsonResponse
 from users import forms, models as user_models
 from users.utils import system_utils
 from school import models as school_models
@@ -119,7 +118,43 @@ class ResetPasswordView(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
+            url = CALLBACK_URL + "mfa/otp/generate"
             data = form.cleaned_data
+            email = data['email']
+            payload = {"send_to": email, "expiry_time": 600}
+            resp = requests.post(url, json=payload)
+
+            if not resp:
+                return redirect("/reset-password", {"form": form, "message": "An error occurred"})
+
+            return redirect("/forgot-password")
+        return render(request, self.template_name, {"form": form})
+
+
+class ForgotPassword(View):
+    template_name = "users/forgot_password.html"
+    form_class = forms.ForgotPasswordForm
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            email = data['email']
+            password = data['password']
+            try:
+                instance = user_models.User.objects.get(username__iexact=email)
+            except user_models.User.DoesNotExist:
+                return redirect("/reset-password")
+
+            instance.set_password(password)
+            instance.save()
+            return redirect("/login", {"message": "Password updated successfully"})
+        print("error")
+        return render(request, self.template_name, {"form": form})
 
 
 class ProtectedView(View):
