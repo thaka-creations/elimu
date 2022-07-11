@@ -208,6 +208,20 @@ def delete_subject(request):
     return JsonResponse({"message": "Successful"})
 
 
+class UpdateSubject(AdminMixin, View):
+    def post(self, request):
+        data = request.POST
+        pk = data['id']
+        name = data['name']
+        try:
+            instance = school_models.SubjectModel.objects.get(id=pk)
+        except school_models.SubjectModel.DoesNotExist:
+            return redirect("/admin/subjects/"+pk)
+        instance.name = name
+        instance.save()
+        return redirect("/admin/subjects/"+pk)
+
+
 class AddSubject(AdminMixin):
     form_class = forms.AddSubjectForm
     login_url = "/"
@@ -265,6 +279,19 @@ class ListForm(AdminMixin, ListView):
         context['form'] = forms.AddForm
         return context
 
+
+class UpdateForm(AdminMixin, View):
+    def post(self, request):
+        data = request.POST
+        pk = data['id']
+        name = data['name']
+        try:
+            instance = school_models.FormModel.objects.get(id=pk)
+        except school_models.FormModel.DoesNotExist:
+            return redirect("/admin/forms/"+pk)
+        instance.name = name
+        instance.save()
+        return redirect("/admin/forms/"+pk)
 
 @csrf_exempt
 @require_http_methods(["POST"])

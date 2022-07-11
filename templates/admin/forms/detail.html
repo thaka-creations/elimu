@@ -19,6 +19,29 @@
         <div class="col-lg-3">
 
             <div class="card">
+                <div class="card-header text-success">
+                    EDIT FORM
+                </div>
+
+                <div class="card-body mt-2">
+                    <form action="/admin/update-form" method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-2">
+                            <label for="name" class="control-label">
+                                Name
+                            </label>
+                            <input type="hidden" name="id" value="{{form_inst.id}}">
+                            <input type="text" class="form-control shadow-none rounded-0" name="name" value="{{form_inst.name}}">
+                        </div>
+
+                        <button class="btn btn-primary rounded-0 shadow-none">Update Form</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="card">
                 <div class="card-header">
                     {{subject.name.title}}
                 </div>
