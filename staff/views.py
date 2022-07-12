@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db import transaction
-from django.db.models import Count
+from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.conf import settings
 from django.views.generic import ListView
@@ -30,6 +30,8 @@ service_manager = util.ServiceManager()
 
 class AdminMixin(UserPassesTestMixin, View):
     def test_func(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied
         return self.request.user.is_admin
 
 
@@ -155,7 +157,7 @@ def cover_videoid(request):
     return JsonResponse(upload_info)
 
 
-class CoverVideo(View):
+class CoverVideo(AdminMixin):
     template_name = "admin/videos/cover.html"
     form_class = forms.CoverVideoForm
 
@@ -692,7 +694,7 @@ class ListAgentCommission(AdminMixin, ListView):
         return context
 
 
-class AddAgentCommission(AdminMixin, View):
+class AddAgentCommission(AdminMixin):
     form_class = forms.AddCommissionForm
 
     def post(self, request):
