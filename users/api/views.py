@@ -58,7 +58,7 @@ class Registration(viewsets.ViewSet):
         detail=False
     )
     def list_codes(self, request):
-        qs = RegistrationCodes.objects.all()
+        qs = user_models.Agent.objects.all()
         serializer = serializers.ListCodes(qs, many=True)
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 

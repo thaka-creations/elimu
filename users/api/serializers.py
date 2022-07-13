@@ -64,8 +64,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class ListCodes(serializers.ModelSerializer):
     class Meta:
-        model = RegistrationCodes
-        fields = ['id', 'code', 'name', 'users']
+        model = user_models.Agent
+        fields = ['id', 'code']
 
 
 class ListCounties(serializers.ModelSerializer):
