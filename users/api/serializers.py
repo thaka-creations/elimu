@@ -63,9 +63,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class ListCodes(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    users = serializers.SerializerMethodField()
+
     class Meta:
         model = user_models.Agent
-        fields = ['id', 'code']
+        fields = ['id', 'code', 'name', 'users']
+
+    @staticmethod
+    def get_name(obj):
+        return obj.user.name
+
+    @staticmethod
+    def get_users(obj):
+        return obj.subscribers.count()
 
 
 class ListCounties(serializers.ModelSerializer):
