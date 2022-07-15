@@ -17,17 +17,38 @@ class SubjectSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
 
-class ListRetrieveUnitSerializer(serializers.ModelSerializer):
+class ListTopicSerializer(serializers.ModelSerializer):
     subject = SubjectSerializer()
     form = FormSerializer()
 
     class Meta:
-        model = school_models.UnitModel
+        model = school_models.TopicModel
         fields = ['id', 'name', 'subject', 'form']
         extra_kwargs = {'id': {'read_only': True}}
 
 
-class UnitSerializer(serializers.Serializer):
+class ListRetrieveUnitSerializer(serializers.ModelSerializer):
+    topic = ListTopicSerializer()
+
+    class Meta:
+        model = school_models.UnitModel
+        fields = ['id', 'name', 'topic']
+        extra_kwargs = {'id': {'read_only': True}}
+
+
+class RetrieveTopicSerializer(ListTopicSerializer):
+    units = serializers.SerializerMethodField()
+
+    class Meta(ListTopicSerializer.Meta):
+        fields = ListTopicSerializer.Meta.fields + ['units']
+
+    @staticmethod
+    def get_units(obj):
+        units = obj.topic_units.all()
+        return [{"id": unit.id, "name": unit.name} for unit in units]
+
+
+class TopicSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, trim_whitespace=True)
     subject = serializers.UUIDField(required=True)
     form = serializers.UUIDField(required=True)
@@ -35,7 +56,7 @@ class UnitSerializer(serializers.Serializer):
     class Meta:
         validators = [
             UniqueTogetherValidator(
-                queryset=school_models.UnitModel.objects.all(),
+                queryset=school_models.TopicModel.objects.all(),
                 fields=['name', 'subject', 'form']
             )
         ]
@@ -53,6 +74,28 @@ class UnitSerializer(serializers.Serializer):
 
         obj['subject'] = subject
         obj['form'] = form
+        return obj
+
+
+class UnitSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True, trim_whitespace=True)
+    topic = serializers.UUIDField(required=True)
+
+    class Meta:
+        validators = [
+            UniqueTogetherValidator(
+                queryset=school_models.UnitModel.objects.all(),
+                fields=['name', 'topic']
+            )
+        ]
+
+    def validate(self, obj):
+        try:
+            topic = school_models.TopicModel.objects.get(id=obj['topic'])
+        except school_models.TopicModel.DoesNotExist:
+            raise serializers.ValidationError("Topic does not exist")
+
+        obj['topic'] = topic
         return obj
 
 

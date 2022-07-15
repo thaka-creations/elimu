@@ -69,6 +69,14 @@ class FormAmount(BaseModel):
     amount = models.DecimalField(max_digits=19, decimal_places=2)
 
 
+class TopicAmount(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    topic = models.ForeignKey(school_models.TopicModel, on_delete=models.CASCADE, related_name="topic_amounts")
+    period = models.IntegerField(default=1)
+    period_type = models.CharField(max_length=100, choices=ALLOWED_PERIOD_TYPE, default="MONTH")
+    amount = models.DecimalField(max_digits=19, decimal_places=2)
+
+
 class Invoice(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="invoices")

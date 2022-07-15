@@ -69,6 +69,17 @@ class ListFormAmount(viewsets.ReadOnlyModelViewSet):
             return payment_models.FormAmount.objects.filter(form__id=form)
 
 
+class TopicAmountViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = payment_models.TopicAmount.objects.all()
+    serializer_class = payment_serializers.TopicAmountSerializer
+
+    def get_queryset(self):
+        topic = self.request.query_params.get("topic", False)
+        if not topic:
+            return payment_models.TopicAmount.objects.none()
+        return payment_models.TopicAmount.objects.filter(topic__id=topic)
+
+
 class ListSubjectAmount(viewsets.ReadOnlyModelViewSet):
     queryset = payment_models.SubjectAmount.objects.all()
     serializer_class = payment_serializers.SubjectAmountSerializer

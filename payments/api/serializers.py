@@ -45,8 +45,26 @@ class FormAmountSerializer(serializers.ModelSerializer):
     def get_period(obj):
         return str(obj.period) + " " + obj.period_type
 
-    def get_form(self, obj):
+    @staticmethod
+    def get_form(obj):
         return obj.form.name
+
+
+class TopicAmountSerializer(serializers.ModelSerializer):
+    period = serializers.SerializerMethodField()
+    topic = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.TopicAmount
+        fields = ['topic', 'amount', 'period']
+
+    @staticmethod
+    def get_period(obj):
+        return str(obj.period) + " " + obj.period_type
+
+    @staticmethod
+    def get_topic(obj):
+        return obj.topic.name
 
 
 class SubjectAmountSerializer(serializers.ModelSerializer):

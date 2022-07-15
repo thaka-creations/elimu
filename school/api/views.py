@@ -160,9 +160,9 @@ class FormViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
 
-class UnitViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = school_models.UnitModel.objects.all()[0:1]
-    serializer_class = school_serializers.ListRetrieveUnitSerializer
+class TopicViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = school_models.TopicModel.objects.all()
+    serializer_class = school_serializers.ListTopicSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
@@ -171,10 +171,61 @@ class UnitViewSet(viewsets.ReadOnlyModelViewSet):
         subject = self.request.query_params.get('subject', False)
 
         if not form or not subject:
+            qs = school_models.TopicModel.objects.all()
+            return self.filter_queryset(qs)
+
+        qs = school_models.TopicModel.objects.filter(form__id=form, subject__id=subject)
+        return self.filter_queryset(qs)
+
+    @staticmethod
+    def create(request):
+        """
+        add topic
+        """
+        payload = request.data
+        payload_serializer = school_serializers.TopicSerializer(
+            data=payload, many=False
+        )
+
+        if not payload_serializer.is_valid():
+            return Response({"details": payload_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = payload_serializer.validated_data
+        school_models.TopicModel.objects.create(**validated_data)
+
+        return Response({"details": "Topic created successfully"}, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=False)
+    def retrieve_topic(self, request):
+        request_id = request.query_params.get("request_id", False)
+        is_valid = valid_uuid(request_id)
+
+        if not is_valid:
+            return Response({"details": "request id is required or is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = school_models.TopicModel.objects.get(id=request_id)
+        except school_models.TopicModel.DoesNotExist:
+            return Response({"details": "Topic does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = school_serializers.RetrieveTopicSerializer(instance, many=False)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
+
+
+class UnitViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = school_models.UnitModel.objects.all()
+    serializer_class = school_serializers.ListRetrieveUnitSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+    def get_queryset(self):
+        topic = self.request.query_params.get('topic', False)
+
+        if not topic:
             qs = school_models.UnitModel.objects.all()
             return self.filter_queryset(qs)
 
-        qs = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
+        qs = school_models.UnitModel.objects.filter(topic__id=topic)
         return self.filter_queryset(qs)
 
     @staticmethod
@@ -208,7 +259,7 @@ class UnitViewSet(viewsets.ReadOnlyModelViewSet):
         except school_models.UnitModel.DoesNotExist:
             return Response({"details": "Unit does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = school_serializers.ListRetrieveUnitSerializer(instance)
+        serializer = school_serializers.ListRetrieveUnitSerializer(instance, many=False)
         return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)

@@ -8,6 +8,7 @@ router.register("unit-amount", views.UnitAmountViewSet, basename="unit-amount")
 router.register("subscription", views.SubscriptionViewSet, basename="subscription")
 router.register("subject-amounts", views.ListSubjectAmount, basename="subject-amounts")
 router.register("form-amounts", views.ListFormAmount, basename="form-amounts")
+router.register("topic-amounts", views.TopicAmountViewSet, basename="topic-amounts")
 
 urlpatterns = [
     path("checkout", views.MpesaCheckout.as_view()),

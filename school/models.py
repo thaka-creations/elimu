@@ -29,11 +29,20 @@ class SubjectModel(BaseModel):
         return self.name
 
 
-class UnitModel(BaseModel):
+class TopicModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     subject = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="form_units")
     form = models.ForeignKey(FormModel, on_delete=models.CASCADE, related_name="subject_units")
+
+    def __str__(self):
+        return self.name
+
+
+class UnitModel(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    topic = models.ForeignKey(TopicModel, on_delete=models.CASCADE, related_name="topic_units", null=True)
 
     def __str__(self):
         return self.name
