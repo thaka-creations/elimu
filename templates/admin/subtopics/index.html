@@ -1,0 +1,122 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block styles %}
+<style>
+    tbody > tr{
+        cursor: pointer
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+ <div class="pagetitle">
+    <h1>Subtopics</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">Subtopics</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row d-flex justify-content-between">
+
+      <!-- Left side columns -->
+      <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header border-0">
+            </div>
+            <div class="card-body">
+                <table class="display" id="form-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                #
+                            </th>
+                            <th class="text-center">
+                                Name
+                            </th>
+                            <th class="text-center">
+                                Topic
+                            </th>
+                            <th class="text-center">
+                                Videos Count
+                            </th>
+                            <th class="text-center">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inst in subtopics%}
+                        <tr data-id="{{inst.id}}">
+                            <td class="text-center">
+                                {{forloop.counter}}
+                            </td>
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view details">
+                                {{inst.name}}
+                            </td>
+                            <td class="text-center">
+                                {{inst.topic.name.title}}
+                            </td>
+                            <td class="text-center">
+                                {{inst.videos.count}}
+                            </td>
+                            <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
+                                <i class='bi bi-trash text-danger'></i>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+      </div><!-- End Left side columns -->
+
+      <div class="col-lg-4 col-md-4">
+          <div class="card shadow">
+              <div class="card-header">
+                  Add Subtopic
+              </div>
+              <div class="card-body mt-3">
+                    <form action="/admin/subtopics" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Subtopic</button>
+                    </form>
+              </div>
+          </div>
+      </div>
+
+    </div>
+  </section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        var myTable = $('#form-table').DataTable();
+
+        $("#form-table tbody").on('click', 'tr', function(e){
+            id = $(this).attr('data-id');
+            window.location.href = "/admin/subtopics/"+id;
+        });
+
+        $(".bi-trash").on("click", function (e) {
+            e.stopPropagation();
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    myTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/delete-subtopic");
+            xhttp.send(tr.attr('data-id'))
+        });
+    });
+</script>
+{% endblock %}

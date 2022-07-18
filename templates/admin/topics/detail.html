@@ -1,0 +1,160 @@
+{% extends "admin/partials/theme.html"%}
+
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Topics</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/topics">Topics</a></li>
+        <li class="breadcrumb-item active">{{topic.name.title}}</li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section subject-detail">
+
+    <div class="row d-flex justify-content-between">
+        <div class="col-lg-3">
+
+            <div class="card">
+                <div class="card-header text-success">
+                    EDIT TOPIC
+                </div>
+
+                <div class="card-body mt-2">
+                    <form action="/admin/update-topic" method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-2">
+                            <label for="name" class="control-label">
+                                Name
+                            </label>
+                            <input type="hidden" name="id" value="{{topic.id}}">
+                            <input type="text" class="form-control shadow-none rounded-0" name="name" value="{{topic.name}}">
+                        </div>
+                        
+                        <div class="mt-2">
+                            <label for="form" class="control-label">Form</label>
+                            <select name="form_id" class="form-control rounded-0 shadow-none" autocomplete="off">
+                                {% for inst in form_qs%}
+                                {% if topic.form.id == inst.id %}
+                                <option value="{{inst.id}}" selected>{{inst.name}}</option>
+                                {% else%}
+                                <option value="{{inst.id}}">{{inst.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="my-2">
+                            <label for="form" class="control-label">Subject</label>
+                            <select name="subject" class="form-control rounded-0 shadow-none" autocomplete="off">
+                                {% for inst in subjects%}
+                                {% if topic.subject.id == inst.id %}
+                                <option value="{{inst.id}}" selected>{{inst.name}}</option>
+                                {% else%}
+                                <option value="{{inst.id}}">{{inst.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+                        <button class="btn btn-primary rounded-0 shadow-none">Update Topic</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-success">
+                    Add Topic Price
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/payments/topic-amount" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Price</button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header text-success">
+                    {{topic.name.title}}
+                </div>
+                <div class="card-body mt-3">
+                    <div class="card">
+                        <div class="card-header text-success">
+                            {{topic.name.upper}} SUBTOPICS
+                        </div>
+                        <div class="card-body mt-2">
+                            <ul class="list-group">
+                                {% for unit in topic.topic_units.all %}
+                                    <li class="list-group-item">
+                                        {{unit}}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header text-success">
+                    Subject Prices
+                </div>
+                <div class="card-body mt-3 px-2">
+                    <table id="topic-prices" class="display">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    #
+                                </th>
+                                <th class="text-center">
+                                    Topic
+                                </th>
+                                <th class="text-center">
+                                    Amount
+                                </th>
+                                <th class="text-center">
+                                    Period
+                                </th>
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for amount in amounts %}
+                            <tr>
+                                <td class="text-center">{{forloop.counter}}</td>
+                                <td class="text-center">{{amount.topic.name}}</td>
+                                <td class="text-center">{{amount.amount}}</td>
+                                <td class="text-center">{{amount.period}} {{amount.period_type}}</td>
+                                <td class="text-center"><i class='bi bi-trash text-danger'></i></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+     $(document).ready(function () {
+        $('#topic-prices').DataTable();
+    });
+</script>
+{% endblock%}

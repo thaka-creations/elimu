@@ -1,0 +1,158 @@
+{% extends "admin/partials/theme.html" %}
+
+{% block  content %}
+<div class="pagetitle">
+    <h1>Subtopic</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/subtopics">List Subtopics</a></li>
+        <li class="breadcrumb-item active"> Subtopic </li>
+      </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header border-0">
+                    <p class="text-primary">Name: {{subtopic.name}}</p>
+                    <p class="text-primary">Topic: {{subtopic.topic.name}}</p>
+                    <p class="mb-0 text-primary">Videos: {{subtopic.videos.count}}</p>
+                </div>
+                {% if subtopic.videos.count > 0%}
+                <div class="card-body mt-3">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div id="embedBox"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="list-group rounded-0 shadow">
+                                    <li class="list-group-item disabled text-primary"><b>{{subtopic.name.title}} Videos</b></li>
+                                {% for video in subtopic.videos.all %}
+                                    <li class="list-group-item">
+                                        {{video.label}}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header text-success">
+                    EDIT SUBTOPIC
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/subtopics/{{subtopic.pk}}" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary shadow-none rounded-0" type="submit">Update Subtopic</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-end">
+                    <button class="btn btn-primary shadow-none rounded-0" data-bs-toggle="modal" data-bs-target="#amountModal">
+                        Add Amount
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    #
+                                </th>
+                                <th class="text-center">
+                                    Period
+                                </th>
+                                <th class="text-center">
+                                    Amount
+                                </th>
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if amounts %}
+                            {% for amount in amounts %}
+                                <tr>
+                                    <td class="text-center">
+                                        {{forloop.counter}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{amount.period}} {{amount.period_type}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{amount.amount}}
+                                    </td>
+                                    <td class="text-center">
+                                        <i class='bi bi-trash text-danger'></i>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan='4' class='text-center'>Unit pricing not defined yet</td>
+                                </tr>
+                            {%endif%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="amountModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="subscriptionModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Subtopic Amount</h5>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body mt-0">
+            <form action="/admin/payments/subtopic-amount" method="post" id="form-add-amount">
+                {% csrf_token %}
+                {{amount_form}}
+            </form>
+        </div>
+        <div class="modal-footer d-flex justify-content-between border-0 pt-0">
+          <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-0 shadow-none" id="btn-add-amount">Add Amount</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% if subtopic.videos.count > 0 %}
+<script>
+    (function(v,i,d,e,o){v[o]=v[o]||{}; v[o].add = v[o].add || function V(a){ (v[o].d=v[o].d||[]).push(a);};
+      if(!v[o].l) { v[o].l=1*new Date(); a=i.createElement(d), m=i.getElementsByTagName(d)[0];
+      a.async=1; a.src=e; m.parentNode.insertBefore(a,m);}
+      })(window,document,"script","https://player.vdocipher.com/playerAssets/1.6.10/vdo.js","vdo");
+      vdo.add({
+      otp: "{{otp}}",
+      playbackInfo: "{{playback}}",
+      theme: "9ae8bbe8dd964ddc9bdb932cca1cb59a",
+      container: document.querySelector( "#embedBox" ),
+      });
+</script>
+{% endif %}
+<script>
+    bm = document.getElementById("btn-add-amount");
+    fam = document.getElementById("form-add-amount")
+    bm.addEventListener("click", function() {
+        fam.submit();
+    })
+</script>
+{% endblock %}

@@ -21,7 +21,7 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-body mt-3 px-4">
-                    <div class="message-display">
+                    <div id="message-display">
                       {% for message in messages %}
                           <p class="text-success">{{message}}</p>
                       {% endfor %}
@@ -61,13 +61,11 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 {% if messages %}
 <script>
-    $(document).ready(function(){
-      const timeOut = setTimeout(successMessage, 3000);
-
-      function successMessage(){
-        $(".message-display").addClass(".d-none");
-      }
-    });
+    const timeOut = setTimeout(successMessage, 3000);
+    var messageDiv  = document.getElementById("message-display");
+    function successMessage(){
+      messageDiv.classList.add("d-none");
+    }
 </script>
 {% endif %}
 <script>
