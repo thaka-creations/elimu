@@ -11,6 +11,12 @@
         content:"*";
         color:red;
     }
+    .badge{
+        top:2px;
+        right:2px; 
+        font-size:0.7em; 
+        background-color:#5968B0;
+    }
 </style>
 {% endblock %}
 
@@ -32,8 +38,8 @@
                 {% if topic.topic_units.all %}
                     {% for subtopic in topic.topic_units.all %}
                         <div class="col-md-3">
-                            <div class="py-2 border text-center un-it" un-id="{{subtopic.id}}">
-                                {{subtopic.name.title}}
+                            <div class="py-2 border text-center un-it position-relative" un-id="{{subtopic.id}}">
+                                {{subtopic.name.title}} <span class="badge text-danger text-white position-absolute">Ksh {{subtopic.unit_amounts.first.amount}}</span>
                             </div>
                         </div>
                     {% endfor %}

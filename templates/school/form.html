@@ -26,7 +26,12 @@
     .form-four{
         background-color:#D56064;
     }
-
+    .badge{
+        top:2px;
+        right:2px; 
+        font-size:0.7em; 
+        background-color:#5968B0;
+    }
 </style>
 {% endblock %}
 
@@ -53,8 +58,8 @@
                 {% if subjects %}
                     {% for subject in subjects %}
                         <div class="col-md-3">
-                            <div class="py-2 border text-center sb-it" sub-id="{{subject.id}}">
-                                {{subject.name}}
+                            <div class="py-2 border text-center position-relative sb-it" sub-id="{{subject.id}}">
+                                {{subject.name}} <span class="badge text-danger text-white position-absolute">Ksh {{subject.subject_amounts.first.amount}}</span>
                             </div>
                         </div>
                     {% endfor %}
@@ -145,7 +150,12 @@
     });
 
     function fmNavigator(e){
-        id = e.target.getAttribute('sub-id');
+        if (e.target.tagName.toLowerCase() == "span") {
+            id = e.target.parentElement.getAttribute('sub-id');
+        }
+        else {
+            id = e.target.getAttribute('sub-id');
+        }
         var slug = "{{instance.name.lower}}".replace(" ", "-");
         window.location.href = "/"+slug+"/subject/"+id;
     }
