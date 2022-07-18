@@ -3,6 +3,7 @@ import uuid
 from word2number import w2n
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseBadRequest, Http404
 from django.conf import settings
 from django.views import View
 from school import models as school_models
@@ -19,20 +20,21 @@ class FormView(LoginRequiredMixin, View):
         try:
             inst = school_models.FormModel.objects.get(pk=pk)
         except school_models.FormModel.DoesNotExist:
-            return redirect("/")
+            return HttpResponseBadRequest
 
         try:
             val = inst.name.split(' ')[1]
             num = w2n.word_to_num(val)
         except Exception as e:
-            return redirect("/")
+            return HttpResponseBadRequest
 
-        qs = school_models.SubjectModel.objects. \
-            filter(form_units__videos__isnull=False, form_units__form=inst).distinct()
+        # qs = school_models.SubjectModel.objects. \
+        #     filter(form_units__videos__isnull=False, form_units__form=inst).distinct()
+        qs = school_models.SubjectModel.objects.all()
         amounts = payment_models.FormAmount.objects.filter(form=inst)
         context = {"subjects": qs, "instance": inst, "num": num, "amounts": amounts, "subscribed": False}
         # check status
-        units = school_models.UnitModel.objects.filter(form=inst).values_list("id", flat=True)
+        units = school_models.UnitModel.objects.filter(topic__form=inst).values_list("id", flat=True)
         if units:
             subscription_qs = payment_models.Subscription.objects.filter(
                 user=self.request.user, status="ACTIVE", invoiceunits__unit_id__in=units
@@ -47,19 +49,45 @@ class SubjectView(LoginRequiredMixin, View):
     template_name = "school/subjects/index.html"
     login_url = "/login"
 
-    def get(self, request, pk):
+    def get(self, request, slug, pk):
         try:
             instance = school_models.SubjectModel.objects.get(pk=pk)
         except school_models.SubjectModel.DoesNotExist:
-            return redirect("/")
+            return HttpResponseBadRequest
 
-        units = school_models.UnitModel.objects.filter(subject=instance)
-        if units.exists():
-            form = units.first().form
-        else:
-            return redirect("/")
+        topics = school_models.TopicModel.objects.filter(subject=instance)
+
+        try:
+            form = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
+        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned):
+            return HttpResponseBadRequest
         amounts = payment_models.SubjectAmount.objects.filter(subject=instance, form=form)
-        context = {"units": units, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
+        context = {"topics": topics, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
+        return render(request, self.template_name, context=context)
+
+
+class TopicView(LoginRequiredMixin, View):
+    template_name = "school/subjects/topics/index.html"
+    login_url = "/login"
+
+    def get(self, request, slug, subject, pk):
+        try:
+            form_instance = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
+        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned):
+            return Http404
+
+        try:
+            subject = school_models.SubjectModel.objects.get(name__iexact=subject.replace("_", ""))
+        except (school_models.SubjectModel.DoesNotExist, school_models.SubjectModel.MultipleObjectsReturned):
+            return Http404
+
+        try:
+            instance = school_models.TopicModel.objects.get(id=pk)
+        except school_models.TopicModel.DoesNotExist:
+            return Http404
+
+        amounts = payment_models.TopicAmount.objects.filter(topic=instance)
+        context = {"topic": instance, "subject": subject, "form": form_instance, "amounts": amounts}
         return render(request, self.template_name, context=context)
 
 

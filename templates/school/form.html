@@ -145,8 +145,9 @@
     });
 
     function fmNavigator(e){
-        id = e.target.getAttribute('sub-id')
-        window.location.href = "/form/subject/"+id
+        id = e.target.getAttribute('sub-id');
+        var slug = "{{instance.name.lower}}".replace(" ", "-");
+        window.location.href = "/"+slug+"/subject/"+id;
     }
 </script>
 <script>
