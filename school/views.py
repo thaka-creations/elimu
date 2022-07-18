@@ -3,8 +3,8 @@ import uuid
 from word2number import w2n
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest
-from django.core.e
+from django.http import HttpResponseBadRequest, Http404
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.views import View
 from school import models as school_models
@@ -20,8 +20,8 @@ class FormView(LoginRequiredMixin, View):
     def get(self, request, pk):
         try:
             inst = school_models.FormModel.objects.get(pk=pk)
-        except school_models.FormModel.DoesNotExist:
-            return HttpResponseBadRequest
+        except (school_models.FormModel.DoesNotExist, ValidationError):
+            raise Http404("Form does not exist")
 
         try:
             val = inst.name.split(' ')[1]
@@ -53,15 +53,15 @@ class SubjectView(LoginRequiredMixin, View):
     def get(self, request, slug, pk):
         try:
             instance = school_models.SubjectModel.objects.get(pk=pk)
-        except school_models.SubjectModel.DoesNotExist:
-            return HttpResponseBadRequest
+        except (school_models.SubjectModel.DoesNotExist, ValidationError):
+            raise Http404("Subject does not exist")
 
         topics = school_models.TopicModel.objects.filter(subject=instance)
 
         try:
             form = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
-        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned):
-            return HttpResponseBadRequest
+        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned, ValidationError):
+            raise Http404("Form does not exist")
         amounts = payment_models.SubjectAmount.objects.filter(subject=instance, form=form)
         context = {"topics": topics, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
         return render(request, self.template_name, context=context)
@@ -74,18 +74,19 @@ class TopicView(LoginRequiredMixin, View):
     def get(self, request, slug, subject, pk):
         try:
             form_instance = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
-        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned):
-            raise Http404
+        except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned, ValidationError):
+            raise Http404("Form does not exist")
 
         try:
             subject = school_models.SubjectModel.objects.get(name__iexact=subject.replace("_", ""))
-        except (school_models.SubjectModel.DoesNotExist, school_models.SubjectModel.MultipleObjectsReturned):
-            raise Http404
+        except (school_models.SubjectModel.DoesNotExist, school_models.SubjectModel.MultipleObjectsReturned,
+                ValidationError):
+            raise Http404("Subject does not exist")
 
         try:
             instance = school_models.TopicModel.objects.get(id=pk)
-        except school_models.TopicModel.DoesNotExist:
-            return Http404
+        except (school_models.TopicModel.DoesNotExist, ValidationError):
+            raise Http404("Topic does not exist")
 
         amounts = payment_models.TopicAmount.objects.filter(topic=instance)
         context = {"topic": instance, "subject": subject, "form": form_instance, "amounts": amounts}
