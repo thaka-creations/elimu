@@ -15,12 +15,17 @@ def current_year():
 
 @register.simple_tag(name="subject_video_count")
 def subject_video_count(subject):
-    return school_models.VideoModel.objects.filter(unit__subject=subject).count()
+    return school_models.VideoModel.objects.filter(unit__topic__subject=subject).count()
 
 
 @register.simple_tag(name="form_video_count")
 def form_video_count(inst):
-    return school_models.VideoModel.objects.filter(unit__form=inst).count()
+    return school_models.VideoModel.objects.filter(unit__topic__form=inst).count()
+
+
+@register.simple_tag(name="topic_video_count")
+def topic_video_count(inst):
+    return school_models.VideoModel.objects.filter(unit__topic__id=inst).count()
 
 
 @register.simple_tag(name="get_unit")

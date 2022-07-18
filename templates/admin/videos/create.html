@@ -21,6 +21,12 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-body mt-3 px-4">
+                    <div class="message-display">
+                      {% for message in messages %}
+                          <p class="text-success">{{message}}</p>
+                      {% endfor %}
+                    </div>
+
                     <form action="/admin/videos/add-video" method="post" id="video-form" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{form}}
@@ -53,44 +59,25 @@
 
 {% block scripts %}
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+{% if messages %}
 <script>
-    // var toast = document.getElementById("toast");
-    // var btn = document.getElementById("add-video");
-    // btn.addEventListener("click", addVideo);
-    
-    // function addVideo(){
-    //     var el = document.getElementById("video-form");
-    //     var url = el.getAttribute("action");
-    //     var formData = new FormData(el);
-    //     var unt = document.getElementById("_unit").value;
+    $(document).ready(function(){
+      const timeOut = setTimeout(successMessage, 3000);
 
-    //     xhttp = new XMLHttpRequest();
-    //     xhttp.onreadystatechange = function(){
-    //         if (this.readyState == 4 && this.status == 200){
-    //             console.log(xhttp.responseText)
-    //             $(".toast-body").addClass("bg-success");
-    //             $(".toast-body p").text("Video added successfully");
-    //             $(".toast").toast("show");
-    //         }
-    //         else if (this.readyState ==4 && this.status == 400){
-    //             console.log(xhttp.responseText)
-    //             $(".toast-body").addClass("bg-danger");
-    //             $(".toast-body p").text("Enter all required details");
-    //             $(".toast").toast("show");
-    //         }
-    //         window.location.load = "/admin/videos?unit="+unt;
-    //     }
-
-    //     xhttp.open("POST", url);
-    //     xhttp.send(formData);
-    // }
+      function successMessage(){
+        $(".message-display").addClass(".d-none");
+      }
+    });
 </script>
+{% endif %}
 <script>
     afm = document.getElementById("a_form");
     asb = document.getElementById("a_subject");
-    aun = document.getElementById("a_unit");
+    aun = document.getElementById("a_topic");
+    ausp = document.getElementById("a_subtopic");
     afm.addEventListener("change", fmChangeEvent);
     asb.addEventListener("change", sbChangeEvent);
+    aun.addEventListener("change", tpChangeEvent);
 
     function fmChangeEvent(){
         form = afm.value;
@@ -105,6 +92,10 @@
                     while (aun.hasChildNodes()) {
                                     aun.removeChild(aun.firstChild);
                                 }
+                    
+                    while (ausp.hasChildNodes()) {
+                      ausp.removeChild(ausp.firstChild);
+                    }
                     
                     for(const key of Object.keys(obj)){
                         if (obj[key].length == 0){
@@ -124,11 +115,12 @@
                                 aun.appendChild(option);
                             }
                     }
+                    tpChangeEvent();
 
                 }
             }
 
-            xhttp.open("GET", "/api/v1/school/unit?form="+form+"&subject="+subject)
+            xhttp.open("GET", "/api/v1/school/topic?form="+form+"&subject="+subject)
             xhttp.send()
         }
     }
@@ -147,6 +139,10 @@
                     while (aun.hasChildNodes()) {
                                     aun.removeChild(aun.firstChild);
                                 }
+
+                    while (ausp.hasChildNodes()) {
+                      ausp.removeChild(ausp.firstChild);
+                    }
                     
                     for(const key of Object.keys(obj)){
                         
@@ -161,13 +157,44 @@
                                 aun.appendChild(option);
                             }
                     }
+                    tpChangeEvent();
                 }
             }
 
-            xhttp.open("GET", "/api/v1/school/unit?form="+form+"&subject="+subject)
+            xhttp.open("GET", "/api/v1/school/topic?form="+form+"&subject="+subject)
             xhttp.send()
 
         }
+    }
+
+    function tpChangeEvent(){
+      topic_id = aun.value;
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200){
+          obj = JSON.parse(xhttp.responseText);
+
+          while (ausp.hasChildNodes()) {
+            ausp.removeChild(ausp.firstChild);
+          }
+          var topics = obj['details']['units'];
+        
+          for(const key of Object.keys(topics)){
+            name = topics[key].name;
+            id = topics[key].id;
+
+            if (name != "undefined"){
+              const option = document.createElement("option");
+              textNode = document.createTextNode(name);
+              option.appendChild(textNode);
+              option.value = id;
+              ausp.appendChild(option);
+            }
+          }
+        }
+      }
+      xhttp.open("GET", "/api/v1/school/topic/retrieve_topic?request_id="+topic_id);
+      xhttp.send();
     }
 </script>
 <script>

@@ -10,7 +10,7 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, Http404
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.views import View
@@ -22,6 +22,8 @@ from payments import models as payment_models
 from staff import forms, util
 from django.contrib.auth.mixins import UserPassesTestMixin
 from users import models as user_models
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 password_manager = util.PasswordManager()
@@ -101,25 +103,24 @@ class AddVideo(AdminMixin):
         form = self.form_class(request.POST)
         data = form.data
         video_id = data['file']
-        unit_id = data['unit']
+        unit_id = data['subtopic']
         try:
             video_instance = school_models.VideoModel.objects.get(videoid=video_id)
-        except Exception as e:
-            print("error")
-            return redirect("/admin/videos/add-video", {"form": form})
+        except school_models.VideoModel.DoesNotExist:
+            return HttpResponseBadRequest
 
         try:
             unit = school_models.UnitModel.objects.get(id=unit_id)
-        except Exception as e:
-            print("unit error")
-            return redirect("/admin/videos/add-video", {"form": form})
+        except school_models.UnitModel.DoesNotExist:
+            return HttpResponseBadRequest
 
         video_instance.unit = unit
         video_instance.index = data['index']
         video_instance.label = data['label']
         video_instance.save()
+        messages.success(request, _("Video added successfully"))
 
-        return redirect("/admin/units")
+        return redirect("/admin/videos/add-video")
 
 
 @csrf_exempt
@@ -224,7 +225,7 @@ class UpdateSubject(AdminMixin, View):
         return redirect("/admin/subjects/" + pk)
 
 
-class UpdateUnit(AdminMixin, View):
+class UpdateTopic(AdminMixin, View):
     def post(self, request):
         data = request.POST
         pk = data['id']
@@ -235,23 +236,23 @@ class UpdateUnit(AdminMixin, View):
         try:
             form_inst = school_models.FormModel.objects.get(id=form_id)
         except school_models.FormModel.DoesNotExist:
-            return redirect("/admin/units/view?unit="+pk)
+            return redirect("/admin/topics/view?unit=" + pk)
 
         try:
             subject = school_models.SubjectModel.objects.get(id=subject_id)
         except school_models.SubjectModel.DoesNotExist:
-            return redirect("/admin/units/view?unit="+pk)
+            return redirect("/admin/topics/view?unit=" + pk)
 
         try:
-            instance = school_models.UnitModel.objects.get(id=pk)
-        except school_models.UnitModel.DoesNotExist:
-            return redirect("/admin/units/view?unit="+pk)
+            instance = school_models.TopicModel.objects.get(id=pk)
+        except school_models.TopicModel.DoesNotExist:
+            return redirect("/admin/topics/view?unit=" + pk)
 
         instance.name = name
         instance.subject = subject
         instance.form = form_inst
         instance.save()
-        return redirect("/admin/units/view?unit="+pk)
+        return redirect("/admin/topics/view?unit=" + pk)
 
 
 class AddSubject(AdminMixin):
@@ -357,29 +358,29 @@ class AddForm(AdminMixin):
         return redirect("/admin/forms", {"qs": qs, "form": form})
 
 
-class ListUnits(AdminMixin, ListView):
-    model = school_models.UnitModel
-    template_name = "admin/units/index.html"
-    context_object_name = "units"
+class ListTopics(AdminMixin, ListView):
+    model = school_models.TopicModel
+    template_name = "admin/topics/index.html"
+    context_object_name = "topics"
     login_url = "/login"
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def delete_unit(request):
+def delete_topic(request):
     body_unicode = request.body.decode('utf-8')
     try:
-        instance = school_models.UnitModel.objects.get(id=body_unicode)
-    except school_models.UnitModel.DoesNotExist:
+        instance = school_models.TopicModel.objects.get(id=body_unicode)
+    except school_models.TopicModel.DoesNotExist:
         return HttpResponseBadRequest
 
     instance.delete()
     return JsonResponse({"message": "Successful"})
 
 
-class AddUnit(AdminMixin):
-    form_class = forms.AddUnitForm
-    template_name = "admin/units/create.html"
+class AddTopic(AdminMixin):
+    form_class = forms.AddTopicForm
+    template_name = "admin/topics/create.html"
     login_url = "/login"
 
     def get(self, request):
@@ -391,50 +392,50 @@ class AddUnit(AdminMixin):
 
         if form.is_valid():
             data = form.cleaned_data
-            school_models.UnitModel.objects.create(**data)
-            context = {"details": "Unit added successfully"}
-            return redirect("/admin/units", context=context)
+            school_models.TopicModel.objects.create(**data)
+            context = {"details": "Topic added successfully"}
+            return redirect("/admin/topics", context=context)
         return render(request, self.template_name, {"form": form})
 
 
-class UnitDetailView(AdminMixin):
-    template_name = "admin/units/detail.html"
+class TopicDetailView(AdminMixin):
+    template_name = "admin/topics/detail.html"
     login_url = "/login"
 
     def get(self, request):
-        unit = request.GET.get("unit", False)
+        topic = request.GET.get("topic", False)
 
-        if not unit:
-            return redirect("/admin/units")
+        if not topic:
+            return redirect("/admin/topics")
 
         try:
-            instance = school_models.UnitModel.objects.get(id=unit)
-        except school_models.UnitModel.DoesNotExist:
-            return redirect("/admin/units")
+            instance = school_models.TopicModel.objects.get(id=topic)
+        except school_models.TopicModel.DoesNotExist:
+            return redirect("/admin/topics")
 
-        videos = instance.videos.all()
-        amounts = payment_models.UnitAmount.objects.filter(unit=instance)
+        # videos = instance.videos.all()
+        amounts = payment_models.TopicAmount.objects.filter(topic=instance)
         subjects = school_models.SubjectModel.objects.all()
         form_qs = school_models.FormModel.objects.all()
-        form = forms.AddUnitAmount
-        context = {"unit": instance, "amounts": amounts, "otp": False, "form": form, "form_qs": form_qs,
+        form = forms.AddTopicAmount
+        context = {"topic": instance, "amounts": amounts, "otp": False, "form": form, "form_qs": form_qs,
                    "subjects": subjects}
-        if not videos.exists:
-            return render(request, self.template_name, context)
+        # if not videos.exists:
+        #     return render(request, self.template_name, context)
 
-        video_id = videos.first()
-        url = CALLBACK_URL + 'video/get-video-otp'
-        headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+        # video_id = videos.first()
+        # url = CALLBACK_URL + 'video/get-video-otp'
+        # headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+        #
+        # resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        # res = resp.json()
+        #
+        # if not resp:
+        #     return render(request, self.template_name, context)
 
-        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
-        res = resp.json()
-
-        if not resp:
-            return render(request, self.template_name, context)
-
-        otp = res['otp']
-        playback = res['playbackInfo']
-        context.update({"otp": otp, "playback": playback})
+        # otp = res['otp']
+        # playback = res['playbackInfo']
+        # context.update({"otp": otp, "playback": playback})
         return render(request, self.template_name, context)
 
 
@@ -515,21 +516,38 @@ class AddCounty(AdminMixin):
         return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
 
 
-class AddUnitAmountView(AdminMixin):
-    form_class = forms.AddUnitAmount
-    template_name = "admin/units/detail.html"
-    login_url = "/login"
+class AddTopicAmountView(AdminMixin):
+    form_class = forms.AddTopicAmount
+    template_name = "admin/topics/detail.html"
 
     def post(self, request):
         form = self.form_class(request.POST)
-        qs = user_models.County.objects.all()
 
         if form.is_valid():
             data = form.cleaned_data
-            payment_models.UnitAmount.objects.create(**data)
-            context = {"details": "Unit Amount added successfully"}
-            return redirect("/admin")
-        return redirect("/")
+            topic = data['topic']
+            payment_models.TopicAmount.objects.create(**data)
+            context = {"details": "Topic Amount added successfully"}
+            return redirect("/admin/topics/view?topic={}".format(topic.id))
+        return redirect("/admin")
+
+
+class AddSubtopicAmountView(AdminMixin):
+    form_class = forms.AddUnitAmount
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            subtopic = data['unit']
+            try:
+                payment_models.UnitAmount.objects.create(**data)
+            except Exception as e:
+                logging.error(e)
+                return HttpResponseBadRequest
+            return redirect("/admin/subtopics/{}".format(subtopic.pk))
+        return redirect("/admin")
 
 
 class AddSubjectAmountView(AdminMixin):
@@ -718,6 +736,84 @@ def delete_commission(request):
     try:
         instance = payment_models.Commission.objects.get(id=body_unicode)
     except payment_models.Commission.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
+
+
+class SubtopicView(AdminMixin):
+    template_name = "admin/subtopics/index.html"
+    form_class = forms.AddSubtopicForm
+
+    def get(self, request):
+        subtopics = school_models.UnitModel.objects.all()
+        context = {"subtopics": subtopics, "form": self.form_class}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            school_models.UnitModel.objects.create(**data)
+
+        return redirect("/admin/subtopics")
+
+
+class RetrieveUpdateSubtopic(AdminMixin):
+    template_name = "admin/subtopics/detail.html"
+    form_class = forms.AddSubtopicForm
+    amount_form_class = forms.AddUnitAmount
+
+    def get(self, request, pk):
+        try:
+            instance = school_models.UnitModel.objects.get(id=pk)
+        except school_models.UnitModel.DoesNotExist:
+            return Http404
+
+        amounts = payment_models.UnitAmount.objects.filter(unit=instance)
+        videos = instance.videos.all()
+        context = {"subtopic": instance, "amounts": amounts, "amount_form": self.amount_form_class,
+                   "form": self.form_class(initial={"name": instance.name,
+                                                    "topic": instance.topic})}
+
+        if videos.exists():
+            video_id = videos.first()
+            url = CALLBACK_URL + 'video/get-video-otp'
+            headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+
+            resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+            res = resp.json()
+
+            if resp:
+                otp = res['otp']
+                playback = res['playbackInfo']
+                context.update({"otp": otp, "playback": playback})
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        try:
+            instance = school_models.UnitModel.objects.get(id=pk)
+        except school_models.UnitModel.DoesNotExist:
+            return Http404
+
+        form = self.form_class(request.POST, instance)
+        if form.is_valid():
+            data = form.cleaned_data
+            instance.__dict__.update(data)
+            instance.save()
+
+        return redirect("/admin/subtopics/{}".format(pk))
+
+
+@csrf_exempt
+def delete_subtopic(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = school_models.UnitModel.objects.get(id=body_unicode)
+    except school_models.UnitModel.DoesNotExist:
         return HttpResponseBadRequest
 
     instance.delete()

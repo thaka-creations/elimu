@@ -49,11 +49,11 @@
                     {% for inst in queryset %}
                     <div class="card">
                         <div class="card-header">
-                            {{inst.name.upper}} UNITS
+                            {{inst.name.upper}} TOPICS
                         </div>
                         <div class="card-body mt-2">
                             <ul class="list-group">
-                                {% for unit in form_inst.subject_units.all %}
+                                {% for unit in form_inst.subject_topics.all %}
                                     {% if unit.subject.id == inst.id %}
                                         <li class="list-group-item">
                                             {{unit.name}}

@@ -41,18 +41,34 @@
             </div>
 
             <div class="card">
-                <div class="card-header">
+                <div class="card-header text-success">
+                    Add Subject Price
+                </div>
+                <div class="card-body mt-2">
+                    <form action="/admin/payments/add-amount" method="post">
+                        {% csrf_token%}
+                        {{form}}
+                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Price</button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header text-success">
                     {{subject.name.title}}
                 </div>
                 <div class="card-body mt-3">
                     {% for inst in queryset %}
                     <div class="card">
-                        <div class="card-header">
-                            {{inst.name.upper}} UNITS
+                        <div class="card-header text-success">
+                            {{inst.name.upper}} TOPICS
                         </div>
                         <div class="card-body mt-2">
                             <ul class="list-group">
-                                {% for unit in subject.form_units.all %}
+                                {% for unit in subject.form_topics.all %}
                                     {% if unit.form.id == inst.id %}
                                         <li class="list-group-item">
                                             {{unit.name}}
@@ -65,12 +81,11 @@
                     {% endfor %}
                 </div>
             </div>
-            
         </div>
 
         <div class="col-lg-6">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header text-success">
                     Subject Prices
                 </div>
                 <div class="card-body mt-3 px-2">
@@ -110,21 +125,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="card">
-                <div class="card-header">
-                    Add Subject Price
-                </div>
-                <div class="card-body mt-2">
-                    <form action="/admin/payments/add-amount" method="post">
-                        {% csrf_token%}
-                        {{form}}
-                        <button class="btn btn-primary rounded-0 shadow-none" type="submit">Add Subject</button>
-                    </form>
                 </div>
             </div>
         </div>

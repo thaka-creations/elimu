@@ -32,8 +32,8 @@ class SubjectModel(BaseModel):
 class TopicModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    subject = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="form_units")
-    form = models.ForeignKey(FormModel, on_delete=models.CASCADE, related_name="subject_units")
+    subject = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="form_topics")
+    form = models.ForeignKey(FormModel, on_delete=models.CASCADE, related_name="subject_topics")
 
     def __str__(self):
         return self.name

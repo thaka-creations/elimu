@@ -13,9 +13,12 @@ class AddVideoForm(forms.Form):
     subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
                                                                          "rounded-0 mb-2", "id": "a_subject"}))
-    unit = forms.ChoiceField(label="Unit", required=True,
-                             widget=forms.Select(attrs={"class": "form-control "
-                                                                 "shadow-none rounded-0 mb-2", "id": "a_unit"}))
+    topic = forms.ChoiceField(label="Topic", required=True,
+                                   widget=forms.Select(attrs={"class": "form-control shadow-none "
+                                                                       "rounded-0 mb-2", "id": "a_topic"}))
+    subtopic = forms.ChoiceField(label="Subtopic", required=True,
+                                 widget=forms.Select(attrs={"class": "form-control "
+                                                                     "shadow-none rounded-0 mb-2", "id": "a_subtopic"}))
     label = forms.CharField(label="Video Label", max_length=255, required=True,
                             widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     index = forms.IntegerField(label="Video Index",
@@ -39,7 +42,7 @@ class AddForm(forms.Form):
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
 
 
-class AddUnitForm(forms.Form):
+class AddTopicForm(forms.Form):
     name = forms.CharField(label="Name", label_suffix="", required=True,
                            widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     form = forms.ModelChoiceField(queryset=school_models.FormModel.objects.all(), label="Form", required=True,
@@ -48,6 +51,14 @@ class AddUnitForm(forms.Form):
     subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
                                                                          "rounded-0", "id": "_subject"}))
+
+
+class AddSubtopicForm(forms.Form):
+    name = forms.CharField(label="Name", label_suffix="", required=True,
+                           widget=forms.TextInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    topic = forms.ModelChoiceField(queryset=school_models.TopicModel.objects.all(), label="Topic", required=True,
+                                   widget=forms.Select(attrs={"class": "form-control "
+                                                                       "shadow-none rounded-0 mb-2", "id": "_topic"}))
 
 
 class AddCountyForm(forms.Form):
@@ -66,8 +77,19 @@ ALLOWED_PERIOD = [
 
 
 class AddUnitAmount(forms.Form):
-    unit = forms.ModelChoiceField(queryset=school_models.UnitModel.objects.all(), label="Unit", required=True,
+    unit = forms.ModelChoiceField(queryset=school_models.UnitModel.objects.all(), label="Subtopic", required=True,
                                   widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    amount = forms.IntegerField(label="Amount",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period = forms.IntegerField(label="Period",
+                                widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+    period_type = forms.ChoiceField(label="Period Type", choices=ALLOWED_PERIOD,
+                                    widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
+
+
+class AddTopicAmount(forms.Form):
+    topic = forms.ModelChoiceField(queryset=school_models.TopicModel.objects.all(), label="Topic", required=True,
+                                   widget=forms.Select(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     amount = forms.IntegerField(label="Amount",
                                 widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
     period = forms.IntegerField(label="Period",
