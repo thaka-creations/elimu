@@ -3,7 +3,8 @@ import uuid
 from word2number import w2n
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, Http404
+from django.http import HttpResponseBadRequest
+from django.core.e
 from django.conf import settings
 from django.views import View
 from school import models as school_models
@@ -74,12 +75,12 @@ class TopicView(LoginRequiredMixin, View):
         try:
             form_instance = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
         except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned):
-            return Http404
+            raise Http404
 
         try:
             subject = school_models.SubjectModel.objects.get(name__iexact=subject.replace("_", ""))
         except (school_models.SubjectModel.DoesNotExist, school_models.SubjectModel.MultipleObjectsReturned):
-            return Http404
+            raise Http404
 
         try:
             instance = school_models.TopicModel.objects.get(id=pk)
