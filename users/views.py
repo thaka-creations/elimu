@@ -132,7 +132,7 @@ class ResetPasswordView(View):
         return render(request, self.template_name, {"form": form})
 
 
-class ForgotPassword(View):#c
+class ForgotPassword(View):
     template_name = "users/forgot_password.html"
     form_class = forms.ForgotPasswordForm
 
