@@ -38,7 +38,7 @@
                 {% if topic.topic_units.all %}
                     {% for subtopic in topic.topic_units.all %}
                         <div class="col-md-3">
-                            <div class="py-2 border text-center un-it position-relative" un-id="{{subtopic.id}}">
+                            <div class="py-2 border text-center un-it position-relative" un-id="{{subtopic.id}}" un-title="{{subtopic.name.title}}">
                                 {{subtopic.name.title}} <span class="badge text-danger text-white position-absolute">Ksh {{subtopic.unit_amounts.first.amount}}</span>
                             </div>
                         </div>
@@ -181,7 +181,7 @@
 
     function unNavigator(e){
         id = e.target.getAttribute('un-id')
-        name = e.target.innerHTML
+        name = e.target.getAttribute('un-title');
         var el = document.getElementById("wl-md-title")
         el.innerHTML = "Dear Client, subscribe to view videos in " + name + ".";
         ref = document.getElementById("reference")
