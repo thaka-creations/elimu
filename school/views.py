@@ -137,6 +137,7 @@ class UnitView(LoginRequiredMixin, View):
         }
 
         resp = requests.request("POST", url, data=payload, headers=headers)
+        return JsonResponse({"details": resp.text})
         res = resp.json()
         if not res:
             return redirect("/")
