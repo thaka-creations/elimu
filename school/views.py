@@ -125,18 +125,17 @@ class UnitView(LoginRequiredMixin, View):
         url = CALLBACK_URL + 'video/{}/otp'.format(video_id)
         payload = json.dumps({
             "annotate": json.dumps([
-                {'type': 'rtext', 'text': request.user.username, 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
+                {'type': 'rtext', 'text': 'name', 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
                  'interval': '5000'}
             ])
         })
-
         headers = {
             'Authorization': "Apisecret " + settings.VDOCIPHER_SECRET,
             'Content-Type': "application/json",
             'Accept': "application/json"
         }
 
-        resp = requests.request("POST", url, data=payload, headers=headers)
+        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
         return JsonResponse({"details": resp.text})
         res = resp.json()
         if not res:
