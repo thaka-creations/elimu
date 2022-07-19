@@ -126,7 +126,7 @@ class UnitView(LoginRequiredMixin, View):
         payload = json.dumps({
             "annotate": json.dumps([
                 {'type': 'text', 'text': request.user.username, 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
-                 'interval': '5000', 'x': '10', 'y': '100'}
+                 'interval': '5000', 'x': '100', 'y': '100'}
             ])
         })
         headers = {
