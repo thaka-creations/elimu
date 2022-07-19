@@ -37,7 +37,7 @@
             <div class="row gx-3 gy-3">
                 {% if topics %}
                     {% for topic in topics %}
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-subject">
                             <div class="py-2 border text-center un-it position-relative" un-id="{{topic.id}}">
                                 {{topic.name.title}} <span class="badge text-danger text-white position-absolute">Ksh {{topic.topic_amounts.first.amount}}</span>
                             </div>
@@ -126,7 +126,7 @@
 
 {% block scripts %}
 <script>
-    var elements = document.getElementsByClassName("col-md-3");
+    var elements = document.getElementsByClassName("col-subject");
     Array.from(elements).forEach(function(element){
         element.addEventListener("click", function(e){
             id = e.target.getAttribute("un-id");
