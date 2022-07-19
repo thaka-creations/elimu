@@ -129,6 +129,7 @@ class UnitView(LoginRequiredMixin, View):
                  'interval': '5000'}
             ])
         })
+
         headers = {
             'Authorization': "Apisecret " + settings.VDOCIPHER_SECRET,
             'Content-Type': "application/json",
