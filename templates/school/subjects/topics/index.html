@@ -126,7 +126,7 @@
                 <div class="mb-3">
                     <label for="period" class="col-form-label col-label-required">Duration</label>
                     <select id="id-period-subject" class="form-select rounded-0 shadow-none">
-                        {% for amount in amounts %}
+                        {% for amount in topic.topic_amounts.all %}
                         <option value="{{amount.amount}}">{{amount.period}} {{amount.period_type}}</option>
                         {% endfor %}
                     </select>
@@ -138,8 +138,7 @@
                 </div>
                 
                 <input type="hidden" name="user" value={{request.user.id}}>
-                <input type="hidden" name="form" value="{{form.id}}">
-                <input type="hidden" name="subject" value="{{subject.id}}">
+                <input type="hidden" name="topic" value="{{topic.id}}">
 
             </form>
 
