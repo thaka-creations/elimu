@@ -258,10 +258,11 @@ class MpesaCheckout(APIView):
         user = validated_data['user']
         form = validated_data.get("form", None)
         subject = validated_data.get("subject", None)
+        topic = validated_data.get("topic", None)
 
-        if not unit and not form and not subject:
-            return Response({"details": "Unit or form or subject required"}, status=status.HTTP_400_BAD_REQUEST)
-        resp = gateway.stk_push_request(amount, phone_number, unit, form, subject, period, user)
+        if not unit and not form and not subject and not topic:
+            return Response({"details": "Unit or form or subject or topic required"}, status=status.HTTP_400_BAD_REQUEST)
+        resp = gateway.stk_push_request(amount, phone_number, unit, form, subject, topic, period, user)
 
         if not resp:
             return Response({"details": "An error occurred. Try again later"}, status=status.HTTP_400_BAD_REQUEST)

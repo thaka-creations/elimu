@@ -102,6 +102,24 @@
         </div>
     </div>
 </div>
+<div class="modal" tabindex="-1" id="confirm-payment" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered rounded-0">
+      <div class="modal-content rounded-0 w-75">
+        <div class="modal-header">
+          <h5 class="modal-title">CONFIRM PAYMENT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex justify-content-between">
+            <button type="button" class="btn btn-danger shadow-none rounded-0" data-bs-dismiss="modal">Cancel</button>
+            <form action="/payments/subscription/check-form-subscription" method="post" id="check-payment-status">
+                {% csrf_token %}
+                <input type="hidden" name="form" value="{{instance.id}}">
+            </form>
+            <button type="button" class="btn btn-primary shadow-none rounded-0" id="btn-confirm-payment">Confirm payment</button>
+        </div>
+      </div>
+    </div>
+</div>
 
 {% csrf_token %}
 {% endblock %}
@@ -131,9 +149,14 @@
                 $("#subject-amount").val(amount);
             });
 
-            $("#pay-mpesa-sb").on("click", function(){
-                
-            });
+            // $("#pay-mpesa-sb").on("click", function(){
+            //     $("#subject-amount-form").submit();
+            // });
+
+            // $("#subject-amount-form").on("submit", function(e){
+            //     e.preventDefault();
+            //     var el = document.getElementById("subject-amount-form");
+            // });
             // xhttp = new XMLHttpRequest();
             // xhttp.onreadystatechange = function(){
             //     if (this.readyState == 4 && xhttp.status == 200){
@@ -147,6 +170,54 @@
             // xhttp.setRequestHeader("X-CSRFToken", csrftoken)
             // xhttp.send(JSON.stringify(req));
         });
+    });
+</script>
+<script>
+    var mpesaEl = document.getElementById("pay-mpesa-sb");
+    mpesaEl.addEventListener("click", function(){
+        var el = document.getElementById("subject-amount-form");
+            formData = new FormData(el);
+            url = $("#subject-amount-form").attr("action")
+            xhttp = new XMLHttpRequest();
+    
+
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    console.log(xhttp.responseText);
+                    $("#subjectModal").modal("hide");
+                    $("#confirm-payment").modal("show");
+                }
+                else if (this.readyState == 4 && this.status == 400){
+                    console.log(xhttp.responseText);
+                }
+            }
+            xhttp.open("POST", url);
+            xhttp.send(formData);
+    });
+
+    confEl = document.getElementById("btn-confirm-payment")
+    confEl.addEventListener("click", function(){
+        var elF = document.getElementById("check-payment-status");
+        formData = new FormData(elF);
+        url = elF.getAttribute("action")
+        xhttp = new XMLHttpRequest()
+
+        xhttp.onreadystatechange = function(){
+            $("#confirm-payment").modal("hide");
+            if (this.readyState == 4 && this.status == 200){
+                console.log(xhttp.responseText);
+                $(".toast-body").addClass("bg-success");
+                $(".toast-body p").text("Payment successful");
+                $(".toast").toast("show");
+            }
+            else if (this.readyState == 4 && this.status ==400){
+                $(".toast-body").addClass("bg-danger")
+                $(".toast-body p").text("Payment not successful");
+                $(".toast").toast("show");
+            }
+        }
+        xhttp.open("POST", url)
+        xhttp.send(formData)
     });
 </script>
 {% endblock %}

@@ -75,7 +75,8 @@ class MpesaGateway:
         return token
 
     @Decorators.refresh_token
-    def stk_push_request(self, amount, phone_number, unit=None, form=None, subject=None, period=None, user=None):
+    def stk_push_request(self, amount, phone_number, unit=None, form=None, subject=None, topic=None,
+                         period=None, user=None):
         if not user:
             return False
         reference = str(user.id)
@@ -121,12 +122,14 @@ class MpesaGateway:
                     unit=unit
                 )
                 return True
+            elif topic:
+                units = school_models.UnitModel.objects.filter(topic__id=topic)
             elif subject:
                 if not form:
                     return False
-                units = school_models.UnitModel.objects.filter(subject__id=subject, form__id=form)
+                units = school_models.UnitModel.objects.filter(topic__subject__id=subject, topic__form__id=form)
             elif form and not subject:
-                units = school_models.UnitModel.objects.filter(form__id=form)
+                units = school_models.UnitModel.objects.filter(topic__form__id=form)
             else:
                 return False
 
