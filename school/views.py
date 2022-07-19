@@ -135,7 +135,7 @@ class UnitView(LoginRequiredMixin, View):
             'Accept': "application/json"
         }
 
-        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        resp = requests.request("POST", url, data=payload, headers=headers)
         return JsonResponse({"details": resp.text})
         res = resp.json()
         if not res:
