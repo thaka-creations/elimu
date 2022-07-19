@@ -1,5 +1,6 @@
 import requests
 import uuid
+import json
 from word2number import w2n
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -121,10 +122,20 @@ class UnitView(LoginRequiredMixin, View):
                 return redirect("/")
         else:
             video_id = qs.first().videoid
-        url = CALLBACK_URL + 'video/get-video-otp'
-        headers = {"Authorization": "Apisecret " + settings.VDOCIPHER_SECRET}
+        url = CALLBACK_URL + 'video/{}/otp'.format(video_id)
+        payload = json.dumps({
+            "annotate": json.dumps([
+                {'type': 'rtext', 'text': request.user.email, 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
+                 'interval': '5000'}
+            ])
+        })
+        headers = {
+            'Authorization': "Apisecret " + settings.VDOCIPHER_SECRET,
+            'Content-Type': "application/json",
+            'Accept': "application/json"
+        }
 
-        resp = requests.get(url, params={"video_id": video_id}, headers=headers)
+        resp = requests.request("POST", url, data=payload, headers=headers)
         res = resp.json()
         if not res:
             return redirect("/")
