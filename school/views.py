@@ -122,7 +122,7 @@ class UnitView(LoginRequiredMixin, View):
                 return redirect("/")
         else:
             video_id = qs.first().videoid
-        url = CALLBACK_URL + 'video/{}/otp'.format(video_id)
+        url = 'https://dev.vdocipher.com/api/videos/{}/otp'.format(video_id)
         payload = json.dumps({
             "annotate": json.dumps([
                 {'type': 'rtext', 'text': 'name', 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
@@ -136,13 +136,11 @@ class UnitView(LoginRequiredMixin, View):
         }
 
         resp = requests.request("POST", url, data=payload, headers=headers).json()
-        return JsonResponse(resp)
-        res = resp.json()
-        if not res:
+        if not resp:
             return redirect("/")
         else:
-            otp = res['otp']
-            playback = res['playbackInfo']
+            otp = resp['otp']
+            playback = resp['playbackInfo']
 
         context = {"videos": qs, 'unit': instance, 'otp': otp, 'playback': playback, 'video_id': video_id}
         return render(request, self.template_name, context=context)
