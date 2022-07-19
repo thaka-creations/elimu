@@ -125,7 +125,7 @@ class UnitView(LoginRequiredMixin, View):
         url = 'https://dev.vdocipher.com/api/videos/{}/otp'.format(video_id)
         payload = json.dumps({
             "annotate": json.dumps([
-                {'type': 'text', 'text': request.user.username, 'alpha': '0.60', 'color': '0xFF0000', 'size': '15',
+                {'type': 'text', 'text': request.user.username, 'alpha': '0.40', 'color': '0xFF0000', 'size': '15',
                  'interval': '5000', 'x': '700', 'y': '20'}
             ])
         })
