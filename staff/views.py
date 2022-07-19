@@ -797,12 +797,15 @@ class RetrieveUpdateSubtopic(AdminMixin):
         try:
             instance = school_models.UnitModel.objects.get(id=pk)
         except school_models.UnitModel.DoesNotExist:
-            return Http404
+            raise Http404("Subtopic does not exist")
 
         form = self.form_class(request.POST, instance)
         if form.is_valid():
             data = form.cleaned_data
-            instance.__dict__.update(data)
+            name = data['name']
+            topic = data['topic']
+            instance.name = name
+            instance.topic = topic
             instance.save()
 
         return redirect("/admin/subtopics/{}".format(pk))

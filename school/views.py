@@ -3,7 +3,7 @@ import uuid
 from word2number import w2n
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, Http404
+from django.http import HttpResponseBadRequest, Http404, JsonResponse
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.views import View
@@ -101,8 +101,8 @@ class UnitView(LoginRequiredMixin, View):
         videoid = request.GET.get("videoid", False)
         try:
             instance = school_models.UnitModel.objects.get(pk=pk)
-        except school_models.UnitModel.DoesNotExist:
-            return redirect("/")
+        except (school_models.UnitModel.DoesNotExist, ValidationError):
+            raise Http404("Unit does not exist")
 
         qs = school_models.VideoModel.objects.filter(unit=instance)
 
@@ -134,3 +134,36 @@ class UnitView(LoginRequiredMixin, View):
 
         context = {"videos": qs, 'unit': instance, 'otp': otp, 'playback': playback, 'video_id': video_id}
         return render(request, self.template_name, context=context)
+
+
+class CartView(LoginRequiredMixin, View):
+    template_name = "school/cart/index.html"
+    login_url = "/login"
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        data = request.body.decode('utf-8')
+        _type = data['type']
+        request_id = data['request_id']
+        amount = data['amount']
+        _form = data['form']
+        cart = request.session['cart']
+        if _type == "subject":
+            try:
+                instance = school_models.SubjectModel.objects.get(id=request_id)
+            except school_models.SubjectModel.DoesNotExist:
+                return JsonResponse({"error": False})
+            cart_items = cart['subject']
+            subjects = cart_items['items']
+
+            if str(instance.id) in subjects:
+                pass
+            else:
+                if len(subjects) >= 1:
+                    subjects.append(str(instance.pk))
+                else:
+                    {"item": str(instance.pk), "amount": amount, "form": instance.form.name}
+
+        return JsonResponse({"details": "test"})
