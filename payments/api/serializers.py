@@ -159,8 +159,6 @@ class MpesaCheckoutSerializer(serializers.Serializer):
             print(e)
             raise serializers.ValidationError("An error occurred. Try again later")
 
-        period = str(instance.period) + ' ' + instance.period_type
-
         if phone == "+":
             phone = phone[1:]
         if phone[0] == "0":
@@ -176,19 +174,7 @@ class MpesaCheckoutSerializer(serializers.Serializer):
 
         if amount <= 0:
             raise serializers.ValidationError("Amount must be greater than zero")
-
-        _period_list = period.split(" ")
-
-        if len(_period_list) < 2 or len(_period_list) > 2:
-            raise serializers.ValidationError("Invalid period")
-
-        if _period_list[1] in ["MONTH", "MONTHS"]:
-            period = int(_period_list[0]) * 30
-        elif _period_list[1] in ["YEAR", "YEARS"]:
-            period = int(_period_list[0]) * 365
-        else:
-            period = int(_period_list[0])
-
+        period = int(365)
         obj.update({"period": period, "user": user, "phone_number": str(phone_number)[1:]})
         return obj
 

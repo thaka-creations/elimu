@@ -11,6 +11,22 @@
         content:"*";
         color:red;
     }
+    .badge{
+        top:2px;
+        right:2px; 
+        font-size:0.6em; 
+        background-color:#5968B0;
+    }
+    .list-group-item{
+        font-size: 1.2em!important;
+    }
+    .un-it{
+        font-size:1.3em!important;
+    }
+    small{
+        font-size: 0.7em;
+        margin-right: 0.2em;
+    }
 </style>
 {% endblock %}
 
@@ -24,16 +40,52 @@
 <div class="card rounded-0">
     <div class="card-header rounded-0 d-flex justify-content-between">
         <p class="fs-5 mb-0">{{form.name.title}} {{subject.name.title}} Topics</p>
-        <button class="btn border-1 shadow-sm btn-success rounded-0" id="add-to-cart">Get plan</button>
+        <button class="btn border-1 shadow-sm btn-success rounded-0 d-flex aligh-items-top col-subject" id="add-to-cart" data-id="{{subject.id}}">
+            <small>KSH</small>
+            <span class="subject-amount">{{subject.subject_amounts.first.amount}}</span>
+        </button>
     </div>
     <div class="card-body">
         <div class="container">
             <div class="row gx-3 gy-3">
                 {% if topics %}
                     {% for topic in topics %}
-                        <div class="col-md-3 col-subject">
-                            <div class="py-2 border text-center un-it position-relative" un-id="{{topic.id}}">
-                                {{topic.name.title}}
+                        <div class="col-md-4">
+
+                            <div class="card rounded-0 border-0 shadow">
+                                <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
+                                    <div class="row">
+                                        <div class="col-md-8 fw-bold">
+                                            {{topic.name.title}}
+                                        </div>
+                                        <div class="col-md-4 d-flex justify-content-end">
+                                            <button class="btn btn-secondary rounded-0 shadow-none d-flex align-items-top pb-0">
+                                                <small>KSH</small>
+                                                <span class="topic-amount">{{topic.topic_amounts.first.amount}}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <ul class="list-group rounded-0">
+                                        {% if not topic.topic_units.all%}
+                                        <li class="list-group-item">
+                                            <div class="ms-0 me-auto">
+                                              No subtopics
+                                            </div>
+                                        </li>
+                                        {% endif %}
+                                        {% for subtopic in topic.topic_units.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-start stn-it" stn-id="{{subtopic.id}}">
+                                          <div class="ms-0 me-auto">
+                                            {{subtopic.name.title}}
+                                          </div>
+                                          <span class="badge bg-primary rounded-pill">Ksh <span class="subtopic-amount">{{subtopic.unit_amounts.first.amount}}</span></span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
@@ -47,11 +99,11 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" id="cart-modal" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" tabindex="-1" id="cart-modal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-0">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Subject Subscription Payment</h5>
+            <h5 class="modal-title cart-md-title" id="exampleModalLabel">Subject Subscription Payment</h5>
             <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -60,21 +112,12 @@
               </p>
               <p class="text-danger fs-6"><superscript>*</superscript>Follow the steps below for payment via MPESA</p>
               
-              <form action="/api/v1/payments/checkout" method="POST" id="subject-amount-form">
+              <form action="/api/v1/payments/checkout" method="POST" id="cart-form">
                   {% csrf_token %}
                   
                   <div class="mb-3">
                       <label for="phone" class="col-form-label col-label-required">Phone Number</label>
                       <input type="text" class="form-control rounded-0 shadow-none" name="phone_number" placeholder="Enter phone number" required>
-                  </div>
-  
-                  <div class="mb-3">
-                      <label for="period" class="col-form-label col-label-required">Duration</label>
-                      <select id="id-period-subject" class="form-select rounded-0 shadow-none">
-                          {% for amount in subject.subject_amounts.all %}
-                          <option value="{{amount.amount}}">{{amount.period}} {{amount.period_type}}</option>
-                          {% endfor %}
-                      </select>
                   </div>
   
                   <div class="mb-3">
@@ -84,14 +127,16 @@
                   
                   <input type="hidden" name="user" value={{request.user.id}}>
                   <input type="hidden" name="form" value="{{form.id}}">
-                  <input type="hidden" name="subject" value="{{subject.id}}">
+                  <input type="hidden" name="topic">
+                  <input type="hidden" name="unit">
+                  <input type="hidden" name="subject">
   
               </form>
   
           </div>
           <div class="modal-footer d-flex justify-content-between">
             <button type="button" class="btn btn-danger rounded-0 shadow-none" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa-sb">Pay via MPESA</button>
+            <button type="button" class="btn btn-primary rounded-0 shadow-none" id="pay-mpesa">Pay via MPESA</button>
           </div>
         </div>
     </div>
@@ -120,17 +165,83 @@
 
 {% block scripts %}
 <script>
-    var elements = document.getElementsByClassName("col-subject");
-    Array.from(elements).forEach(function(element){
-        element.addEventListener("click", function(e){
-            id = e.target.getAttribute("un-id");
-            slug = "{{form.name.lower}}".replace(" ","-");
-            subject = "{{subject.name.lower}}".replace(" ","-");
-            window.location.href = "/"+slug+"/"+subject+"/topic/"+id;
+    $(document).ready(function(){
+        //subjects
+        $(".col-subject").on("click", function(){
+            var id = $(this).attr("data-id");
+            var subject = "{{subject.name.title}}";
+            var amount = $(this).children("span").text();
+            $(".cart-md-title").text("Subject Subscription Payment");
+            $("#subject-amount").val(amount);
+            $("[name='topic']").val(null);
+            $("[name='subtopic']").val(null);
+            $("[name='subject']").val(id);
+            $("#wl-md-title").text("Dear {{request.user.name}}, subscribe to view all "+subject+" videos");
+            $("#cart-modal").modal("show");
         });
-    })
+
+        //topics
+        $(".col-topic").on("click", function(){
+            var id = $(this).attr("un-id");
+            var topic = $(this).find(".fw-bold").text();
+            var amount = $(this).find(".topic-amount").text();
+            $(".cart-md-title").text("Topic Subscription Payment");
+            $("#subject-amount").val(amount);
+            $("[name='topic']").val(id);
+            $("[name='subtopic']").val(null);
+            $("[name='subject']").val(null);
+            $("#wl-md-title").text("Dear {{request.user.name}}, subscribe to view all "+topic+" videos");
+            $("#cart-modal").modal("show");
+        });
+
+        //subtopic
+        $(".stn-it").on("click", function (){
+            var id = $(this).attr("stn-id");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                    window.location.href = "/form/subject/unit/"+id
+                }
+                else if (this.readyState == 4 && this.status == 400){
+                    var subtopic = $(this).children("div").text();
+                    var amount = $(this).find(".subtopic-amount").text();
+                    $(".cart-md-title").text("Subtopic Subscription Payment");
+                    $("#subject-amount").val(amount);
+                    $("[name='unit']").val(id);
+                    $("[name='subject']").val(null);
+                    $("[name='topic']").val(null);
+                    $("#wl-md-title").text("Dear {{request.user.name}}, subscribe to view all "+subtopic+" videos");
+                    $("#cart-modal").modal("show");
+                }
+            }
+            xhttp.open("GET", "/payments/subscription/check-status?request_id="+id, true);
+            xhttp.send();
+        });
+
+        //form submit
+        $("#pay-mpesa").on("click", function(){
+            $("#cart-form").submit();
+        });
+
+        //form
+        $("#cart-form").on("submit", function(e){
+            e.preventDefault();
+            var el = $(this);
+            var formData = new FormData(this);
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && xhttp.status == 200){
+                    obj =  JSON.parse(xhttp.responseText);
+                    $("#cart-modal").modal("hide");
+                    $("#confirm-payment").modal("show");
+                }
+            }
+            xhttp.open("POST", "/api/v1/payments/checkout");
+            xhttp.send(formData);
+        });
+    });
 </script>
-<script>
+<!-- <script>
     $(document).ready(function(){
         $("#add-to-cart").on("click", function(){
             $("#cart-modal").modal("show");
@@ -165,30 +276,8 @@
             // xhttp.send(JSON.stringify(req));
         });
     });
-</script>
+</script> -->
 <script>
-    var mpesaEl = document.getElementById("pay-mpesa-sb");
-    mpesaEl.addEventListener("click", function(){
-        var el = document.getElementById("subject-amount-form");
-            formData = new FormData(el);
-            url = $("#subject-amount-form").attr("action")
-            xhttp = new XMLHttpRequest();
-    
-
-            xhttp.onreadystatechange = function(){
-                if (this.readyState == 4 && this.status == 200){
-                    console.log(xhttp.responseText);
-                    $("#subjectModal").modal("hide");
-                    $("#confirm-payment").modal("show");
-                }
-                else if (this.readyState == 4 && this.status == 400){
-                    console.log(xhttp.responseText);
-                }
-            }
-            xhttp.open("POST", url);
-            xhttp.send(formData);
-    });
-
     confEl = document.getElementById("btn-confirm-payment")
     confEl.addEventListener("click", function(){
         var elF = document.getElementById("check-payment-status");
@@ -210,8 +299,8 @@
                 $(".toast").toast("show");
             }
         }
-        xhttp.open("POST", url)
-        xhttp.send(formData)
+        xhttp.open("POST", url);
+        xhttp.send(formData);
     });
 </script>
 {% endblock %}
