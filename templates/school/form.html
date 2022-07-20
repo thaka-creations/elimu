@@ -26,12 +26,6 @@
     .form-four{
         background-color:#D56064;
     }
-    .badge{
-        top:2px;
-        right:2px; 
-        font-size:0.6em; 
-        background-color:#5968B0;
-    }
 </style>
 {% endblock %}
 
@@ -59,7 +53,7 @@
                     {% for subject in subjects %}
                         <div class="col-md-3">
                             <div class="py-2 border text-center position-relative sb-it" sub-id="{{subject.id}}">
-                                {{subject.name}} <span class="badge text-danger text-white position-absolute">Ksh {{subject.subject_amounts.first.amount}}</span>
+                                {{subject.name}}</span>
                             </div>
                         </div>
                     {% endfor %}
