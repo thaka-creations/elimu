@@ -57,12 +57,12 @@ class SubjectView(LoginRequiredMixin, View):
         except (school_models.SubjectModel.DoesNotExist, ValidationError):
             raise Http404("Subject does not exist")
 
-        topics = school_models.TopicModel.objects.filter(subject=instance)
-
         try:
             form = school_models.FormModel.objects.get(name__iexact=slug.replace("-", " "))
         except (school_models.FormModel.DoesNotExist, school_models.FormModel.MultipleObjectsReturned, ValidationError):
             raise Http404("Form does not exist")
+
+        topics = school_models.TopicModel.objects.filter(subject=instance, form=form)
         amounts = payment_models.SubjectAmount.objects.filter(subject=instance, form=form)
         context = {"topics": topics, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
         return render(request, self.template_name, context=context)
@@ -125,8 +125,8 @@ class UnitView(LoginRequiredMixin, View):
         url = 'https://dev.vdocipher.com/api/videos/{}/otp'.format(video_id)
         payload = json.dumps({
             "annotate": json.dumps([
-                {'type': 'text', 'text': request.user.username, 'alpha': '0.40', 'color': '0xFF0000', 'size': '9',
-                 'interval': '5000', 'x': '87%', 'y': '20'}
+                {'type': 'rtext', 'text': request.user.username, 'alpha': '0.40', 'color': '0xFF0000', 'size': '9',
+                 'interval': '5000'}
             ])
         })
         headers = {
