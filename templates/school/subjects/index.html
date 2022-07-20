@@ -34,12 +34,14 @@
         margin-left:10px;
         width: calc(100% / 3 - 20px);
         float: left;
+        display:flex;
+        flex-direction: column;
+        min-height: 100%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .card-topic:hover {
-        box-shadow: 0 0 8px 3px rgba(0,0,0,.15);
-        transform: scale(1.025);
-        opacity: 1;
-        transition: .1s all ease;
+        top: -2px;
+        box-shadow: 0 4px 5px rgba(0,0,0,0.2);
         cursor: pointer;
     }   
     
@@ -68,7 +70,7 @@
                     {% for topic in topics %}
                         <div class="card-container w-100">
 
-                            <div class="card card-topic rounded-0 border-0 shadow">
+                            <div class="card card-topic rounded-0 border-0">
                                 <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="ms-0 me-auto fw-bold">
