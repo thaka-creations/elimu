@@ -27,6 +27,19 @@
         font-size: 0.7em;
         margin-right: 0.2em;
     }
+    .card-container .card{
+        margin:1em;
+        width: calc(100% / 3 - 20px);
+        float: left;
+    }
+    .card-topic:hover {
+        box-shadow: 0 0 8px 3px rgba(0,0,0,.15);
+        transform: scale(1.025);
+        opacity: 1;
+        transition: .1s all ease;
+        cursor: pointer;
+    }   
+    
 </style>
 {% endblock %}
 
@@ -45,14 +58,14 @@
             <span class="subject-amount">{{subject.subject_amounts.first.amount}}</span>
         </button>
     </div>
-    <div class="card-body">
+    <div class="card-body px-0">
         <div class="container">
-            <div class="row gx-3 gy-3">
+            <section>
                 {% if topics %}
                     {% for topic in topics %}
-                        <div class="col-md-4">
+                        <div class="card-container w-100">
 
-                            <div class="card rounded-0 border-0 shadow">
+                            <div class="card card-topic rounded-0 border-0 shadow">
                                 <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="ms-0 me-auto fw-bold">
@@ -89,7 +102,7 @@
                         No {{subject.name.title}} topics available at the moment
                     </div>
                 {% endif %}
-            </div>
+            </section>
         </div>
     </div>
 </div>
