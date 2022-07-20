@@ -32,19 +32,23 @@
         margin-bottom:1em;
         margin-right: 10px;
         margin-left:10px;
-        width: calc(100% / 3 - 20px);
         float: left;
         display:flex;
         flex-direction: column;
         min-height: 100%;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width:calc(100% - 20px);
+    }
+    @media (min-width: 992px){
+        .card-container .card{
+            width: calc(100% / 3 - 20px);
+        }
     }
     .card-topic:hover {
         top: -2px;
         box-shadow: 0 4px 5px rgba(0,0,0,0.2);
         cursor: pointer;
-    }   
-    
+    }       
 </style>
 {% endblock %}
 
