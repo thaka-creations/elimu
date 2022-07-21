@@ -115,9 +115,12 @@
         </div>
     </div>
 </div>
+{% csrf_token %}
+{% endblock %}
 
-<div class="modal fade" tabindex="-1" id="cart-modal">
-    <div class="modal-dialog">
+{% block modal %}
+<div class="modal fade" tabindex="-1" id="cart-modal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content rounded-0">
           <div class="modal-header">
             <h5 class="modal-title cart-md-title" id="exampleModalLabel">Subject Subscription Payment</h5>
@@ -159,7 +162,7 @@
     </div>
 </div>
 <div class="modal" tabindex="-1" id="confirm-payment" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog rounded-0">
+    <div class="modal-dialog modal-dialog-centered rounded-0">
       <div class="modal-content rounded-0 w-75">
         <div class="modal-header">
           <h5 class="modal-title">CONFIRM PAYMENT</h5>
@@ -176,7 +179,6 @@
       </div>
     </div>
 </div>
-{% csrf_token %}
 {% endblock %}
 
 {% block scripts %}
@@ -200,7 +202,7 @@
         $(".col-topic").on("click", function(){
             var id = $(this).attr("un-id");
             var topic = $(this).find(".fw-bold").text();
-            var amount = $(this).find(".topic-amount").text();
+            var amount = $(this).find(".topic-amount").text().replace("Ksh", "");
             $(".cart-md-title").text("Topic Subscription Payment");
             $("#subject-amount").val(amount);
             $("[name='topic']").val(id);
