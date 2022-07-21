@@ -107,7 +107,6 @@ class MpesaGateway:
                 reference=reference,
                 description=description
             )
-
             invoice_inst = Invoice.objects.create(
                 user=user,
                 amount=amount,
