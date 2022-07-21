@@ -116,8 +116,8 @@
     </div>
 </div>
 
-<div class="modal fade" tabindex="-1" id="cart-modal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade" tabindex="-1" id="cart-modal">
+    <div class="modal-dialog">
         <div class="modal-content rounded-0">
           <div class="modal-header">
             <h5 class="modal-title cart-md-title" id="exampleModalLabel">Subject Subscription Payment</h5>
@@ -159,7 +159,7 @@
     </div>
 </div>
 <div class="modal" tabindex="-1" id="confirm-payment" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered rounded-0">
+    <div class="modal-dialog rounded-0">
       <div class="modal-content rounded-0 w-75">
         <div class="modal-header">
           <h5 class="modal-title">CONFIRM PAYMENT</h5>
@@ -215,13 +215,13 @@
         $(".stn-it").on("click", function (){
             var id = $(this).attr("stn-id");
             var xhttp = new XMLHttpRequest();
+            var subtopic = $(this).children("div").text();
+            var amount = $(this).find(".subtopic-amount").text();
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200) {
                     window.location.href = "/form/subject/unit/"+id
                 }
                 else if (this.readyState == 4 && this.status == 400){
-                    var subtopic = $(this).children("div").text();
-                    var amount = $(this).find(".subtopic-amount").text();
                     $(".cart-md-title").text("Subtopic Subscription Payment");
                     $("#subject-amount").val(amount);
                     $("[name='unit']").val(id);
