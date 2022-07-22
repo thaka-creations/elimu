@@ -109,7 +109,7 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header text-success">
-                    Subject Prices
+                    Topic Prices ({{topic.name.title}})
                 </div>
                 <div class="card-body mt-3 px-2">
                     <table id="topic-prices" class="display">
@@ -134,12 +134,12 @@
                         </thead>
                         <tbody>
                             {% for amount in amounts %}
-                            <tr>
+                            <tr data-id="{{amount.id}}" style="cursor: pointer;">
                                 <td class="text-center">{{forloop.counter}}</td>
                                 <td class="text-center">{{amount.topic.name}}</td>
                                 <td class="text-center">{{amount.amount}}</td>
                                 <td class="text-center">{{amount.period}} {{amount.period_type}}</td>
-                                <td class="text-center"><i class='bi bi-trash text-danger'></i></td>
+                                <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete"><i class='bi bi-trash text-danger'></i></td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -154,7 +154,20 @@
 {% block scripts %}
 <script>
      $(document).ready(function () {
-        $('#topic-prices').DataTable();
+        var myTable = $('#topic-prices').DataTable();
+
+        $(".bi-trash").on("click", function (e) {
+            e.stopPropagation();
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    myTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/payments/delete-topic-amount");
+            xhttp.send(tr.attr('data-id'));
+        });
     });
 </script>
 {% endblock%}

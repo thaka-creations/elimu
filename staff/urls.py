@@ -44,4 +44,8 @@ urlpatterns = [
     path("admin/subtopics/<pk>", views.RetrieveUpdateSubtopic.as_view()),
     path("admin/delete-subtopic", views.delete_subtopic),
     path("admin/payments/subtopic-amount", views.AddSubtopicAmountView.as_view()),
+    path("admin/payments/delete-subtopic-amount", views.delete_subtopic_amount),
+    path("admin/payments/delete-topic-amount", views.delete_topic_amount),
+    path("admin/payments/delete-subject-amount", views.delete_subject_amount),
+    path("admin/payments/delete-form-amount", views.delete_form_amount),
 ]

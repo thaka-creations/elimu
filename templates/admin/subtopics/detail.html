@@ -62,7 +62,7 @@
                     </button>
                 </div>
                 <div class="card-body">
-                    <table class="table table-hover table-striped">
+                    <table class="display" id="subtopic-price-table">
                         <thead>
                             <tr>
                                 <th class="text-center">
@@ -80,9 +80,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% if amounts %}
                             {% for amount in amounts %}
-                                <tr>
+                                <tr data-id={{amount.id}} style="cursor: pointer;">
                                     <td class="text-center">
                                         {{forloop.counter}}
                                     </td>
@@ -92,16 +91,11 @@
                                     <td class="text-center">
                                         {{amount.amount}}
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
                                         <i class='bi bi-trash text-danger'></i>
                                     </td>
                                 </tr>
                             {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan='4' class='text-center'>Unit pricing not defined yet</td>
-                                </tr>
-                            {%endif%}
                         </tbody>
                     </table>
                 </div>
@@ -154,5 +148,22 @@
     bm.addEventListener("click", function() {
         fam.submit();
     })
+</script>
+<script>
+    $(document).ready(function(){
+        var subtopicPriceTable = $("#subtopic-price-table").DataTable();
+        $(".bi-trash").on("click", function (e) {
+            e.stopPropagation();
+            tr = $(this).parents("tr");
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200){
+                    subtopicPriceTable.row( tr ).remove().draw( false );
+                }
+            }
+            xhttp.open("POST", "/admin/payments/delete-subtopic-amount");
+            xhttp.send(tr.attr('data-id'));
+        });
+    });
 </script>
 {% endblock %}

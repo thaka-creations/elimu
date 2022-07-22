@@ -516,6 +516,18 @@ class AddCounty(AdminMixin):
         return redirect("/admin/counties/add-county", {"qs": qs, "form": form})
 
 
+@csrf_exempt
+def delete_topic_amount(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = payment_models.TopicAmount.objects.get(id=body_unicode)
+    except payment_models.TopicAmount.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
+
+
 class AddTopicAmountView(AdminMixin):
     form_class = forms.AddTopicAmount
     template_name = "admin/topics/detail.html"
@@ -530,6 +542,18 @@ class AddTopicAmountView(AdminMixin):
             context = {"details": "Topic Amount added successfully"}
             return redirect("/admin/topics/view?topic={}".format(topic.id))
         return redirect("/admin")
+
+
+@csrf_exempt
+def delete_subtopic_amount(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = payment_models.UnitAmount.objects.get(id=body_unicode)
+    except payment_models.UnitAmount.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
 
 
 class AddSubtopicAmountView(AdminMixin):
@@ -550,6 +574,18 @@ class AddSubtopicAmountView(AdminMixin):
         return redirect("/admin")
 
 
+@csrf_exempt
+def delete_subject_amount(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = payment_models.SubjectAmount.objects.get(id=body_unicode)
+    except payment_models.SubjectAmount.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
+
+
 class AddSubjectAmountView(AdminMixin):
     form_class = forms.AddSubjectAmount
 
@@ -564,6 +600,18 @@ class AddSubjectAmountView(AdminMixin):
             context = {"details": "Subject Amount added successfully"}
             return redirect(url)
         return redirect(url)
+
+
+@csrf_exempt
+def delete_form_amount(request):
+    body_unicode = request.body.decode('utf-8')
+    try:
+        instance = payment_models.FormAmount.objects.get(id=body_unicode)
+    except payment_models.FormAmount.DoesNotExist:
+        return HttpResponseBadRequest
+
+    instance.delete()
+    return JsonResponse({"message": "Successful"})
 
 
 class AddFormAmountView(AdminMixin):
