@@ -63,8 +63,19 @@ class SubjectView(LoginRequiredMixin, View):
             raise Http404("Form does not exist")
 
         topics = school_models.TopicModel.objects.filter(subject=instance, form=form)
+
+        # check for user subscription
+        units_ids = list(payment_models.Subscription.objects.filter(
+            user=request.user, status="ACTIVE", invoiceunits__unit__topic__in=topics).values_list(
+            'invoiceunits__unit__id', flat=True
+        ))
+        topics_ids = school_models.TopicModel.objects.filter(topic_units__in=units_ids).values_list(
+            "id", flat=True
+        )
+
         amounts = payment_models.SubjectAmount.objects.filter(subject=instance, form=form)
-        context = {"topics": topics, "subject": instance, "form": form, "user": request.user, "amounts": amounts}
+        context = {"topics": topics, "subject": instance, "form": form, "user": request.user, "amounts": amounts,
+                   "active_units": units_ids, "active_topics": topics_ids}
         return render(request, self.template_name, context=context)
 
 

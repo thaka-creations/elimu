@@ -48,73 +48,161 @@
         top: -2px;
         box-shadow: 0 4px 5px rgba(0,0,0,0.2);
         cursor: pointer;
+    }
+    .cr{
+        color: red;
     }       
 </style>
 {% endblock %}
 
 {% block content %}
 
-<div class="mt-4 mb-5 heading-bar px-md-3 d-flex py-2">
+<div class="mt-4 mb-4 heading-bar px-md-3 d-flex py-2">
     <div class="flex-fill"><p class="fs-4 mb-0">{{form.name.title}} {{subject.name.title}} Videos Category</p></div>
     <div class="flex-fill d-flex justify-content-end"><button type="button" class="btn btn-primary btn-sm px-3 shadow-none" onclick="history.back()">Back</button></div>
 </div>
 
-<div class="card rounded-0">
-    <div class="card-header rounded-0 d-flex justify-content-between">
-        <p class="fs-5 mb-0">{{form.name.title}} {{subject.name.title}} Topics</p>
-        <button class="btn border-1 shadow-sm btn-success rounded-0 d-flex aligh-items-top col-subject" id="add-to-cart" data-id="{{subject.id}}">
-            <small>KSH</small>
-            <span class="subject-amount">{{subject.subject_amounts.first.amount}}</span>
-        </button>
-    </div>
-    <div class="card-body px-0">
-        <div class="container">
-            <section>
-                {% if topics %}
-                    {% for topic in topics %}
-                        <div class="card-container w-100">
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Market</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Your Topics</button>
+    </li>
+  </ul>
+  
+  <div class="tab-content">
+    <div class="tab-pane active pt-3" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-                            <div class="card card-topic rounded-0 border-0">
-                                <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="ms-0 me-auto fw-bold">
-                                            {{topic.name.title}}
+        <div class="card rounded-0">
+            <div class="card-header rounded-0 d-flex justify-content-between">
+                <p class="fs-5 mb-0">{{form.name.title}} {{subject.name.title}} Topics</p>
+                <button class="btn border-1 shadow-sm btn-success rounded-0 d-flex aligh-items-top col-subject" id="add-to-cart" data-id="{{subject.id}}">
+                    <small>KSH</small>
+                    <span class="subject-amount">{{subject.subject_amounts.first.amount}}</span>
+                </button>
+            </div>
+            <div class="card-body px-0">
+                <div class="container">
+                    <section>
+                        {% if topics %}
+                            {% for topic in topics %}
+                                <div class="card-container w-100">
+        
+                                    <div class="card card-topic rounded-0 border-0">
+                                        <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="ms-0 me-auto fw-bold">
+                                                    {{topic.name.title}}
+                                                </div>
+                                                <span class="badge bg-secondary rounded-pill topic-amount">Ksh {{topic.topic_amounts.first.amount}}</span>
+                                            </div>
                                         </div>
-                                        <span class="badge bg-secondary rounded-pill topic-amount">Ksh {{topic.topic_amounts.first.amount}}</span>
+        
+                                        <div class="card-body p-0">
+                                            <ul class="list-group rounded-0">
+                                                {% if not topic.topic_units.all%}
+                                                <li class="list-group-item">
+                                                    <div class="ms-0 me-auto">
+                                                      No subtopics
+                                                    </div>
+                                                </li>
+                                                {% endif %}
+                                                {% for subtopic in topic.topic_units.all %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-start stn-it" stn-id="{{subtopic.id}}">
+                                                  <div class="ms-0 me-auto">
+                                                    {{subtopic.name.title}}
+                                                  </div>
+                                                  {% if subtopic.id in active_units%}
+                                                  <span class="badge bg-success rounded-pill">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
+                                                        <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
+                                                      </svg>
+                                                  </span>
+                                                  {% else %}
+                                                  <span class="badge bg-primary rounded-pill">
+                                                    Ksh <span class="subtopic-amount">{{subtopic.unit_amounts.first.amount}}</span></span>
+                                                  {% endif %}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12 text-center">
+                                No {{subject.name.title}} topics available at the moment
+                            </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+        </div>
 
-                                <div class="card-body p-0">
-                                    <ul class="list-group rounded-0">
-                                        {% if not topic.topic_units.all%}
-                                        <li class="list-group-item">
-                                            <div class="ms-0 me-auto">
-                                              No subtopics
-                                            </div>
-                                        </li>
-                                        {% endif %}
-                                        {% for subtopic in topic.topic_units.all %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-start stn-it" stn-id="{{subtopic.id}}">
-                                          <div class="ms-0 me-auto">
-                                            {{subtopic.name.title}}
-                                          </div>
-                                          <span class="badge bg-primary rounded-pill">Ksh <span class="subtopic-amount">{{subtopic.unit_amounts.first.amount}}</span></span>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
+    </div>
+    <div class="tab-pane pt-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+        <div class="card rounded-0">
+            <div class="card-header">
+                <p class="fs-5 mb-0">{{form.name.title}} {{subject.name.title}} Topics</p>
+            </div>
+            <div class="card-body">
+                {% if not active_units %}
+                <div class="py-4 text-center text-secondary">
+                    <p class="fs-3">
+                        You do not have a plan that covers {{form.name.title}} {{subject.name.title}} Topics at the moment
+                    </p>
+    
+                    <button class="btn btn-primary rounded-0 shadow-none">
+                        Click to view {{form.name.title}} {{subject.name.title}} Topics
+                    </button>
+                </div>
+                {% else %}
+
+                {% for topic in topics %}
+                {%if topic.id in active_topics %}
+                    <div class="card-container w-100">
+
+                        <div class="card card-topic rounded-0 border-0">
+                            <div class="card-header un-it rounded-0 fs-5 col-topic" un-id="{{topic.id}}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="ms-0 me-auto fw-bold">
+                                        {{topic.name.title}}
+                                    </div>
+                                    <span class="badge bg-secondary rounded-pill topic-amount">Ksh {{topic.topic_amounts.first.amount}}</span>
                                 </div>
                             </div>
+
+                            <div class="card-body p-0">
+                                <ul class="list-group rounded-0">
+                                    {% for subtopic in topic.topic_units.all %}
+                                    {% if subtopic.id in active_units%}
+                                    <li class="list-group-item d-flex justify-content-between align-items-start stn-it" stn-id="{{subtopic.id}}">
+                                        <div class="ms-0 me-auto">
+                                        {{subtopic.name.title}}
+                                        </div>
+                                        
+                                        <span class="badge bg-success rounded-pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
+                                            <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
+                                            </svg>
+                                        </span>
+                                    </li>
+                                    {%endif%}
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12 text-center">
-                        No {{subject.name.title}} topics available at the moment
                     </div>
                 {% endif %}
-            </section>
+                {% endfor %}
+
+                {% endif %}
         </div>
     </div>
-</div>
+  </div>
+
 {% csrf_token %}
 {% endblock %}
 
