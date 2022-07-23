@@ -403,66 +403,11 @@
         });
     });
 </script>
-<!-- <script>
+<script>
     $(document).ready(function(){
-        $("#add-to-cart").on("click", function(){
-            $("#cart-modal").modal("show");
-            var amount = $("#id-period-subject").val();
-            $("#subject-amount").val(amount);
-
-            // on change 
-            $("#id-period-subject").on("change", function(){
-                var amount = $(this).val();
-                $("#subject-amount").val(amount);
-            });
-
-            // $("#pay-mpesa-sb").on("click", function(){
-            //     $("#subject-amount-form").submit();
-            // });
-
-            // $("#subject-amount-form").on("submit", function(e){
-            //     e.preventDefault();
-            //     var el = document.getElementById("subject-amount-form");
-            // });
-            // xhttp = new XMLHttpRequest();
-            // xhttp.onreadystatechange = function(){
-            //     if (this.readyState == 4 && xhttp.status == 200){
-            //         obj =  JSON.parse(xhttp.responseText);
-            //     }
-            // }
-            // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            // req = {"type": "subject", "request_id":"{{subject.id}}", "amount": "{{subject.subject_amounts.first.amount}}"}
-            // xhttp.open("POST", "/cart");
-            // xhttp.setRequestHeader("Content-type", "application/json");
-            // xhttp.setRequestHeader("X-CSRFToken", csrftoken)
-            // xhttp.send(JSON.stringify(req));
-        });
+    $(".toast").on("hidden.bs.toast", function(){
+        window.location.reload();
     });
-</script> -->
-<!-- <script>
-    confEl = document.getElementById("btn-confirm-payment")
-    confEl.addEventListener("click", function(){
-        var elF = document.getElementById("check-payment-status");
-        formData = new FormData(elF);
-        url = elF.getAttribute("action")
-        xhttp = new XMLHttpRequest()
-
-        xhttp.onreadystatechange = function(){
-            $("#confirm-payment").modal("hide");
-            if (this.readyState == 4 && this.status == 200){
-                console.log(xhttp.responseText);
-                $(".toast-body").addClass("bg-success");
-                $(".toast-body p").text("Payment successful");
-                $(".toast").toast("show");
-            }
-            else if (this.readyState == 4 && this.status ==400){
-                $(".toast-body").addClass("bg-danger")
-                $(".toast-body p").text("Payment not successful");
-                $(".toast").toast("show");
-            }
-        }
-        xhttp.open("POST", url);
-        xhttp.send(formData);
-    });
-</script> -->
+});
+</script>
 {% endblock %}
