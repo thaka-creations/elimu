@@ -67,7 +67,7 @@
                         <td class="text-center">
                             {% topic_video_count topic.id%}
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete">
                             <i class='bi bi-trash text-danger'></i>
                         </td>
                     </tr>
@@ -92,6 +92,7 @@
         })
         $(".bi-trash").on("click", function (e) {
         e.stopPropagation();
+        e.preventDefault();
         tr = $(this).parents("tr");
         xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
