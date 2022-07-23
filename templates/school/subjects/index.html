@@ -366,6 +366,13 @@
                                                 $(".toast").toast("show");
                                             }
                                         }
+                                    },
+                                    error: function(xhr, status, error){
+                                        clearInterval(pollInterval);
+                                        loader.modal("hide");
+                                        $(".toast-body").addClass("bg-danger");
+                                        $(".toast-body p").text("Payment not successful");
+                                        $(".toast").toast("show");
                                     }
                                 });
                         },
