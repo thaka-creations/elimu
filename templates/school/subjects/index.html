@@ -345,7 +345,7 @@
                                     dataType: 'json',
                                     type: 'get',
                                     success: function(data){
-                                        var resp = JSON.parse(data)['details'];
+                                        var resp = data['details'];
                                         status = resp['status']
                                         invoice = resp['invoice']
 
