@@ -134,6 +134,7 @@ class MpesaCheckoutSerializer(serializers.Serializer):
     unit = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     form = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     subject = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    topic = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     user = serializers.UUIDField(required=True)
 
     def validate(self, obj):
@@ -145,6 +146,36 @@ class MpesaCheckoutSerializer(serializers.Serializer):
             user = User.objects.get(id=user)
         except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist")
+
+        try:
+            if "unit" in obj.keys():
+                if obj['unit']:
+                    try:
+                        instance = models.UnitAmount.objects.get(unit__id=obj['unit'], amount=amount)
+                    except models.UnitAmount.DoesNotExist:
+                        raise serializers.ValidationError("Unit amount does not exist")
+                    obj.update({"unit": instance.unit})
+            elif "topic" in obj.keys():
+                if obj['topic']:
+                    try:
+                        models.TopicAmount.objects.get(topic__id=obj['topic'], amount=amount)
+                    except models.TopicAmount.DoesNotExist:
+                        raise serializers.ValidationError("Topic amount does not exist")
+            elif "subject" in obj.keys() and "form" in obj.keys():
+                if obj['subject'] and obj['form']:
+                    try:
+                        models.SubjectAmount.objects.get(subject__id=obj['subject'], form__id=obj['form'],
+                                                         amount=amount)
+                    except models.SubjectAmount.DoesNotExist:
+                        raise serializers.ValidationError("Subject amount does not exist")
+            else:
+                try:
+                    models.FormAmount.objects.get(form__id=obj['form'], amount=amount)
+                except models.FormAmount.DoesNotExist:
+                    raise serializers.ValidationError("Form amount does not exist")
+        except Exception as e:
+            print(e)
+            raise serializers.ValidationError("An error occurred. Try again later")
 
         if phone == "+":
             phone = phone[1:]
