@@ -249,20 +249,14 @@
         </div>
     </div>
 </div>
-<div class="modal" tabindex="-1" id="confirm-payment" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal" tabindex="-1" id="loader" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered rounded-0">
       <div class="modal-content rounded-0 w-75">
-        <div class="modal-header">
-          <h5 class="modal-title">CONFIRM PAYMENT</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body d-flex justify-content-between">
-            <button type="button" class="btn btn-danger shadow-none rounded-0" data-bs-dismiss="modal">Cancel</button>
-            <form action="/payments/subscription/check-form-subscription" method="post" id="check-payment-status">
-                {% csrf_token %}
-                <input type="hidden" name="form" value="{{instance.id}}">
-            </form>
-            <button type="button" class="btn btn-primary shadow-none rounded-0" id="btn-confirm-payment">Confirm payment</button>
+        <div class="modal-body text-center">
+            <div class="spinner-border m-3 text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-secondary fs-5">Processing payment...</p>
         </div>
       </div>
     </div>
@@ -334,12 +328,57 @@
             e.preventDefault();
             var el = $(this);
             var formData = new FormData(this);
+            var loader = $("#loader");
             xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && xhttp.status == 200){
                     obj =  JSON.parse(xhttp.responseText);
                     $("#cart-modal").modal("hide");
-                    $("#confirm-payment").modal("show");
+                    loader.modal("show");
+                    (function(){
+                        var paymentStatus = null;
+
+                        poll = function(){
+                                $.ajax({
+                                    url: '//localhost:8000/api/v1/school/unit',
+                                    dataType: 'json',
+                                    type: 'get',
+                                    success: function(data){
+                                        console.log(data);
+                                        clearInterval(pollInterval);
+                                    }
+                                });
+                        },
+                        pollInterval = setInterval(function(){
+                            poll();
+                        }, 5000);
+
+                        poll();
+                    })();
+                }
+                else{
+                    $("#cart-modal").modal("hide");
+                    loader.modal("show");
+                    (function(){
+                        var paymentStatus = null;
+
+                        poll = function(){
+                                $.ajax({
+                                    url: '//localhost:8000/api/v1/school/unit',
+                                    dataType: 'json',
+                                    type: 'get',
+                                    success: function(data){
+                                        console.log(data);
+                                        clearInterval(pollInterval);
+                                        loader.modal("hide");
+                                    }
+                                });
+                        },
+                        pollInterval = setInterval(function(){
+                            poll();
+                        }, 5000);
+
+                    })();
                 }
             }
             xhttp.open("POST", "/api/v1/payments/checkout");
@@ -408,5 +447,27 @@
         xhttp.open("POST", url);
         xhttp.send(formData);
     });
+</script>
+<script>
+   (function(){
+       var paymentStatus = null;
+
+       poll = function(){
+            $.ajax({
+                url: '//localhost:8000/api/v1/school/unit',
+                dataType: 'json',
+                type: 'get',
+                success: function(data){
+                    console.log(data);
+                    clearInterval(pollInterval);
+                }
+            });
+       },
+       pollInterval = setInterval(function(){
+           poll();
+       }, 5000);
+
+       poll();
+   })();
 </script>
 {% endblock %}

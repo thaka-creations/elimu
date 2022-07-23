@@ -86,7 +86,7 @@
 <script>
      $(document).ready(function () {
         var myTable = $('#topic-table').DataTable();
-        $(".topic").on("click", function(){
+        $("#topic-table tbody").on("click", "tr", function(){
             id = $(this).attr("data-bs-topic");
             window.location.href = "/admin/topics/view?topic="+id;
         })
