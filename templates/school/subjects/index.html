@@ -346,9 +346,10 @@
                                     type: 'get',
                                     success: function(data){
                                         var resp = data['details'];
-                                        status = resp['status']
-                                        invoice = resp['invoice']
-
+                                        status = resp['status'];
+                                        invoice = resp['invoice'];
+                                        console.log(status);
+                                        console.log(invoice);
                                         if (invoice != request_id){
                                             clearInterval(pollInterval);
                                             loader.modal("hide");
