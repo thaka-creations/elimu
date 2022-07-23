@@ -376,7 +376,7 @@
                         poll();
                     })();
                 }
-                else{
+                else if (this.readyState == 4 && xhttp.status == 400){
                     $("#cart-modal").modal("hide");
                     loader.modal("show");
                     (function(){
