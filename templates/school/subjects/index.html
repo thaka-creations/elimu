@@ -334,6 +334,8 @@
                 if (this.readyState == 4 && xhttp.status == 200){
                     obj =  JSON.parse(xhttp.responseText);
                     var request_id = obj['details'];
+                    console.log(request_id);
+                    console.log(obj);
                     $("#cart-modal").modal("hide");
                     loader.modal("show");
                     (function(){
