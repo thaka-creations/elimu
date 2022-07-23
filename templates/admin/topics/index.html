@@ -42,6 +42,9 @@
                             Subject
                         </th>
                         <th class="text-center">
+                            Index
+                        </th>
+                        <th class="text-center">
                             Video Count
                         </th>
                         <th class="text-center">
@@ -63,6 +66,9 @@
                         </td>
                         <td class="text-center">
                             {{topic.subject.name}}
+                        </td>
+                        <td class="text-center">
+                            {{topic.index}}
                         </td>
                         <td class="text-center">
                             {% topic_video_count topic.id%}
