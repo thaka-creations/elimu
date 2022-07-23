@@ -146,19 +146,6 @@ class MpesaCheckoutSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist")
 
-        try:
-            if "unit" in obj.keys():
-                instance = models.UnitAmount.objects.get(unit__id=obj['unit'], amount=amount)
-                obj.update({"unit": instance.unit})
-            elif "subject" in obj.keys() and "form" in obj.keys():
-                instance = models.SubjectAmount.objects.get(subject__id=obj['subject'], form__id=obj['form'],
-                                                            amount=amount)
-            else:
-                instance = models.FormAmount.objects.get(form__id=obj['form'], amount=amount)
-        except Exception as e:
-            print(e)
-            raise serializers.ValidationError("An error occurred. Try again later")
-
         if phone == "+":
             phone = phone[1:]
         if phone[0] == "0":

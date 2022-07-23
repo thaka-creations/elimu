@@ -77,6 +77,7 @@ class MpesaGateway:
     @Decorators.refresh_token
     def stk_push_request(self, amount, phone_number, unit=None, form=None, subject=None, topic=None,
                          period=None, user=None):
+
         if not user:
             return False
         reference = str(user.id)
