@@ -105,7 +105,7 @@
             window.location.href = "/admin/subtopics/"+id;
         });
 
-        $(".bi-trash").on("click", function (e) {
+        $("#form-table tbody").on("click", "tr td .bi-trash", function (e) {
             e.stopPropagation();
             tr = $(this).parents("tr");
             xhttp = new XMLHttpRequest();

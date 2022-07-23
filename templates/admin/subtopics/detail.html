@@ -152,7 +152,7 @@
 <script>
     $(document).ready(function(){
         var subtopicPriceTable = $("#subtopic-price-table").DataTable();
-        $(".bi-trash").on("click", function (e) {
+        $("#subtopic-price-table tbody").on("click", "tr td .bi-trash", function (e) {
             e.stopPropagation();
             tr = $(this).parents("tr");
             xhttp = new XMLHttpRequest();

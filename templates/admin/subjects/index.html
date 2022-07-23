@@ -98,7 +98,7 @@
             window.location.href = "/admin/subjects/"+id;
         });
 
-        $(".bi-trash").on("click", function (e) {
+        $("#subject-table tbody").on("click", "tr td .bi-trash", function (e) {
             e.stopPropagation();
             tr = $(this).parents("tr");
             xhttp = new XMLHttpRequest();

@@ -156,7 +156,7 @@
      $(document).ready(function () {
         var myTable = $('#topic-prices').DataTable();
 
-        $(".bi-trash").on("click", function (e) {
+        $("#topic-prices tbody").on("click", "tr td .bi-trash", function (e) {
             e.stopPropagation();
             tr = $(this).parents("tr");
             xhttp = new XMLHttpRequest();
