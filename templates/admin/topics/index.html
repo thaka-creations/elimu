@@ -90,9 +90,8 @@
             id = $(this).attr("data-bs-topic");
             window.location.href = "/admin/topics/view?topic="+id;
         })
-        $(".bi-trash").on("click", function (e) {
+        $("#topic-table tbody").on("click", "tr td .bi-trash", function (e) {
         e.stopPropagation();
-        e.preventDefault();
         tr = $(this).parents("tr");
         xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
