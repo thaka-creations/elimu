@@ -120,7 +120,7 @@ class MpesaGateway:
                     invoice=invoice_inst,
                     unit=unit
                 )
-                return True
+                return str(invoice_inst.id)
             elif topic:
                 units = school_models.UnitModel.objects.filter(topic__id=topic)
             elif subject:
