@@ -99,6 +99,31 @@ class InvoiceViewSet(viewsets.ViewSet):
     def create(self, request):
         pass
 
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_name="check-invoice-status",
+        url_path="check-invoice-status"
+    )
+    def check_invoice_status(self, request):
+        param_serializer = payment_serializers.BaseSerializer(data=request.query_params.dict(), many=False)
+
+        if not param_serializer.is_valid():
+            return Response({"details": param_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = param_serializer.validated_data
+        try:
+            instance = payment_models.Invoice.objects.get(id=validated_data['request_id'])
+        except payment_models.Invoice.DoesNotExist:
+            return Response({"details": "Invoice does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if instance.status in ["PENDING", "PAID", "OVERPAYMENT"]:
+            return Response({"details": {"invoice": str(instance.id), "status": instance.status}},
+                            status=status.HTTP_200_OK)
+
+        return Response({"details": {"invoice": str(instance.id), "status": instance.status}},
+                        status=status.HTTP_400_BAD_REQUEST)
+
 
 class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = payment_models.Subscription.objects.all()
@@ -266,7 +291,7 @@ class MpesaCheckout(APIView):
 
         if not resp:
             return Response({"details": "An error occurred. Try again later"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"details": "Payment process initiated successfully"}, status=status.HTTP_200_OK)
+        return Response({"details": resp}, status=status.HTTP_200_OK)
 
 
 class MpesaCallBack(APIView):
@@ -282,3 +307,4 @@ class MpesaCallBack(APIView):
             return Response({"details": "Success"}, status=status.HTTP_200_OK)
 
         return Response({"details": "Failed"}, status=status.HTTP_400_BAD_REQUEST)
+

@@ -333,19 +333,36 @@
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4 && xhttp.status == 200){
                     obj =  JSON.parse(xhttp.responseText);
+                    var request_id = obj['details'];
                     $("#cart-modal").modal("hide");
                     loader.modal("show");
                     (function(){
-                        var paymentStatus = null;
-
                         poll = function(){
                                 $.ajax({
-                                    url: '//localhost:8000/api/v1/school/unit',
+                                    url: '/api/v1/payments/invoice/check-invoice-status?request_id='+request_id,
                                     dataType: 'json',
                                     type: 'get',
                                     success: function(data){
-                                        console.log(data);
-                                        clearInterval(pollInterval);
+                                        var resp = JSON.parse(data)['details'];
+                                        status = resp['status']
+                                        invoice = resp['invoice']
+
+                                        if (invoice != request_id){
+                                            clearInterval(pollInterval);
+                                            loader.modal("hide");
+                                            $(".toast-body").addClass("bg-danger");
+                                            $(".toast-body p").text("Payment not successful");
+                                            $(".toast").toast("show");
+                                        }
+                                        else {
+                                            if (status == "PAID"){
+                                                clearInterval(pollInterval);
+                                                loader.modal("hide");
+                                                $(".toast-body").addClass("bg-success");
+                                                $(".toast-body p").text("Payment confirmed. Your topics has been updated");
+                                                $(".toast").toast("show");
+                                            }
+                                        }
                                     }
                                 });
                         },
@@ -360,22 +377,12 @@
                     $("#cart-modal").modal("hide");
                     loader.modal("show");
                     (function(){
-                        var paymentStatus = null;
-
-                        poll = function(){
-                                $.ajax({
-                                    url: '//localhost:8000/api/v1/school/unit',
-                                    dataType: 'json',
-                                    type: 'get',
-                                    success: function(data){
-                                        console.log(data);
-                                        clearInterval(pollInterval);
-                                        loader.modal("hide");
-                                    }
-                                });
-                        },
                         pollInterval = setInterval(function(){
-                            poll();
+                            clearInterval(pollInterval);
+                            loader.modal("hide");
+                            $(".toast-body").addClass("bg-danger");
+                            $(".toast-body p").text("Invalid transaction");
+                            $(".toast").toast("show");
                         }, 5000);
 
                     })();
@@ -422,7 +429,7 @@
         });
     });
 </script> -->
-<script>
+<!-- <script>
     confEl = document.getElementById("btn-confirm-payment")
     confEl.addEventListener("click", function(){
         var elF = document.getElementById("check-payment-status");
@@ -447,27 +454,5 @@
         xhttp.open("POST", url);
         xhttp.send(formData);
     });
-</script>
-<script>
-   (function(){
-       var paymentStatus = null;
-
-       poll = function(){
-            $.ajax({
-                url: '//localhost:8000/api/v1/school/unit',
-                dataType: 'json',
-                type: 'get',
-                success: function(data){
-                    console.log(data);
-                    clearInterval(pollInterval);
-                }
-            });
-       },
-       pollInterval = setInterval(function(){
-           poll();
-       }, 5000);
-
-       poll();
-   })();
-</script>
+</script> -->
 {% endblock %}

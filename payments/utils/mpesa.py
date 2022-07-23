@@ -142,7 +142,7 @@ class MpesaGateway:
                 ]
             )
 
-            return True
+            return str(invoice_inst.id)
         return False
 
     @staticmethod
@@ -214,6 +214,7 @@ class MpesaGateway:
 
         else:
             transaction.status = "PENDING"
-
+            invoice.status = "CANCELLED"
+            invoice.save()
         transaction.save()
         return True
