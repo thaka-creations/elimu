@@ -14,8 +14,8 @@ class AddVideoForm(forms.Form):
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
                                                                          "rounded-0 mb-2", "id": "a_subject"}))
     topic = forms.ChoiceField(label="Topic", required=True,
-                                   widget=forms.Select(attrs={"class": "form-control shadow-none "
-                                                                       "rounded-0 mb-2", "id": "a_topic"}))
+                              widget=forms.Select(attrs={"class": "form-control shadow-none "
+                                                                  "rounded-0 mb-2", "id": "a_topic"}))
     subtopic = forms.ChoiceField(label="Subtopic", required=True,
                                  widget=forms.Select(attrs={"class": "form-control "
                                                                      "shadow-none rounded-0 mb-2", "id": "a_subtopic"}))
@@ -51,6 +51,8 @@ class AddTopicForm(forms.Form):
     subject = forms.ModelChoiceField(queryset=school_models.SubjectModel.objects.all(), label="Subject", required=True,
                                      widget=forms.Select(attrs={"class": "form-control shadow-none "
                                                                          "rounded-0", "id": "_subject"}))
+    index = forms.IntegerField(label="Index", required=True,
+                               widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
 
 
 class AddSubtopicForm(forms.Form):

@@ -232,6 +232,7 @@ class UpdateTopic(AdminMixin, View):
         name = data['name']
         subject_id = data['subject']
         form_id = data['form_id']
+        index = data['index']
 
         try:
             form_inst = school_models.FormModel.objects.get(id=form_id)
@@ -251,6 +252,7 @@ class UpdateTopic(AdminMixin, View):
         instance.name = name
         instance.subject = subject
         instance.form = form_inst
+        instance.index = index
         instance.save()
         return redirect("/admin/topics/view?unit=" + pk)
 

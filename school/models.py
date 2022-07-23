@@ -34,6 +34,10 @@ class TopicModel(BaseModel):
     name = models.CharField(max_length=255)
     subject = models.ForeignKey(SubjectModel, on_delete=models.CASCADE, related_name="form_topics")
     form = models.ForeignKey(FormModel, on_delete=models.CASCADE, related_name="subject_topics")
+    index = models.BigIntegerField(default=0)
+
+    class Meta:
+        ordering = ['index']
 
     def __str__(self):
         return self.name
