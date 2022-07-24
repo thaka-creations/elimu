@@ -47,9 +47,13 @@ class UnitModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     topic = models.ForeignKey(TopicModel, on_delete=models.CASCADE, related_name="topic_units", null=True)
+    index = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['index']
 
 
 class VideoModel(BaseModel):

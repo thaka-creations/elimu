@@ -61,6 +61,8 @@ class AddSubtopicForm(forms.Form):
     topic = forms.ModelChoiceField(queryset=school_models.TopicModel.objects.all(), label="Topic", required=True,
                                    widget=forms.Select(attrs={"class": "form-control "
                                                                        "shadow-none rounded-0 mb-2", "id": "_topic"}))
+    index = forms.IntegerField(label="Index", required=True,
+                               widget=forms.NumberInput(attrs={"class": "form-control shadow-none rounded-0 mb-2"}))
 
 
 class AddCountyForm(forms.Form):
