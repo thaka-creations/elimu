@@ -826,7 +826,7 @@ class RetrieveUpdateSubtopic(AdminMixin):
         videos = instance.videos.all()
         context = {"subtopic": instance, "amounts": amounts, "amount_form": self.amount_form_class,
                    "form": self.form_class(initial={"name": instance.name,
-                                                    "topic": instance.topic})}
+                                                    "topic": instance.topic, "index": instance.index})}
 
         if videos.exists():
             video_id = videos.first()
@@ -854,8 +854,10 @@ class RetrieveUpdateSubtopic(AdminMixin):
             data = form.cleaned_data
             name = data['name']
             topic = data['topic']
+            index = data['index']
             instance.name = name
             instance.topic = topic
+            instance.index = index
             instance.save()
 
         return redirect("/admin/subtopics/{}".format(pk))
