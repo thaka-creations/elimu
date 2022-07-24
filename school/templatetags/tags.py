@@ -41,6 +41,15 @@ def get_unit(pk):
     return unit.name
 
 
+@register.simple_tag(name="get_initial")
+def get_initial(name):
+    name_list = name.split(' ')
+    if len(name_list) > 3:
+        name_list = name_list[2]
+    initial = " ".join([name[0] for name in name_list])
+    return initial
+
+
 @register.simple_tag(name="get_invoice_units")
 def get_invoice_units(invoice):
     qs = payment_models.InvoiceUnit.objects.filter(invoice=invoice)
