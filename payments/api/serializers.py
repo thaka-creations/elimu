@@ -210,3 +210,7 @@ class CheckSubjectSubscriptionSerializer(serializers.Serializer):
 
 class CheckFormSubscriptionSerializer(serializers.Serializer):
     form = serializers.UUIDField(required=True)
+
+
+class CheckTopicSubscriptionSerializer(serializers.Serializer):
+    topic = serializers.UUIDField(required=True)

@@ -17,23 +17,38 @@ class SubjectSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
 
-class ListTopicSerializer(serializers.ModelSerializer):
-    subject = SubjectSerializer()
-    form = FormSerializer()
-
-    class Meta:
-        model = school_models.TopicModel
-        fields = ['id', 'name', 'subject', 'form']
-        extra_kwargs = {'id': {'read_only': True}}
-
-
 class ListRetrieveUnitSerializer(serializers.ModelSerializer):
-    topic = ListTopicSerializer()
+    amount = serializers.SerializerMethodField()
 
     class Meta:
         model = school_models.UnitModel
-        fields = ['id', 'name', 'topic']
+        fields = ['id', 'name', 'amount']
         extra_kwargs = {'id': {'read_only': True}}
+
+    def get_amount(self, obj):
+        try:
+            amount = obj.unit_amounts.first().amount
+            return amount
+        except Exception as e:
+            return None
+
+
+class ListTopicSerializer(serializers.ModelSerializer):
+    amount = serializers.SerializerMethodField()
+    subject = SubjectSerializer()
+    form = FormSerializer()
+    subtopics = ListRetrieveUnitSerializer(source='topic_units', many=True)
+
+    class Meta:
+        model = school_models.TopicModel
+        fields = ['id', 'name', 'amount', 'subject', 'form', 'subtopics']
+        extra_kwargs = {'id': {'read_only': True}}
+
+    def get_amount(self, obj):
+        try:
+            return obj.topic_amounts.first().amount
+        except Exception as e:
+            return None
 
 
 class RetrieveTopicSerializer(ListTopicSerializer):

@@ -183,7 +183,7 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
         except school_models.FormModel.DoesNotExist:
             return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        units = school_models.UnitModel.objects.filter(subject=subject, form=form).values_list("id", flat=True)
+        units = school_models.UnitModel.objects.filter(topic__subject=subject, topic__form=form).values_list("id", flat=True)
 
         if not units:
             return Response({"details": "Subject does not have units"}, status=status.HTTP_400_BAD_REQUEST)
@@ -235,10 +235,14 @@ class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response({"details": "Subscribed"}, status=status.HTTP_200_OK)
 
-
-class CheckFormSubscription(APIView):
-    def post(self, request):
-        serializer = payment_serializers.CheckFormSubscriptionSerializer(data=request.data)
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="check-topic-subscription",
+        url_name="check-topic-subscription"
+    )
+    def check_topic_subscription(self, request):
+        serializer = payment_serializers.CheckTopicSubscriptionSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -246,11 +250,11 @@ class CheckFormSubscription(APIView):
         validated_data = serializer.validated_data
 
         try:
-            form = school_models.FormModel.objects.get(id=validated_data['form'])
-        except school_models.FormModel.DoesNotExist:
-            return Response({"details": "Form does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            topic = school_models.TopicModel.objects.get(id=validated_data['topic'])
+        except school_models.TopicModel.DoesNotExist:
+            return Response({"details": "Topic does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-        units = school_models.UnitModel.objects.filter(form=form).values_list("id", flat=True)
+        units = school_models.UnitModel.objects.filter(topic=topic).values_list("id", flat=True)
 
         if not units:
             return Response({"details": "Form does not have units"}, status=status.HTTP_400_BAD_REQUEST)
@@ -286,7 +290,8 @@ class MpesaCheckout(APIView):
         topic = validated_data.get("topic", None)
 
         if not unit and not form and not subject and not topic:
-            return Response({"details": "Unit or form or subject or topic required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"details": "Unit or form or subject or topic required"},
+                            status=status.HTTP_400_BAD_REQUEST)
         resp = gateway.stk_push_request(amount, phone_number, unit, form, subject, topic, period, user)
 
         if not resp:
@@ -307,4 +312,3 @@ class MpesaCallBack(APIView):
             return Response({"details": "Success"}, status=status.HTTP_200_OK)
 
         return Response({"details": "Failed"}, status=status.HTTP_400_BAD_REQUEST)
-
