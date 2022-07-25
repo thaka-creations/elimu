@@ -41,7 +41,18 @@ class RegistrationView(View):
     template_name = "users/registration.html"
 
     def get(self, request):
-        form = self.form_class()
+        params = request.GET
+        if "code" in params.keys():
+            code = request.GET['code']
+            try:
+                instance = user_models.Agent.objects.get(code=code)
+                form = self.form_class(initial={"code": instance})
+            except user_models.Agent.DoesNotExist:
+                return redirect("/registration")
+        else:
+            if len(params.keys()) != 0:
+                return redirect("/registration")
+            form = self.form_class()
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):

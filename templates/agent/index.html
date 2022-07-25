@@ -1,4 +1,5 @@
 {% extends "agent/partials/theme.html" %}
+{% load tags%}
 
 {% block styles %}
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
@@ -8,7 +9,7 @@
 
 <section class="section dashboard">
     <div class="row d-flex justify-content-between">
-        <div class="col-md-4">
+        <div class="col-md-8">
             <div class="card shadow rounded-0">
                 <div class="card-header text-success">
                     Details
@@ -18,11 +19,17 @@
                     <p>Email: {{request.user.username}}</p>
                     <p>Agent Code: {{request.user.agent_user.code}}</p>
                     <p>Users: {{request.user.agent_user.subscribers.count}}</p>
-                    <!-- <p class="mb-0">Registration Code: </p> -->
+                    <p class="mb-0 fs-6"><span>Registration Link:</span> 
+                        <a target="_blank" href="{% get_agent_url request%}" id="agent_link">{% get_agent_url request%}</a>
+                        <button class="btn btn-light shadow-none border-secondary" onclick="copyToClipboard('#agent_link')"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Copy link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                          </svg>
+                        </button>
+                    </p>
                 </div>
-                <!-- <div class="card-footer">
-                    <button class="btn btn-primary rounded-0 shadow-none">Generate Code</button>
-                </div> -->
             </div>
         </div>
         <div class="col-md-4">
@@ -143,7 +150,7 @@
         $("#date_to").datepicker({
             dateFormat:"yy-mm-dd",
         });
-        $("#date_to").datepicker('setDate', "{{end_date}}");
+        $("#date_to").datepicker('setDate', "{{end_date}}");      
     });
 </script>
 <script>
@@ -161,5 +168,15 @@
         xhttp.open("POST", "/agent");
         xhttp.send(formData);
     });
+</script>
+<script>
+    function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+            alert("Link copied successfully");
+        } 
 </script>
 {% endblock %}

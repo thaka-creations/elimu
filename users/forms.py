@@ -8,6 +8,7 @@ from users import models as user_models
 
 CALLBACK_URL = settings.SERVICES_URLS['callback_url']
 
+
 class RegistrationForm(forms.Form):
     name = forms.CharField(label="Full Name", max_length=255, required=True, label_suffix="",
                            widget=forms.TextInput(
@@ -84,7 +85,7 @@ class ForgotPasswordForm(forms.Form):
                                                   "autocomplete": "off"}))
     otp = forms.CharField(label="Email OTP Code", max_length=100, required=True, label_suffix="",
                           widget=forms.TextInput(
-                             attrs={"class": "form-control shadow-none rounded-0", "autocomplete": "off"}))
+                              attrs={"class": "form-control shadow-none rounded-0", "autocomplete": "off"}))
 
     def clean(self):
         cleaned_data = super(ForgotPasswordForm, self).clean()
@@ -107,8 +108,3 @@ class ForgotPasswordForm(forms.Form):
 
         if resp.status_code != 200:
             raise ValidationError(_("Invalid Otp Code"))
-
-
-
-
-

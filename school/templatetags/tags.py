@@ -60,3 +60,9 @@ def get_invoice_units(invoice):
     units = [i.unit.name for i in qs]
     units = " ,".join(units)
     return units
+
+
+@register.simple_tag(name="get_agent_url")
+def get_agent_url(request):
+    url = request.build_absolute_uri('/registration?code='+request.user.agent_user.code)
+    return url
